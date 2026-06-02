@@ -106,3 +106,34 @@ document.getElementById('reset').addEventListener('click', async () => {
 document.getElementById('clear-cache').addEventListener('click', () => {
   chrome.runtime.sendMessage({ type: 'clearCache' }, () => flash('Cache cleared.'));
 });
+
+document.getElementById('export-settings').addEventListener('click', async () => {
+  const sync = await new Promise((r) => chrome.storage.sync.get(null, r));
+  const local = await new Promise((r) => chrome.storage.local.get(['se_notes_v1', 'se_blocklist_v1', 'se_price_history_v1'], r));
+  const payload = { __steam_enhancer: 1, version: chrome.runtime.getManifest().version, sync, local };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'steam-enhancer-settings.json'; a.click();
+  flash('Exported.');
+});
+document.getElementById('import-settings').addEventListener('click', () => {
+  document.getElementById('import-file').click();
+});
+document.getElementById('import-file').addEventListener('change', async (e) => {
+  const f = e.target.files?.[0]; if (!f) return;
+  try {
+    const txt = await f.text();
+    const obj = JSON.parse(txt);
+    if (!obj.__steam_enhancer) throw new Error('Not a Steam Enhancer export.');
+    if (obj.sync) await new Promise((r) => chrome.storage.sync.set(obj.sync, r));
+    if (obj.local) await new Promise((r) => chrome.storage.local.set(obj.local, r));
+    await load(); flash('Imported. Reload Steam tabs to apply.');
+  } catch (err) {
+    flash('Import failed: ' + err.message);
+  }
+});
+document.getElementById('clear-blocklist').addEventListener('click', async () => {
+  if (!confirm('Clear the extension blocklist (games you marked "hide forever")?')) return;
+  await new Promise((r) => chrome.storage.local.set({ se_blocklist_v1: [] }, r));
+  flash('Blocklist cleared.');
+});

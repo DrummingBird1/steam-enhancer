@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "description": "All-in-one Steam upgrade: price history, lowest prices, wishlist tools, market & inventory helpers, trade utilities, review filters, and more.",
   "author": "Steam Enhancer Contributors",
-  "default_locale": "en",
   "minimum_chrome_version": "110",
 
   "icons": {
@@ -52,7 +51,9 @@
     "*://steamdb.info/*",
     "*://*.howlongtobeat.com/*",
     "*://*.protondb.com/*",
-    "*://api.steampowered.com/*"
+    "*://api.steampowered.com/*",
+    "*://open.er-api.com/*",
+    "*://api.steamapis.com/*"
   ],
 
   "content_scripts": [
@@ -64,6 +65,7 @@
         "src/lib/currency.js",
         "src/lib/api.js",
         "src/lib/prices.js",
+        "src/lib/notes.js",
         "src/content/common.js"
       ],
       "css": ["src/styles/injected.css"],

@@ -4,11 +4,14 @@
 
   document.addEventListener('se-ready', () => init(), { once: true });
 
+  let cachedItems = null;
+
   async function init() {
     if (!SE.ctx.settings.enableInventoryTools) return;
     insertToolbar();
-    // Listen for inventory swaps and re-decorate.
     setInterval(decorateSelected, 1000);
+    // Periodic decorate of inventory tiles with median prices.
+    setInterval(decorateTiles, 4000);
   }
 
   function insertToolbar() {
@@ -16,95 +19,185 @@
     const anchor = SE.$('#inventory_pagecontrols') || SE.$('#tabcontent_inventory') || SE.$('#inventories');
     if (!anchor) return;
     const bar = SE.el('div', { id: 'se-inv-toolbar', class: 'se-toolbar' },
-      SE.el('button', { class: 'se-btn', onclick: showValue }, 'Estimate inventory value'),
+      SE.el('button', { class: 'se-btn', onclick: showValue }, 'Estimate value'),
       SE.el('button', { class: 'se-btn', onclick: findDuplicates }, 'Find duplicates'),
-      SE.el('button', { class: 'se-btn', onclick: exportInventory }, 'Export inventory JSON'),
-      SE.el('button', { class: 'se-btn', onclick: openTradeCalc }, 'Trade calculator'),
+      SE.el('button', { class: 'se-btn', onclick: selectDuplicatesUI }, 'Mark duplicates'),
+      SE.el('button', { class: 'se-btn', onclick: cardSetProgress }, 'Card set progress'),
+      SE.el('button', { class: 'se-btn', onclick: exportInventory }, 'Export JSON'),
+      SE.el('input', { type: 'search', id: 'se-inv-filter', placeholder: 'Filter by name…', class: 'se-input' }),
       SE.el('span', { id: 'se-inv-out', class: 'se-muted' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);
+    SE.$('#se-inv-filter').addEventListener('input', SE.debounce((e) => {
+      const q = e.target.value.toLowerCase().trim();
+      for (const tile of SE.$$('.itemHolder, .inventory_item_link')) {
+        const name = (tile.querySelector('.hover_item_name')?.textContent || tile.innerText || '').toLowerCase();
+        tile.style.display = (!q || name.includes(q)) ? '' : 'none';
+      }
+    }, 150));
   }
 
-  function getActiveInventoryItems() {
-    // Steam stores inventories on `g_ActiveInventory` in the page context.
-    return SE.injectPage(() => {
+  async function getItems(force = false) {
+    if (cachedItems && !force) return cachedItems;
+    const r = await SE.injectPage(() => {
       try {
         const inv = window.g_ActiveInventory;
         if (!inv?.rgInventory) return null;
-        return Object.values(inv.rgInventory).map(it => ({
-          id: it.id, classid: it.classid, instanceid: it.instanceid, amount: it.amount,
-          market_hash_name: it.market_hash_name || (inv.rgDescriptions[it.classid + '_' + it.instanceid]?.market_hash_name),
-          name: inv.rgDescriptions[it.classid + '_' + it.instanceid]?.name,
-          tradable: inv.rgDescriptions[it.classid + '_' + it.instanceid]?.tradable,
-          marketable: inv.rgDescriptions[it.classid + '_' + it.instanceid]?.marketable,
-          appid: inv.appid
-        }));
-      } catch (e) { return null; }
+        return Object.values(inv.rgInventory).map(it => {
+          const d = inv.rgDescriptions[it.classid + '_' + it.instanceid] || {};
+          return {
+            id: it.id, classid: it.classid, instanceid: it.instanceid,
+            amount: it.amount, appid: inv.appid,
+            market_hash_name: d.market_hash_name, name: d.name,
+            tradable: d.tradable, marketable: d.marketable,
+            tags: (d.tags || []).map(t => t.localized_tag_name || t.name)
+          };
+        });
+      } catch { return null; }
     });
+    cachedItems = (r?.ok && r.result) ? r.result : null;
+    return cachedItems;
   }
 
   async function showValue() {
     const out = SE.$('#se-inv-out');
-    out.textContent = 'Estimating (sampling first 25 marketable items)…';
-    const r = await getActiveInventoryItems();
-    if (!r?.ok || !r.result) { out.textContent = 'Could not read inventory.'; return; }
-    const items = r.result.filter(i => i.marketable);
-    const sample = items.slice(0, 25);
+    out.textContent = 'Sampling first 25 marketable items…';
+    const items = await getItems(true);
+    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    const marketable = items.filter(i => i.marketable);
     let total = 0, counted = 0;
-    for (const it of sample) {
+    for (const it of marketable.slice(0, 25)) {
       const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
-      const median = p?.data?.median_price || p?.data?.lowest_price;
-      const val = SE.parsePrice(median);
+      const val = SE.parsePrice(p?.data?.median_price || p?.data?.lowest_price);
       if (val != null) { total += val * (it.amount || 1); counted++; }
     }
     const avg = counted ? total / counted : 0;
-    const estimate = avg * items.length;
-    out.textContent = `Sampled ${counted}/${sample.length}. Avg ≈ ${avg.toFixed(2)} · ${items.length} marketable items · estimate ≈ ${estimate.toFixed(2)}`;
+    out.textContent = `Sampled ${counted}/25 · avg ≈ ${avg.toFixed(2)} · ${marketable.length} marketable · estimate ≈ ${(avg * marketable.length).toFixed(2)}`;
   }
 
   async function findDuplicates() {
-    const out = SE.$('#se-inv-out');
-    const r = await getActiveInventoryItems();
-    if (!r?.ok || !r.result) { out.textContent = 'Could not read inventory.'; return; }
+    const items = await getItems();
+    if (!items) return;
     const map = new Map();
-    for (const it of r.result) {
+    for (const it of items) {
       const k = it.market_hash_name || it.name;
       if (!k) continue;
       map.set(k, (map.get(k) || 0) + (it.amount || 1));
     }
-    const dups = [...map.entries()].filter(([, n]) => n > 1).sort((a, b) => b[1] - a[1]).slice(0, 20);
+    const dups = [...map.entries()].filter(([, n]) => n > 1).sort((a, b) => b[1] - a[1]).slice(0, 25);
+    const out = SE.$('#se-inv-out');
     out.innerHTML = '';
-    if (!dups.length) { out.textContent = 'No duplicates found.'; return; }
+    if (!dups.length) { out.textContent = 'No duplicates.'; return; }
     dups.forEach(([k, n]) => out.appendChild(SE.el('div', null, `${n}× ${k}`)));
   }
 
+  async function selectDuplicatesUI() {
+    const items = await getItems();
+    if (!items) return;
+    const counts = new Map();
+    items.forEach(it => {
+      const k = it.market_hash_name || it.name;
+      if (k) counts.set(k, (counts.get(k) || 0) + 1);
+    });
+    let marked = 0;
+    for (const tile of SE.$$('.itemHolder, .inventory_item_link')) {
+      const name = tile.querySelector('.hover_item_name')?.textContent
+                 || tile.querySelector('img')?.alt
+                 || '';
+      if (name && counts.get(name) > 1) {
+        tile.style.outline = '2px solid #b07a1f';
+        marked++;
+      }
+    }
+    SE.$('#se-inv-out').textContent = `Marked ${marked} duplicate tiles in amber.`;
+  }
+
+  async function cardSetProgress() {
+    const items = await getItems();
+    if (!items) return;
+    const cards = items.filter(i => (i.tags || []).some(t => /trading card/i.test(t)));
+    const byGame = new Map();
+    for (const c of cards) {
+      const game = (c.tags || []).find(t => !/trading card|foil|series/i.test(t)) || c.market_hash_name?.split(' - ')[0] || 'Unknown';
+      const entry = byGame.get(game) || { unique: new Set(), total: 0 };
+      entry.unique.add(c.market_hash_name);
+      entry.total += (c.amount || 1);
+      byGame.set(game, entry);
+    }
+    const out = SE.$('#se-inv-out');
+    out.innerHTML = '';
+    if (!byGame.size) { out.textContent = 'No trading cards in current inventory view.'; return; }
+    [...byGame.entries()].slice(0, 12).forEach(([game, info]) => {
+      out.appendChild(SE.el('div', null, `${game}: ${info.unique.size} unique (${info.total} total)`));
+    });
+  }
+
   async function exportInventory() {
-    const r = await getActiveInventoryItems();
-    if (!r?.ok || !r.result) return alert('Could not read inventory.');
-    const blob = new Blob([JSON.stringify(r.result, null, 2)], { type: 'application/json' });
+    const items = await getItems(true);
+    if (!items) return alert('Could not read inventory.');
+    const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = 'steam-inventory.json'; a.click();
   }
 
-  function openTradeCalc() {
-    window.open('https://steamcommunity.com/tradeoffer/new/', '_blank');
+  async function decorateTiles() {
+    // Throttle: only do a few uncached lookups per pass.
+    const tiles = SE.$$('.itemHolder:not([data-se-priced])').slice(0, 6);
+    if (!tiles.length) return;
+    const items = await getItems();
+    if (!items) return;
+    for (const tile of tiles) {
+      tile.setAttribute('data-se-priced', '1');
+      const name = tile.querySelector('img')?.alt;
+      const it = items.find(x => x.name === name);
+      if (!it?.marketable) continue;
+      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
+      const v = p?.data?.median_price || p?.data?.lowest_price;
+      if (v) {
+        const lbl = SE.el('div', { class: 'se-tile-price' }, v);
+        tile.style.position = 'relative';
+        tile.appendChild(lbl);
+      }
+    }
   }
 
   async function decorateSelected() {
     const sel = SE.$('.inventory_iteminfo.activeInfo, #iteminfo1, #iteminfo0');
-    if (!sel || sel.dataset.seDone === sel.id + (sel.querySelector('.hover_item_name')?.textContent || '')) return;
-    sel.dataset.seDone = sel.id + (sel.querySelector('.hover_item_name')?.textContent || '');
+    if (!sel) return;
+    const stamp = sel.id + (sel.querySelector('.hover_item_name')?.textContent || '');
+    if (sel.dataset.seDone === stamp) return;
+    sel.dataset.seDone = stamp;
+
     const name = sel.querySelector('.hover_item_name')?.textContent?.trim();
     if (!name) return;
-    const appidMatch = location.hash.match(/inventory_[^_]+_(\d+)/) || sel.querySelector('a[href*="/market/listings/"]')?.href.match(/listings\/(\d+)\//);
+    const appidMatch = location.hash.match(/inventory_[^_]+_(\d+)/)
+      || sel.querySelector('a[href*="/market/listings/"]')?.href.match(/listings\/(\d+)\//);
     const appid = appidMatch?.[1];
     if (!appid) return;
     if (sel.querySelector('.se-quicksell')) return;
-    const btn = SE.el('a', {
+
+    sel.appendChild(SE.el('a', {
       class: 'se-btn se-quicksell',
       href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(name)}`,
       target: '_blank', rel: 'noopener'
-    }, 'View on Market');
-    sel.appendChild(btn);
+    }, 'View on Market'));
+
+    // CSGO-specific inspect link / float lookup helper.
+    if (appid === '730') {
+      sel.appendChild(SE.el('a', {
+        class: 'se-btn',
+        href: `https://csfloat.com/search?market_hash_name=${encodeURIComponent(name)}`,
+        target: '_blank', rel: 'noopener'
+      }, 'CSFloat'));
+    }
+
+    // Backpack.tf for TF2.
+    if (appid === '440') {
+      sel.appendChild(SE.el('a', {
+        class: 'se-btn',
+        href: `https://backpack.tf/stats/Unique/${encodeURIComponent(name)}/Tradable/Craftable`,
+        target: '_blank', rel: 'noopener'
+      }, 'Backpack.tf'));
+    }
   }
 })();

@@ -4,42 +4,56 @@
 
   document.addEventListener('se-ready', () => init(), { once: true });
 
+  let blockSet = new Set();
+
   async function init() {
-    const { settings, colls } = SE.ctx;
+    blockSet = await SE.blocklist.get();
     decorateList();
-    // Steam adds rows dynamically when scrolling.
-    const obs = new MutationObserver(SE.throttle(decorateList, 150));
-    obs.observe(document.body, { childList: true, subtree: true });
+    new MutationObserver(SE.throttle(decorateList, 150)).observe(document.body, { childList: true, subtree: true });
+  }
 
-    function decorateList() {
-      const rows = SE.$$('a.search_result_row, .tab_item, .home_marketing_message');
-      for (const row of rows) {
-        if (row.dataset.seDone) continue;
-        row.dataset.seDone = '1';
-        const appid = row.getAttribute('data-ds-appid')
-          || row.querySelector('[data-ds-appid]')?.getAttribute('data-ds-appid')
-          || (row.href || '').match(/\/app\/(\d+)/)?.[1];
-        if (!appid) continue;
+  function decorateList() {
+    const { settings, colls } = SE.ctx;
+    const rows = SE.$$('a.search_result_row, .tab_item');
+    for (const row of rows) {
+      if (row.dataset.seDone) continue;
+      row.dataset.seDone = '1';
+      const appid = row.getAttribute('data-ds-appid')
+        || row.querySelector('[data-ds-appid]')?.getAttribute('data-ds-appid')
+        || (row.href || '').match(/\/app\/(\d+)/)?.[1];
+      if (!appid) continue;
 
-        if (colls) {
-          if (settings.highlightOwned && colls.owned.has(appid)) {
-            row.classList.add('se-owned');
-            row.appendChild(SE.tag('OWNED', 'owned'));
-            if (settings.hideOwnedInSearch) row.style.display = 'none';
-          }
-          if (settings.highlightWishlist && colls.wishlist.has(appid)) {
-            row.classList.add('se-wishlisted');
-            row.appendChild(SE.tag('WISHLIST', 'wish'));
-          }
-          if (settings.highlightIgnored && colls.ignored.has(appid)) {
-            row.classList.add('se-ignored');
-            row.appendChild(SE.tag('IGNORED', 'ignored'));
-            if (settings.hideIgnoredInSearch) row.style.display = 'none';
-          }
+      if (blockSet.has(appid)) { row.style.display = 'none'; continue; }
+
+      if (colls) {
+        if (settings.highlightOwned && colls.owned.has(appid)) {
+          row.classList.add('se-owned');
+          row.appendChild(SE.tag('OWNED', 'owned'));
+          if (settings.hideOwnedInSearch) row.style.display = 'none';
         }
-
-        if (settings.showLowestPrice) decoratePrice(row, appid, settings.country || 'us');
+        if (settings.highlightWishlist && colls.wishlist.has(appid)) {
+          row.classList.add('se-wishlisted');
+          row.appendChild(SE.tag('WISHLIST', 'wish'));
+        }
+        if (settings.highlightIgnored && colls.ignored.has(appid)) {
+          row.classList.add('se-ignored');
+          row.appendChild(SE.tag('IGNORED', 'ignored'));
+          if (settings.hideIgnoredInSearch) row.style.display = 'none';
+        }
       }
+
+      // Hide-forever button
+      const hideBtn = SE.el('button', {
+        class: 'se-hide-btn',
+        title: 'Hide forever (extension blocklist)',
+        onclick: (e) => {
+          e.preventDefault(); e.stopPropagation();
+          SE.blocklist.add(appid).then(() => { blockSet.add(appid); row.style.display = 'none'; });
+        }
+      }, '✕');
+      row.appendChild(hideBtn);
+
+      if (settings.showLowestPrice) decoratePrice(row, appid, settings.country || 'us');
     }
   }
 
@@ -51,9 +65,8 @@
     const cur = SE.parsePrice(priceEl.textContent);
     const low = sum.historicalLow.price;
     const isMatch = cur != null && low != null && Math.abs(cur - low) / Math.max(low, 0.01) < 0.02;
-    const tag = SE.el('div', { class: 'se-row-tag ' + (isMatch ? 'se-row-tag-match' : '') },
-      `low: ${SE.formatMoney(low, sum.historicalLow.currency || 'USD')}` + (isMatch ? ' ✓' : '')
-    );
-    priceEl.appendChild(tag);
+    priceEl.appendChild(SE.el('div', { class: 'se-row-tag ' + (isMatch ? 'se-row-tag-match' : '') },
+      `low: ${SE.formatMoney(low, sum.historicalLow.currency || 'USD')}${isMatch ? ' ✓' : ''}`
+    ));
   }
 })();
