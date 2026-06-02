@@ -58,5 +58,40 @@
     document.body && document.body.appendChild(fab);
   }
 
-  ready().then(injectGlobalBadge).catch((e) => SE.err('init failed', e));
+  // Listen for keyboard-shortcut messages from the background.
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg?.type === 'togglePanel') {
+      const p = document.getElementById('se-panel');
+      if (p) p.style.display = (p.style.display === 'none') ? '' : 'none';
+    }
+  });
+
+  // Changelog modal — shown once after install/update.
+  async function maybeShowChangelog() {
+    const d = await new Promise((r) => chrome.storage.local.get(['se_show_changelog'], r));
+    if (!d.se_show_changelog) return;
+    chrome.storage.local.set({ se_show_changelog: false });
+    if (location.hostname !== 'store.steampowered.com' || location.pathname !== '/') return;
+    if (document.getElementById('se-changelog-modal')) return;
+    const v = chrome.runtime.getManifest().version;
+    const modal = SE.el('div', { id: 'se-changelog-modal', class: 'se-modal' },
+      SE.el('div', { class: 'se-modal-box' },
+        SE.el('div', { class: 'se-modal-h' }, `Steam Enhancer v${v}`),
+        SE.el('div', { class: 'se-modal-body' },
+          SE.el('p', null, 'Thanks for installing/updating!'),
+          SE.el('ul', null,
+            SE.el('li', null, '25+ new features: price history graph, library sort, wishlist alerts, mass-list at median, SteamRep badges, keyboard shortcuts, Hebrew UI…'),
+            SE.el('li', null, 'See the options page (gear icon) to toggle features.'),
+            SE.el('li', null, 'Try Ctrl+Shift+S to toggle the panel, Ctrl+Shift+W for wishlist.')
+          )
+        ),
+        SE.el('div', { class: 'se-modal-foot' },
+          SE.el('button', { class: 'se-btn', onclick: () => modal.remove() }, 'Got it')
+        )
+      )
+    );
+    document.body.appendChild(modal);
+  }
+
+  ready().then(() => { injectGlobalBadge(); maybeShowChangelog(); }).catch((e) => SE.err('init failed', e));
 })();

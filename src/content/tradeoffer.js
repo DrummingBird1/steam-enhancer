@@ -7,7 +7,58 @@
   async function init() {
     if (!SE.ctx.settings.enableTradeOfferTools) return;
     insertSummaryBox();
+    insertSteamRepBadge();
+    insertConfirmHold();
     setInterval(refresh, 2000);
+  }
+
+  function insertSteamRepBadge() {
+    const partner = location.search.match(/partner=(\d+)/)?.[1];
+    if (!partner) return;
+    const steamId64 = (BigInt(partner) + 76561197960265728n).toString();
+    const header = SE.$('.trade_partner_headline') || SE.$('.profile_header');
+    if (!header || SE.$('#se-steamrep')) return;
+    header.appendChild(SE.el('div', { id: 'se-steamrep', class: 'se-row' },
+      SE.el('a', { href: `https://steamrep.com/profiles/${steamId64}`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🛡 Check on SteamRep'),
+      ' · ',
+      SE.el('a', { href: `https://www.backpack.tf/profiles/${steamId64}`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Backpack.tf'),
+      ' · ',
+      SE.el('a', { href: `https://steamid.uk/profile/${steamId64}`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'SteamID.uk')
+    ));
+  }
+
+  function insertConfirmHold() {
+    // Wrap the confirm button so it requires a 2s hold to fire.
+    const tryWrap = () => {
+      const btn = SE.$('#trade_confirmbtn');
+      if (!btn || btn.dataset.seHold) return;
+      btn.dataset.seHold = '1';
+      const overlay = SE.el('div', { class: 'se-hold-overlay', title: 'Hold for 2 seconds to confirm' }, 'Hold to confirm trade');
+      let holdT = null, pressed = false;
+      const startHold = () => {
+        if (pressed) return;
+        pressed = true;
+        overlay.classList.add('se-holding');
+        holdT = setTimeout(() => {
+          overlay.remove();
+          btn.click();
+        }, 2000);
+      };
+      const stopHold = () => {
+        pressed = false;
+        overlay.classList.remove('se-holding');
+        if (holdT) clearTimeout(holdT);
+      };
+      overlay.addEventListener('mousedown', startHold);
+      overlay.addEventListener('mouseup', stopHold);
+      overlay.addEventListener('mouseleave', stopHold);
+      overlay.addEventListener('touchstart', startHold);
+      overlay.addEventListener('touchend', stopHold);
+      btn.parentElement?.insertBefore(overlay, btn);
+      btn.style.opacity = '0.4';
+      btn.style.pointerEvents = 'none';
+    };
+    setInterval(tryWrap, 1000);
   }
 
   function insertSummaryBox() {

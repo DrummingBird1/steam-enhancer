@@ -96,7 +96,36 @@
       // Also stash diff for sorting.
       r.dataset.seDiff = diff != null ? String(diff) : '9999';
       r.dataset.sePrice = cur != null ? String(cur) : '9999';
+
+      // Per-app price-target input.
+      const targets = await getTargets();
+      const tgt = targets[appid];
+      const input = SE.el('input', {
+        type: 'number', step: '0.01', min: '0', placeholder: 'alert me at…',
+        class: 'se-input', style: { width: '90px' }
+      });
+      input.value = tgt != null ? String(tgt) : '';
+      input.addEventListener('change', () => {
+        const v = parseFloat(input.value);
+        setTarget(appid, isFinite(v) && v > 0 ? v : null);
+      });
+      const wrap = SE.el('div', { class: 'se-row-tag' }, 'target: ', input);
+      (r.querySelector('.discount_block, .price') || r).appendChild(wrap);
+
+      if (tgt != null && cur != null && cur <= tgt) {
+        r.style.outline = '2px solid #a4d007';
+        r.appendChild(SE.tag('AT TARGET', 'good'));
+      }
     }
+  }
+
+  async function getTargets() {
+    return new Promise((r) => chrome.storage.local.get(['se_wishlist_targets'], (d) => r(d.se_wishlist_targets || {})));
+  }
+  async function setTarget(appid, v) {
+    const cur = await getTargets();
+    if (v == null) delete cur[appid]; else cur[appid] = v;
+    chrome.storage.local.set({ se_wishlist_targets: cur });
   }
 
   function sortByDealVsLow() {

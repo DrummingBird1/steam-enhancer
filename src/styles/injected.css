@@ -109,3 +109,41 @@
   background: rgba(0,0,0,0.75); color: #a4d007;
   font-size: 10px; padding: 1px 4px; border-radius: 2px; pointer-events: none;
 }
+
+.se-quote-popup {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  font-size: 12px !important;
+}
+
+.se-modal {
+  position: fixed; inset: 0; z-index: 100000;
+  background: rgba(0,0,0,0.7); display: flex;
+  align-items: center; justify-content: center;
+}
+.se-modal-box {
+  width: min(520px, 90vw); background: #1b2838; color: #c7d5e0;
+  border: 1px solid #2a475e; border-radius: 4px; padding: 20px;
+  font: 14px/1.5 'Motiva Sans', Arial, sans-serif;
+}
+.se-modal-h {
+  color: #66c0f4; font-weight: 700; font-size: 18px;
+  margin-bottom: 12px; border-bottom: 1px solid #2a475e; padding-bottom: 8px;
+}
+.se-modal-body p { margin: 0 0 8px; }
+.se-modal-body ul { margin: 0 0 12px; padding-left: 20px; }
+.se-modal-body li { margin-bottom: 4px; }
+.se-modal-foot { text-align: right; }
+
+.se-hold-overlay {
+  display: inline-block; position: relative;
+  padding: 10px 20px; background: #b07a1f; color: white;
+  border-radius: 2px; cursor: pointer; user-select: none; font-weight: 600;
+  overflow: hidden;
+}
+.se-hold-overlay::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 0; background: rgba(92,126,16,0.55); transition: none;
+}
+.se-hold-overlay.se-holding::before {
+  width: 100%; transition: width 2s linear;
+}

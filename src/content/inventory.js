@@ -23,6 +23,9 @@
       SE.el('button', { class: 'se-btn', onclick: findDuplicates }, 'Find duplicates'),
       SE.el('button', { class: 'se-btn', onclick: selectDuplicatesUI }, 'Mark duplicates'),
       SE.el('button', { class: 'se-btn', onclick: cardSetProgress }, 'Card set progress'),
+      SE.el('button', { class: 'se-btn', onclick: massListMedian }, 'Mass-list at median…'),
+      SE.el('button', { class: 'se-btn', onclick: openBoosterCreator }, 'Booster creator'),
+      SE.el('button', { class: 'se-btn', onclick: stickerHelper }, 'CS2 sticker prices'),
       SE.el('button', { class: 'se-btn', onclick: exportInventory }, 'Export JSON'),
       SE.el('input', { type: 'search', id: 'se-inv-filter', placeholder: 'Filter by name…', class: 'se-input' }),
       SE.el('span', { id: 'se-inv-out', class: 'se-muted' }, '')
@@ -130,6 +133,49 @@
     [...byGame.entries()].slice(0, 12).forEach(([game, info]) => {
       out.appendChild(SE.el('div', null, `${game}: ${info.unique.size} unique (${info.total} total)`));
     });
+  }
+
+  function openBoosterCreator() {
+    window.open('https://steamcommunity.com/tradingcards/boostercreator/', '_blank');
+  }
+  function stickerHelper() {
+    const items = SE.$$('.itemHolder img').map(i => i.alt).filter(n => /\bSticker\b/i.test(n));
+    const out = SE.$('#se-inv-out');
+    if (!items.length) { out.textContent = 'No stickers visible (open your CS2 inventory).'; return; }
+    out.innerHTML = '';
+    items.slice(0, 12).forEach(name => {
+      out.appendChild(SE.el('div', null,
+        SE.el('a', { href: `https://steamcommunity.com/market/listings/730/${encodeURIComponent(name)}`, target: '_blank', rel: 'noopener', class: 'se-link' }, name)
+      ));
+    });
+  }
+
+  async function massListMedian() {
+    const items = await getItems(true);
+    if (!items) return;
+    const marketable = items.filter(i => i.marketable);
+    const count = Math.min(marketable.length, 10);
+    if (!count) return alert('No marketable items in current view.');
+    if (!confirm(`This will list up to ${count} items at each item's 24h median price minus 1¢.\n\nThis is a SELL action. You can cancel listings any time from the Market page.\n\nProceed?`)) return;
+    const out = SE.$('#se-inv-out');
+    out.textContent = 'Pricing items…';
+    let listed = 0;
+    for (const it of marketable.slice(0, count)) {
+      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
+      const med = SE.parsePrice(p?.data?.median_price);
+      if (med == null || med <= 0.03) continue;
+      const priceCents = Math.max(3, Math.round((med - 0.01) * 100));
+      const r = await SE.injectPage((appid, contextid, assetid, amount, price) => {
+        return fetch('/market/sellitem/', {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+          body: `sessionid=${encodeURIComponent(g_sessionID)}&appid=${appid}&contextid=${contextid}&assetid=${assetid}&amount=${amount}&price=${price}`
+        }).then(r => r.json()).catch(e => ({ error: String(e) }));
+      }, [it.appid, 2, it.id, it.amount || 1, priceCents]);
+      if (r?.result?.success) listed++;
+      await SE.sleep(1500); // rate-limit-friendly
+    }
+    out.textContent = `Listed ${listed}/${count}. Check Market page; you'll need to confirm via mobile authenticator.`;
   }
 
   async function exportInventory() {

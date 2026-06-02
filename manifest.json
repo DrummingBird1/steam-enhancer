@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Steam Enhancer",
-  "version": "1.0.0",
-  "description": "All-in-one Steam upgrade: price history, lowest prices, wishlist tools, market & inventory helpers, trade utilities, review filters, and more.",
+  "name": "__MSG_extName__",
+  "version": "1.1.0",
+  "description": "__MSG_extDesc__",
   "author": "Steam Enhancer Contributors",
+  "default_locale": "en",
   "minimum_chrome_version": "110",
 
   "icons": {
@@ -34,12 +35,28 @@
     "type": "module"
   },
 
+  "commands": {
+    "toggle-panel": {
+      "suggested_key": { "default": "Ctrl+Shift+S" },
+      "description": "Toggle Steam Enhancer panel on the current Steam tab"
+    },
+    "open-wishlist": {
+      "suggested_key": { "default": "Ctrl+Shift+W" },
+      "description": "Open your Steam wishlist"
+    },
+    "open-itad": {
+      "suggested_key": { "default": "Ctrl+Shift+I" },
+      "description": "Open IsThereAnyDeal lookup for the current app"
+    }
+  },
+
   "permissions": [
     "storage",
     "alarms",
     "contextMenus",
     "notifications",
-    "scripting"
+    "scripting",
+    "tabs"
   ],
 
   "host_permissions": [
@@ -52,8 +69,7 @@
     "*://*.howlongtobeat.com/*",
     "*://*.protondb.com/*",
     "*://api.steampowered.com/*",
-    "*://open.er-api.com/*",
-    "*://api.steamapis.com/*"
+    "*://open.er-api.com/*"
   ],
 
   "content_scripts": [
@@ -66,11 +82,11 @@
         "src/lib/api.js",
         "src/lib/prices.js",
         "src/lib/notes.js",
+        "src/lib/i18n.js",
         "src/content/common.js"
       ],
       "css": ["src/styles/injected.css"],
-      "run_at": "document_idle",
-      "all_frames": false
+      "run_at": "document_idle"
     },
     {
       "matches": ["*://store.steampowered.com/app/*", "*://store.steampowered.com/sub/*", "*://store.steampowered.com/bundle/*"],
@@ -108,6 +124,22 @@
         "*://steamcommunity.com/groups/*"
       ],
       "js": ["src/content/profile.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/id/*/games*",
+        "*://steamcommunity.com/profiles/*/games*"
+      ],
+      "js": ["src/content/library.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/app/*/discussions/*",
+        "*://steamcommunity.com/discussions/*"
+      ],
+      "js": ["src/content/discussions.js"],
       "run_at": "document_idle"
     },
     {

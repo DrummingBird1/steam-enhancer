@@ -31,6 +31,8 @@
       addCommunityLinks(appid);
       addItadWaitlistLink(appid);
       addNotesBox(appid);
+      addPriceChart(appid);
+      addBoosterCreatorLink(appid);
       enhanceWishlistButton();
       trackPriceDrop(appid);
     }
@@ -323,6 +325,47 @@
     }
     if (total) panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
       SE.el('span', { class: 'se-label' }, 'Already owned in package: '), `${ownedCount} / ${total}`
+    ));
+  }
+
+  async function addPriceChart(appid) {
+    const body = panelBody(); if (!body) return;
+    const country = SE.ctx.settings.country || 'us';
+    // ITAD overview returns price history points; sketch a small SVG sparkline.
+    const r = await SE.api.itadOverview((await SE.api.itadLookup(appid))?.data?.game?.id, country);
+    // Fallback: get historical low + current as 2-point line if no overview.
+    const points = [];
+    if (r?.data?.[0]?.lows) {
+      for (const p of r.data[0].lows.slice(0, 20).reverse()) {
+        if (p.price?.amount && p.timestamp) points.push({ t: new Date(p.timestamp).getTime(), p: p.price.amount });
+      }
+    }
+    if (points.length < 2) return;
+
+    const w = 240, h = 60, pad = 4;
+    const minP = Math.min(...points.map(p => p.p));
+    const maxP = Math.max(...points.map(p => p.p));
+    const minT = points[0].t, maxT = points[points.length - 1].t;
+    const x = (t) => pad + (w - 2 * pad) * (t - minT) / Math.max(1, maxT - minT);
+    const y = (p) => h - pad - (h - 2 * pad) * (p - minP) / Math.max(0.01, maxP - minP);
+    const d = points.map((p, i) => (i ? 'L' : 'M') + x(p.t).toFixed(1) + ',' + y(p.p).toFixed(1)).join(' ');
+    const svg = `
+      <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+        <rect width="${w}" height="${h}" fill="#0d1620" />
+        <path d="${d}" fill="none" stroke="#66c0f4" stroke-width="1.5" />
+        <text x="${pad}" y="12" fill="#8f98a0" font-size="10">low ${minP.toFixed(2)}</text>
+        <text x="${w - pad}" y="12" fill="#8f98a0" font-size="10" text-anchor="end">${new Date(maxT).toISOString().slice(0, 10)}</text>
+      </svg>`;
+    const wrap = SE.el('div', { class: 'se-row', html: svg });
+    body.appendChild(SE.el('div', { class: 'se-row se-label' }, 'Price history:'));
+    body.appendChild(wrap);
+  }
+
+  function addBoosterCreatorLink(appid) {
+    panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
+      SE.el('a', { href: `https://steamcommunity.com/tradingcards/boostercreator/`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🎁 Booster pack creator'),
+      ' · ',
+      SE.el('a', { href: `https://steamcommunity.com/my/gamecards/${appid}/?border=1`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Foil cards')
     ));
   }
 

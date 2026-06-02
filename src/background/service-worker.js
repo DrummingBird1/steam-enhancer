@@ -82,7 +82,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true; // async
 });
 
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: 'se-search-itad',
@@ -101,6 +101,27 @@ chrome.runtime.onInstalled.addListener(async () => {
     });
   });
   chrome.alarms.create('se-wishlist-poll', { periodInMinutes: 60 });
+
+  // Show changelog when version changes (incl. fresh install).
+  if (details.reason === 'install' || details.reason === 'update') {
+    const v = chrome.runtime.getManifest().version;
+    chrome.storage.local.set({ se_last_seen_version: v, se_show_changelog: true });
+  }
+});
+
+chrome.commands.onCommand.addListener(async (command) => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
+  if (command === 'toggle-panel') {
+    chrome.tabs.sendMessage(tab.id, { type: 'togglePanel' });
+  } else if (command === 'open-wishlist') {
+    chrome.tabs.create({ url: 'https://store.steampowered.com/wishlist/' });
+  } else if (command === 'open-itad') {
+    const url = tab.url || '';
+    const m = url.match(/\/app\/(\d+)/);
+    if (m) chrome.tabs.create({ url: `https://isthereanydeal.com/search/?q=${m[1]}` });
+    else chrome.tabs.create({ url: 'https://isthereanydeal.com/' });
+  }
 });
 
 chrome.contextMenus.onClicked.addListener((info) => {
