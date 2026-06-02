@@ -1,0 +1,33 @@
+const STORAGE_KEY = 'se_settings_v1';
+
+async function load() {
+  const data = await new Promise((r) => chrome.storage.sync.get([STORAGE_KEY], r));
+  const cfg = data[STORAGE_KEY] || {};
+  document.querySelectorAll('input[data-setting]').forEach((el) => {
+    el.checked = !!cfg[el.dataset.setting];
+  });
+}
+async function save(key, value) {
+  const data = await new Promise((r) => chrome.storage.sync.get([STORAGE_KEY], r));
+  const cur = data[STORAGE_KEY] || {};
+  cur[key] = value;
+  await new Promise((r) => chrome.storage.sync.set({ [STORAGE_KEY]: cur }, r));
+}
+
+document.querySelectorAll('input[data-setting]').forEach((el) => {
+  el.addEventListener('change', () => save(el.dataset.setting, el.checked));
+});
+document.querySelectorAll('button[data-go]').forEach((b) => {
+  b.addEventListener('click', () => chrome.tabs.create({ url: b.dataset.go }));
+});
+document.getElementById('open-options').addEventListener('click', () => chrome.runtime.openOptionsPage());
+document.getElementById('clear-cache').addEventListener('click', () => {
+  chrome.runtime.sendMessage({ type: 'clearCache' }, () => {
+    const btn = document.getElementById('clear-cache');
+    btn.textContent = 'Cleared!';
+    setTimeout(() => (btn.textContent = 'Clear cache'), 1200);
+  });
+});
+
+document.getElementById('version').textContent = 'v' + chrome.runtime.getManifest().version;
+load();

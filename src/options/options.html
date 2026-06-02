@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Steam Enhancer — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="../../icons/icon128.png" alt="" width="64" height="64" />
+      <div>
+        <h1>Steam Enhancer</h1>
+        <p>All settings. Changes apply on next page load.</p>
+      </div>
+    </header>
+
+    <section>
+      <h2>Region</h2>
+      <label>Country (for prices)
+        <input type="text" id="country" maxlength="2" placeholder="us" />
+      </label>
+      <label>Currency hint
+        <input type="text" id="currency" maxlength="3" placeholder="USD" />
+      </label>
+    </section>
+
+    <section>
+      <h2>Store pages</h2>
+      <div class="grid" id="grid-store"></div>
+    </section>
+
+    <section>
+      <h2>Search & lists</h2>
+      <div class="grid" id="grid-search"></div>
+    </section>
+
+    <section>
+      <h2>Market, Inventory, Trade</h2>
+      <div class="grid" id="grid-mkt"></div>
+    </section>
+
+    <section>
+      <h2>Notifications</h2>
+      <div class="grid" id="grid-notify"></div>
+      <label>Deal % threshold for notifications
+        <input type="number" id="wishlistDealThreshold" min="1" max="99" step="1" />
+      </label>
+    </section>
+
+    <section>
+      <h2>Advanced</h2>
+      <label>Cache TTL (minutes)
+        <input type="number" id="cacheTTLMinutes" min="5" max="1440" step="5" />
+      </label>
+      <label>Custom CSS injected on Steam pages
+        <textarea id="customCss" rows="6" placeholder="/* your CSS */"></textarea>
+      </label>
+      <div class="row">
+        <button id="save">Save</button>
+        <button id="reset" class="danger">Reset to defaults</button>
+        <button id="clear-cache">Clear cache</button>
+      </div>
+      <p id="status" class="status"></p>
+    </section>
+
+    <footer>
+      <p>Steam Enhancer is an unofficial enhancement tool. Not affiliated with Valve or Steam.</p>
+      <p><a href="https://github.com/" target="_blank" rel="noopener">Source on GitHub</a></p>
+    </footer>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

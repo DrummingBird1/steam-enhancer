@@ -1,0 +1,127 @@
+{
+  "manifest_version": 3,
+  "name": "Steam Enhancer",
+  "version": "1.0.0",
+  "description": "All-in-one Steam upgrade: price history, lowest prices, wishlist tools, market & inventory helpers, trade utilities, review filters, and more.",
+  "author": "Steam Enhancer Contributors",
+  "default_locale": "en",
+  "minimum_chrome_version": "110",
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "action": {
+    "default_title": "Steam Enhancer",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+
+  "permissions": [
+    "storage",
+    "alarms",
+    "contextMenus",
+    "notifications",
+    "scripting"
+  ],
+
+  "host_permissions": [
+    "*://*.steampowered.com/*",
+    "*://*.steamcommunity.com/*",
+    "*://*.steamstatic.com/*",
+    "*://api.isthereanydeal.com/*",
+    "*://isthereanydeal.com/*",
+    "*://steamdb.info/*",
+    "*://*.howlongtobeat.com/*",
+    "*://*.protondb.com/*",
+    "*://api.steampowered.com/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["*://store.steampowered.com/*", "*://steamcommunity.com/*"],
+      "js": [
+        "src/lib/utils.js",
+        "src/lib/storage.js",
+        "src/lib/currency.js",
+        "src/lib/api.js",
+        "src/lib/prices.js",
+        "src/content/common.js"
+      ],
+      "css": ["src/styles/injected.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": ["*://store.steampowered.com/app/*", "*://store.steampowered.com/sub/*", "*://store.steampowered.com/bundle/*"],
+      "js": ["src/content/app.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://store.steampowered.com/search/*", "*://store.steampowered.com/specials*", "*://store.steampowered.com/sale/*"],
+      "js": ["src/content/search.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://store.steampowered.com/wishlist/*", "*://store.steampowered.com/dynamicstore/*"],
+      "js": ["src/content/wishlist.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://steamcommunity.com/market/*"],
+      "js": ["src/content/market.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/id/*/inventory*",
+        "*://steamcommunity.com/profiles/*/inventory*",
+        "*://steamcommunity.com/my/inventory*"
+      ],
+      "js": ["src/content/inventory.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/id/*",
+        "*://steamcommunity.com/profiles/*",
+        "*://steamcommunity.com/groups/*"
+      ],
+      "js": ["src/content/profile.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/tradeoffer/*",
+        "*://steamcommunity.com/trade/*"
+      ],
+      "js": ["src/content/tradeoffer.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["src/styles/injected.css", "icons/*.png"],
+      "matches": ["*://*.steampowered.com/*", "*://*.steamcommunity.com/*"]
+    }
+  ]
+}

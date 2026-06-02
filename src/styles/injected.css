@@ -1,0 +1,83 @@
+/* Steam Enhancer — injected styles. Scoped via .se-* class names so we don't fight Steam's CSS. */
+
+#se-fab {
+  position: fixed; right: 14px; bottom: 14px; z-index: 99998;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, #66c0f4, #1b2838);
+  color: white; font-weight: 700; font-family: 'Motiva Sans', sans-serif;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  opacity: 0.55; transition: opacity 0.15s ease, transform 0.15s ease;
+  user-select: none;
+}
+#se-fab:hover { opacity: 1; transform: scale(1.06); }
+
+.se-panel {
+  margin: 8px 0 12px; padding: 10px 12px;
+  background: rgba(23, 35, 50, 0.85);
+  border: 1px solid #2a475e;
+  border-radius: 4px;
+  color: #c7d5e0;
+  font: 13px/1.4 'Motiva Sans', Arial, sans-serif;
+}
+.se-panel-h {
+  font-weight: 700; color: #66c0f4; letter-spacing: 0.5px;
+  text-transform: uppercase; font-size: 11px; margin-bottom: 6px;
+  border-bottom: 1px solid #2a475e; padding-bottom: 4px;
+}
+.se-panel-body { display: flex; flex-direction: column; gap: 4px; }
+.se-row { display: block; }
+.se-label { color: #8f98a0; margin-right: 4px; }
+.se-muted { color: #6c7480; }
+.se-link { color: #67c1f5 !important; text-decoration: none; }
+.se-link:hover { color: #fff !important; text-decoration: underline; }
+
+.se-region {
+  display: inline-block; margin: 0 6px 4px 0;
+  padding: 1px 6px; background: #1b2838; border: 1px solid #2a475e;
+  border-radius: 3px; font-size: 11px;
+}
+
+.se-tag {
+  display: inline-block; padding: 1px 6px; margin-left: 6px;
+  border-radius: 3px; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4px; vertical-align: middle;
+}
+.se-tag-info    { background: #316282; color: #fff; }
+.se-tag-good    { background: #5c7e10; color: #fff; }
+.se-tag-owned   { background: #5c7e10; color: #fff; }
+.se-tag-wish    { background: #b07a1f; color: #fff; }
+.se-tag-ignored { background: #6e2727; color: #fff; }
+
+.se-owned { outline: 1px solid #5c7e10; }
+.se-wishlisted { outline: 1px solid #b07a1f; }
+.se-ignored { opacity: 0.45; }
+
+.se-row-tag {
+  font-size: 10px; color: #8f98a0; margin-top: 2px;
+}
+.se-row-tag-match { color: #a4d007; font-weight: 700; }
+
+.se-proton-platinum { color: #b0c4de !important; }
+.se-proton-gold     { color: #cfb53b !important; }
+.se-proton-silver   { color: #c0c0c0 !important; }
+.se-proton-bronze   { color: #cd7f32 !important; }
+.se-proton-borked   { color: #ff5555 !important; }
+
+.se-toolbar {
+  margin: 8px 0; padding: 8px 10px;
+  background: rgba(23, 35, 50, 0.9); border: 1px solid #2a475e; border-radius: 4px;
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  color: #c7d5e0; font: 13px 'Motiva Sans', Arial, sans-serif;
+}
+.se-btn {
+  background: linear-gradient(to bottom, #67c1f5 5%, #417a9b 95%);
+  color: #fff; border: 0; padding: 4px 10px; border-radius: 2px;
+  cursor: pointer; font-size: 12px; font-weight: 600;
+}
+.se-btn:hover { background: linear-gradient(to bottom, #79cdff 5%, #4f8bb1 95%); }
+
+.se-market-net {
+  font-size: 10px; color: #8f98a0; margin-top: 2px;
+}
+.se-quicksell { margin-top: 8px; display: inline-block; }

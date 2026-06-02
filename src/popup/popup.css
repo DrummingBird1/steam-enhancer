@@ -1,0 +1,28 @@
+html, body {
+  margin: 0; padding: 0; width: 320px;
+  background: #1b2838; color: #c7d5e0;
+  font: 13px 'Segoe UI', system-ui, sans-serif;
+}
+header {
+  display: flex; gap: 10px; align-items: center;
+  padding: 12px; border-bottom: 1px solid #2a475e;
+  background: linear-gradient(180deg, #2a475e, #1b2838);
+}
+header h1 { margin: 0; font-size: 14px; color: #fff; }
+header p { margin: 0; font-size: 11px; color: #8f98a0; }
+
+section { padding: 10px 12px; border-bottom: 1px solid #2a475e; }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+button {
+  background: linear-gradient(to bottom, #67c1f5 5%, #417a9b 95%);
+  color: white; border: 0; padding: 6px 8px; border-radius: 2px; cursor: pointer;
+  font-size: 12px; font-weight: 600;
+}
+button:hover { background: linear-gradient(to bottom, #79cdff 5%, #4f8bb1 95%); }
+
+.toggles { display: flex; flex-direction: column; gap: 6px; }
+.toggles label { display: flex; gap: 8px; align-items: center; cursor: pointer; font-size: 12px; }
+.toggles input { accent-color: #67c1f5; }
+
+footer { display: flex; gap: 6px; padding: 10px 12px; }
+footer button { flex: 1; }

@@ -1,0 +1,45 @@
+html, body {
+  margin: 0; padding: 0;
+  background: #1b2838; color: #c7d5e0;
+  font: 14px/1.4 'Segoe UI', system-ui, sans-serif;
+}
+.wrap { max-width: 720px; margin: 0 auto; padding: 24px; }
+header { display: flex; gap: 16px; align-items: center; margin-bottom: 24px; }
+header h1 { margin: 0; font-size: 22px; color: #fff; }
+header p { margin: 2px 0 0; color: #8f98a0; font-size: 13px; }
+
+section {
+  background: #16202d; border: 1px solid #2a475e; border-radius: 4px;
+  padding: 16px; margin-bottom: 16px;
+}
+section h2 { margin: 0 0 12px; font-size: 14px; color: #66c0f4; text-transform: uppercase; letter-spacing: 0.6px; }
+
+label {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-bottom: 10px; font-size: 13px;
+}
+label.inline { flex-direction: row; align-items: center; gap: 8px; }
+input[type="text"], input[type="number"], textarea {
+  background: #0d1620; color: #c7d5e0; border: 1px solid #2a475e;
+  border-radius: 2px; padding: 6px 8px; font: inherit;
+}
+textarea { width: 100%; resize: vertical; font-family: 'Consolas', monospace; }
+input[type="checkbox"] { accent-color: #67c1f5; }
+
+.grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px;
+}
+.grid label { flex-direction: row; align-items: center; gap: 8px; margin-bottom: 0; }
+
+button {
+  background: linear-gradient(to bottom, #67c1f5 5%, #417a9b 95%);
+  color: white; border: 0; padding: 8px 14px; border-radius: 2px; cursor: pointer;
+  font-size: 13px; font-weight: 600;
+}
+button:hover { background: linear-gradient(to bottom, #79cdff 5%, #4f8bb1 95%); }
+button.danger { background: linear-gradient(to bottom, #c25555 5%, #7a3434 95%); }
+
+.row { display: flex; gap: 8px; margin-top: 8px; }
+.status { color: #a4d007; font-size: 12px; height: 16px; margin: 8px 0 0; }
+footer { color: #6c7480; font-size: 12px; margin-top: 16px; text-align: center; }
+footer a { color: #67c1f5; }

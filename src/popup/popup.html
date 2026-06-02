@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Steam Enhancer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <img src="../../icons/icon48.png" alt="" width="32" height="32" />
+    <div>
+      <h1>Steam Enhancer</h1>
+      <p id="version">v1.0.0</p>
+    </div>
+  </header>
+
+  <section class="actions">
+    <button data-go="https://store.steampowered.com/">Open Steam Store</button>
+    <button data-go="https://store.steampowered.com/wishlist/">My Wishlist</button>
+    <button data-go="https://steamcommunity.com/my/inventory/">My Inventory</button>
+    <button data-go="https://isthereanydeal.com/">IsThereAnyDeal</button>
+  </section>
+
+  <section class="toggles">
+    <label><input type="checkbox" data-setting="showLowestPrice" /> Show lowest prices</label>
+    <label><input type="checkbox" data-setting="highlightOwned" /> Highlight owned games</label>
+    <label><input type="checkbox" data-setting="highlightWishlist" /> Highlight wishlisted</label>
+    <label><input type="checkbox" data-setting="hideIgnoredInSearch" /> Hide ignored in search</label>
+    <label><input type="checkbox" data-setting="showProtonDB" /> Show ProtonDB rating</label>
+    <label><input type="checkbox" data-setting="showRegionalPricing" /> Show regional prices</label>
+    <label><input type="checkbox" data-setting="notifyWishlistDeals" /> Notify on wishlist deals</label>
+  </section>
+
+  <footer>
+    <button id="open-options">All settings…</button>
+    <button id="clear-cache">Clear cache</button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
