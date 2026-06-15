@@ -47,6 +47,15 @@
     document.dispatchEvent(new CustomEvent('se-ready', { detail: SE.ctx }));
   }
 
+  // Steam is a single-page app on many routes; se-ready must re-fire on navigation
+  // so per-page scripts re-decorate. Collections are cached, so this is cheap.
+  function watchNavigation() {
+    if (!SE.once('common:nav-watch')) return;
+    SE.onUrlChange(SE.debounce(() => {
+      SE.safe('re-ready', ready);
+    }, 400));
+  }
+
   // Generic page badge: floating control to open Options.
   function injectGlobalBadge() {
     if (document.getElementById('se-fab')) return;
@@ -93,5 +102,7 @@
     document.body.appendChild(modal);
   }
 
-  ready().then(() => { injectGlobalBadge(); maybeShowChangelog(); }).catch((e) => SE.err('init failed', e));
+  ready()
+    .then(() => { injectGlobalBadge(); maybeShowChangelog(); watchNavigation(); })
+    .catch((e) => SE.err('init failed', e));
 })();

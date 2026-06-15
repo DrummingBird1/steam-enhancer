@@ -156,4 +156,35 @@
   SE.tag = (text, kind = 'info') =>
     SE.el('span', { class: `se-tag se-tag-${kind}` }, text);
 
+  // Run a feature in try/catch so one broken selector can't kill the whole script.
+  // Works for sync fns and promise-returning fns. Returns undefined on failure.
+  SE.safe = (label, fn) => {
+    try {
+      const out = fn();
+      if (out && typeof out.then === 'function') {
+        return out.catch((e) => SE.warn(`feature "${label}" failed:`, e));
+      }
+      return out;
+    } catch (e) {
+      SE.warn(`feature "${label}" failed:`, e);
+      return undefined;
+    }
+  };
+
+  // Idempotency guard for things that must run only once per page-load
+  // (e.g. setInterval loops) even if se-ready fires again after SPA navigation.
+  const _onceKeys = new Set();
+  SE.once = (key) => {
+    if (_onceKeys.has(key)) return false;
+    _onceKeys.add(key);
+    return true;
+  };
+
+  // Subscribe to se-ready. Unlike a raw { once: true } listener, this fires again
+  // when common.js re-dispatches se-ready after an SPA navigation, so per-page
+  // decoration re-runs. Guard any setInterval/global side-effects with SE.once().
+  SE.onReady = (fn) => {
+    document.addEventListener('se-ready', (ev) => SE.safe('onReady', () => fn(ev.detail)));
+  };
+
 })(window);

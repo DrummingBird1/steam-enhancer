@@ -5,11 +5,11 @@
   document.addEventListener('se-ready', () => init(), { once: true });
 
   async function init() {
-    if (!SE.ctx.settings.enableTradeOfferTools) return;
-    insertSummaryBox();
-    insertSteamRepBadge();
-    insertConfirmHold();
-    setInterval(refresh, 2000);
+    if (!SE.ctx?.settings.enableTradeOfferTools) return;
+    SE.safe('trade:summary', insertSummaryBox);
+    SE.safe('trade:steamrep', insertSteamRepBadge);
+    SE.safe('trade:hold', insertConfirmHold);
+    if (SE.once('trade:refresh')) setInterval(() => SE.safe('trade:refresh', refresh), 2000);
   }
 
   function insertSteamRepBadge() {
@@ -57,8 +57,21 @@
       btn.parentElement?.insertBefore(overlay, btn);
       btn.style.opacity = '0.4';
       btn.style.pointerEvents = 'none';
+
+      // Safety escape: never lock the user out of the native confirm button.
+      const escape = SE.el('a', {
+        class: 'se-link', style: { marginLeft: '8px', fontSize: '11px' },
+        href: 'javascript:void 0',
+        onclick: (e) => {
+          e.preventDefault();
+          overlay.remove();
+          btn.style.opacity = '';
+          btn.style.pointerEvents = '';
+        }
+      }, 'use normal button');
+      overlay.insertAdjacentElement('afterend', escape);
     };
-    setInterval(tryWrap, 1000);
+    if (SE.once('trade:hold-interval')) setInterval(() => SE.safe('trade:hold', tryWrap), 1000);
   }
 
   function insertSummaryBox() {

@@ -2,12 +2,12 @@
   'use strict';
   const SE = window.SteamEnhancer;
 
-  document.addEventListener('se-ready', () => init(), { once: true });
+  SE.onReady(() => init());
 
   async function init() {
     if (!/\/games\/?(\?|$)/.test(location.pathname)) return;
-    insertToolbar();
-    SE.onUrlChange(SE.debounce(insertToolbar, 400));
+    SE.safe('lib:toolbar', insertToolbar);
+    // se-ready already re-fires on SPA navigation (common.js), so no extra watcher needed.
   }
 
   function insertToolbar() {

@@ -2,12 +2,12 @@
   'use strict';
   const SE = window.SteamEnhancer;
 
-  document.addEventListener('se-ready', () => init(), { once: true });
+  SE.onReady(() => init());
 
   async function init() {
     if (!/\/wishlist\//.test(location.pathname)) return;
-    insertToolbar();
-    decorateRowsLoop();
+    SE.safe('wl:toolbar', insertToolbar);
+    if (SE.once('wl:rows')) SE.safe('wl:rows', decorateRowsLoop);
   }
 
   function insertToolbar() {

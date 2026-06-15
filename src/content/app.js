@@ -2,48 +2,55 @@
   'use strict';
   const SE = window.SteamEnhancer;
 
-  document.addEventListener('se-ready', () => init(), { once: true });
+  SE.onReady(() => init());
 
   async function init() {
     const appid = SE.extractAppId();
     const subid = SE.extractSubId();
     const bundleid = SE.extractBundleId();
+    if (!SE.ctx) return;
     const { settings } = SE.ctx;
 
-    insertEnhancerPanel(appid || subid || bundleid);
-
-    if (appid) {
-      if (settings.showLowestPrice || settings.showPriceHistory) addPriceBox(appid, settings);
-      if (settings.showSteamDBLink) addExternalLinks(appid);
-      if (settings.showProtonDB) addProtonDB(appid);
-      if (settings.showHowLongToBeat) addHowLongToBeat();
-      if (settings.showPlayersOnline) addPlayersOnline(appid);
-      if (settings.showAchievementStats) addAchievementStats(appid);
-      if (settings.showDlcCheck) addDlcOwnership(appid);
-      if (settings.showRegionalPricing) addRegionalPricing(appid);
-      if (settings.showReviewBreakdown) addReviewBreakdown();
-      if (settings.showCardSetValue) addCardSetValue(appid);
-      addEarlyAccessBadge();
-      addDrmInfo();
-      addCommunityTags(appid);
-      addReviewFilters();
-      addCardDropsLink(appid);
-      addCommunityLinks(appid);
-      addItadWaitlistLink(appid);
-      addNotesBox(appid);
-      addPriceChart(appid);
-      addBoosterCreatorLink(appid);
-      enhanceWishlistButton();
-      trackPriceDrop(appid);
+    // If a panel from a previous SPA route is stale, drop it so we rebuild fresh.
+    const stale = SE.$('#se-panel');
+    if (stale && stale.dataset.seFor && stale.dataset.seFor !== String(appid || subid || bundleid)) {
+      stale.remove();
     }
 
-    if (subid) addSubContents(subid);
+    SE.safe('panel', () => insertEnhancerPanel(appid || subid || bundleid));
+
+    if (appid) {
+      if (settings.showLowestPrice || settings.showPriceHistory) SE.safe('priceBox', () => addPriceBox(appid, settings));
+      if (settings.showSteamDBLink) SE.safe('externalLinks', () => addExternalLinks(appid));
+      if (settings.showProtonDB) SE.safe('protonDB', () => addProtonDB(appid));
+      if (settings.showHowLongToBeat) SE.safe('hltb', () => addHowLongToBeat());
+      if (settings.showPlayersOnline) SE.safe('players', () => addPlayersOnline(appid));
+      if (settings.showAchievementStats) SE.safe('achievements', () => addAchievementStats(appid));
+      if (settings.showDlcCheck) SE.safe('dlc', () => addDlcOwnership(appid));
+      if (settings.showRegionalPricing) SE.safe('regional', () => addRegionalPricing(appid));
+      if (settings.showReviewBreakdown) SE.safe('reviewBreakdown', () => addReviewBreakdown());
+      if (settings.showCardSetValue) SE.safe('cards', () => addCardSetValue(appid));
+      SE.safe('earlyAccess', () => addEarlyAccessBadge());
+      SE.safe('drm', () => addDrmInfo());
+      SE.safe('communityTags', () => addCommunityTags(appid));
+      SE.safe('reviewFilters', () => addReviewFilters());
+      SE.safe('cardDrops', () => addCardDropsLink(appid));
+      SE.safe('communityLinks', () => addCommunityLinks(appid));
+      SE.safe('itadWaitlist', () => addItadWaitlistLink(appid));
+      SE.safe('notes', () => addNotesBox(appid));
+      SE.safe('priceChart', () => addPriceChart(appid));
+      SE.safe('boosterCreator', () => addBoosterCreatorLink(appid));
+      SE.safe('wishBtn', () => enhanceWishlistButton());
+      SE.safe('priceDrop', () => trackPriceDrop(appid));
+    }
+
+    if (subid) SE.safe('subContents', () => addSubContents(subid));
   }
 
   function insertEnhancerPanel(id) {
     const anchor = SE.$('.game_meta_data') || SE.$('.rightcol') || SE.$('.game_area_purchase');
     if (!anchor || SE.$('#se-panel')) return;
-    const panel = SE.el('div', { id: 'se-panel', class: 'se-panel' },
+    const panel = SE.el('div', { id: 'se-panel', class: 'se-panel', dataset: { seFor: String(id || '') } },
       SE.el('div', { class: 'se-panel-h' }, 'Steam Enhancer'),
       SE.el('div', { id: 'se-panel-body', class: 'se-panel-body' },
         id ? SE.el('div', { class: 'se-row se-muted' }, `ID ${id}`) : null

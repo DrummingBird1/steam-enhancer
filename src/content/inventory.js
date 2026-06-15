@@ -2,16 +2,18 @@
   'use strict';
   const SE = window.SteamEnhancer;
 
-  document.addEventListener('se-ready', () => init(), { once: true });
+  SE.onReady(() => init());
 
   let cachedItems = null;
 
   async function init() {
-    if (!SE.ctx.settings.enableInventoryTools) return;
-    insertToolbar();
-    setInterval(decorateSelected, 1000);
-    // Periodic decorate of inventory tiles with median prices.
-    setInterval(decorateTiles, 4000);
+    if (!SE.ctx?.settings.enableInventoryTools) return;
+    SE.safe('inv:toolbar', insertToolbar);
+    // Guard the polling loops so SPA re-ready doesn't stack duplicate intervals.
+    if (SE.once('inv:intervals')) {
+      setInterval(() => SE.safe('inv:selected', decorateSelected), 1000);
+      setInterval(() => SE.safe('inv:tiles', decorateTiles), 4000);
+    }
   }
 
   function insertToolbar() {
@@ -150,21 +152,50 @@
     });
   }
 
+  // Two-phase by design: phase 1 is a DRY RUN that only fetches prices and shows
+  // a preview table. Nothing is sold until the user clicks the explicit confirm
+  // button rendered after the preview. This prevents an accidental bulk sale if a
+  // selector (asset id / appid) is wrong.
   async function massListMedian() {
-    const items = await getItems(true);
-    if (!items) return;
-    const marketable = items.filter(i => i.marketable);
-    const count = Math.min(marketable.length, 10);
-    if (!count) return alert('No marketable items in current view.');
-    if (!confirm(`This will list up to ${count} items at each item's 24h median price minus 1¢.\n\nThis is a SELL action. You can cancel listings any time from the Market page.\n\nProceed?`)) return;
     const out = SE.$('#se-inv-out');
-    out.textContent = 'Pricing items…';
-    let listed = 0;
-    for (const it of marketable.slice(0, count)) {
+    const items = await getItems(true);
+    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    const marketable = items.filter(i => i.marketable && i.market_hash_name && i.id);
+    const candidates = marketable.slice(0, 10);
+    if (!candidates.length) { out.textContent = 'No marketable items in current view.'; return; }
+
+    out.innerHTML = '';
+    out.appendChild(SE.el('div', { class: 'se-label' }, `Dry run — pricing ${candidates.length} items (nothing listed yet)…`));
+
+    const plan = [];
+    for (const it of candidates) {
       const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
       const med = SE.parsePrice(p?.data?.median_price);
       if (med == null || med <= 0.03) continue;
       const priceCents = Math.max(3, Math.round((med - 0.01) * 100));
+      plan.push({ it, med, priceCents });
+      out.appendChild(SE.el('div', null,
+        `• ${it.market_hash_name} (app ${it.appid}, asset ${it.id}) → list at ${(priceCents / 100).toFixed(2)} (median ${med.toFixed(2)})`
+      ));
+    }
+
+    if (!plan.length) { out.appendChild(SE.el('div', { class: 'se-muted' }, 'No items had a usable median price.')); return; }
+
+    out.appendChild(SE.el('div', { class: 'se-row' },
+      SE.el('button', {
+        class: 'se-btn',
+        style: { background: 'linear-gradient(to bottom,#c25555 5%,#7a3434 95%)' },
+        onclick: (e) => { e.target.disabled = true; executeListing(plan, out); }
+      }, `⚠ Confirm: actually list these ${plan.length} items for sale`)
+    ));
+    out.appendChild(SE.el('div', { class: 'se-muted' }, 'You can cancel any listing from the Market page. Listings still need mobile-authenticator confirmation.'));
+  }
+
+  async function executeListing(plan, out) {
+    let listed = 0;
+    const status = SE.el('div', null, 'Listing…');
+    out.appendChild(status);
+    for (const { it, priceCents } of plan) {
       const r = await SE.injectPage((appid, contextid, assetid, amount, price) => {
         return fetch('/market/sellitem/', {
           method: 'POST', credentials: 'include',
@@ -175,7 +206,7 @@
       if (r?.result?.success) listed++;
       await SE.sleep(1500); // rate-limit-friendly
     }
-    out.textContent = `Listed ${listed}/${count}. Check Market page; you'll need to confirm via mobile authenticator.`;
+    status.textContent = `Listed ${listed}/${plan.length}. Check the Market page and confirm via mobile authenticator.`;
   }
 
   async function exportInventory() {

@@ -2,14 +2,17 @@
   'use strict';
   const SE = window.SteamEnhancer;
 
-  document.addEventListener('se-ready', () => init(), { once: true });
+  SE.onReady(() => init());
 
   async function init() {
-    if (!SE.ctx.settings.enableMarketTools) return;
-    decorateListings();
-    new MutationObserver(SE.throttle(decorateListings, 200)).observe(document.body, { childList: true, subtree: true });
-    if (/\/market\/listings\//.test(location.pathname)) insertItemTools();
-    insertCurrencyConverter();
+    if (!SE.ctx?.settings.enableMarketTools) return;
+    SE.safe('mkt:decorate', decorateListings);
+    if (SE.once('mkt:observer')) {
+      new MutationObserver(SE.throttle(() => SE.safe('mkt:decorate', decorateListings), 200))
+        .observe(document.body, { childList: true, subtree: true });
+    }
+    if (/\/market\/listings\//.test(location.pathname)) SE.safe('mkt:itemTools', insertItemTools);
+    SE.safe('mkt:fx', insertCurrencyConverter);
   }
 
   function decorateListings() {

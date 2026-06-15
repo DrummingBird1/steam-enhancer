@@ -2,14 +2,17 @@
   'use strict';
   const SE = window.SteamEnhancer;
 
-  document.addEventListener('se-ready', () => init(), { once: true });
+  SE.onReady(() => init());
 
   let blockSet = new Set();
 
   async function init() {
     blockSet = await SE.blocklist.get();
-    decorateList();
-    new MutationObserver(SE.throttle(decorateList, 150)).observe(document.body, { childList: true, subtree: true });
+    SE.safe('search:decorate', decorateList);
+    if (SE.once('search:observer')) {
+      new MutationObserver(SE.throttle(() => SE.safe('search:decorate', decorateList), 150))
+        .observe(document.body, { childList: true, subtree: true });
+    }
   }
 
   function decorateList() {

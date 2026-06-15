@@ -1,11 +1,12 @@
 (function () {
   'use strict';
   const SE = window.SteamEnhancer;
-  document.addEventListener('se-ready', () => init(), { once: true });
+  SE.onReady(() => init());
 
   function init() {
     if (!/\/discussions\//.test(location.pathname)) return;
-    document.addEventListener('mouseup', onSelect);
+    if (!SE.once('discussions:mouseup')) return;
+    document.addEventListener('mouseup', (e) => SE.safe('quote', () => onSelect(e)));
   }
 
   let popup = null;
