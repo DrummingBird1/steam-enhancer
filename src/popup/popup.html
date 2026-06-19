@@ -15,25 +15,25 @@
   </header>
 
   <section class="actions">
-    <button data-go="https://store.steampowered.com/">Open Steam Store</button>
-    <button data-go="https://store.steampowered.com/wishlist/">My Wishlist</button>
-    <button data-go="https://steamcommunity.com/my/inventory/">My Inventory</button>
+    <button data-go="https://store.steampowered.com/" data-i18n="openStore">Open Steam Store</button>
+    <button data-go="https://store.steampowered.com/wishlist/" data-i18n="myWishlist">My Wishlist</button>
+    <button data-go="https://steamcommunity.com/my/inventory/" data-i18n="myInventory">My Inventory</button>
     <button data-go="https://isthereanydeal.com/">IsThereAnyDeal</button>
   </section>
 
   <section class="toggles">
-    <label><input type="checkbox" data-setting="showLowestPrice" /> Show lowest prices</label>
-    <label><input type="checkbox" data-setting="highlightOwned" /> Highlight owned games</label>
-    <label><input type="checkbox" data-setting="highlightWishlist" /> Highlight wishlisted</label>
-    <label><input type="checkbox" data-setting="hideIgnoredInSearch" /> Hide ignored in search</label>
-    <label><input type="checkbox" data-setting="showProtonDB" /> Show ProtonDB rating</label>
-    <label><input type="checkbox" data-setting="showRegionalPricing" /> Show regional prices</label>
-    <label><input type="checkbox" data-setting="notifyWishlistDeals" /> Notify on wishlist deals</label>
+    <label><input type="checkbox" data-setting="showLowestPrice" /> <span data-i18n="tShowLowest">Show lowest prices</span></label>
+    <label><input type="checkbox" data-setting="highlightOwned" /> <span data-i18n="tHighlightOwned">Highlight owned games</span></label>
+    <label><input type="checkbox" data-setting="highlightWishlist" /> <span data-i18n="tHighlightWish">Highlight wishlisted</span></label>
+    <label><input type="checkbox" data-setting="hideIgnoredInSearch" /> <span data-i18n="tHideIgnored">Hide ignored in search</span></label>
+    <label><input type="checkbox" data-setting="showProtonDB" /> <span data-i18n="tShowProton">Show ProtonDB rating</span></label>
+    <label><input type="checkbox" data-setting="showRegionalPricing" /> <span data-i18n="tShowRegional">Show regional prices</span></label>
+    <label><input type="checkbox" data-setting="notifyWishlistDeals" /> <span data-i18n="tNotifyDeals">Notify on wishlist deals</span></label>
   </section>
 
   <footer>
-    <button id="open-options">All settings…</button>
-    <button id="clear-cache">Clear cache</button>
+    <button id="open-options" data-i18n="allSettings">All settings…</button>
+    <button id="clear-cache" data-i18n="clearCache">Clear cache</button>
   </footer>
 
   <script src="popup.js"></script>

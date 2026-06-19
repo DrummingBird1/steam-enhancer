@@ -7,6 +7,8 @@
 
 > Unofficial. Not affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
 
+Current version: **1.1.1** — see [`CHANGELOG.md`](CHANGELOG.md) for what's new (SPA-aware re-init, per-feature error isolation, library-page tools, per-row wishlist price targets, Hebrew UI, and more).
+
 ## Features
 
 ### Store pages (`/app/`, `/sub/`, `/bundle/`)

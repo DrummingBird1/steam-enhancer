@@ -29,5 +29,15 @@ document.getElementById('clear-cache').addEventListener('click', () => {
   });
 });
 
+function localize() {
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const msg = chrome.i18n.getMessage(el.dataset.i18n);
+    if (msg) el.textContent = msg;
+  });
+  const ui = chrome.i18n.getUILanguage?.() || '';
+  if (/^he|^ar|^fa/.test(ui)) document.documentElement.dir = 'rtl';
+}
+
 document.getElementById('version').textContent = 'v' + chrome.runtime.getManifest().version;
+localize();
 load();

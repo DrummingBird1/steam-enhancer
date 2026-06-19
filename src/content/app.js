@@ -254,23 +254,20 @@
     ));
   }
 
-  async function addCommunityTags(appid) {
-    // Steam already shows tags but cuts off + numbers are hidden. Fetch full list from store API.
-    const r = await SE.bg({
-      type: 'fetchJson',
-      url: `https://store.steampowered.com/apphoverpublic/${appid}/?l=en&review_score_preference=0`,
-      cacheKey: `tags:${appid}`, ttl: 60 * 12
-    });
-    // Hover endpoint returns HTML — fall back to existing tag display if parsing fails.
-    if (!r?.data || typeof r.data !== 'string') return;
-    const matches = [...r.data.matchAll(/data-tagid="(\d+)"[^>]*>([^<]+)</g)].slice(0, 8);
-    if (!matches.length) return;
+  function addCommunityTags(appid) {
+    // Read the tags Steam already rendered into the DOM rather than scraping an
+    // HTML endpoint — robust to API changes and needs no network call.
+    const tagEls = SE.$$('.glance_tags .app_tag, .popular_tags .app_tag');
+    const names = tagEls
+      .map(el => el.textContent.trim())
+      .filter(t => t && t !== '+');
+    if (!names.length) return;
     const tagsRow = SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, 'Top tags: '));
-    matches.forEach((m, i) => {
+    names.slice(0, 10).forEach((name) => {
       tagsRow.appendChild(SE.el('a', {
-        href: `https://store.steampowered.com/tags/en/${encodeURIComponent(m[2].trim())}/`,
+        href: `https://store.steampowered.com/tags/en/${encodeURIComponent(name)}/`,
         target: '_blank', rel: 'noopener', class: 'se-link se-region'
-      }, m[2].trim()));
+      }, name));
     });
     panelBody()?.appendChild(tagsRow);
   }
