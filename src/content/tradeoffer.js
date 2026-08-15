@@ -90,6 +90,13 @@
     ), anchor);
   }
 
+  // Smarter polling: sumValue() already caches per-item price lookups forever
+  // (the `cache` Map below), so refresh() was never re-fetching prices on an
+  // unchanged offer — but it WAS rebuilding the whole table/DOM every 2s
+  // regardless. Skip that work entirely when the offer's contents haven't
+  // changed since the last tick.
+  let lastSignature = null;
+
   async function refresh() {
     const r = await SE.injectPage(() => {
       try {
@@ -122,6 +129,12 @@
     if (!r?.ok || !r.result) return;
     const body = SE.$('#se-trade-body'); if (!body) return;
 
+    const signature = `${r.result.your.length}:${r.result.their.length}:` +
+      r.result.your.map(i => i.market_hash_name).sort().join(',') + '|' +
+      r.result.their.map(i => i.market_hash_name).sort().join(',');
+    if (signature === lastSignature) return;
+    lastSignature = signature;
+
     const yourBreakdown = await sumValue(r.result.your);
     const theirBreakdown = await sumValue(r.result.their);
     const yourVal = yourBreakdown.total, theirVal = theirBreakdown.total;
@@ -139,7 +152,9 @@
     body.appendChild(renderItemTable('You offer', yourBreakdown.rows));
     body.appendChild(renderItemTable('They offer', theirBreakdown.rows));
 
-    SE.safe('trade:history', () => recordAndShowHistory(body, r.result.your.length, r.result.their.length, yourVal, theirVal));
+    if (SE.ctx?.settings.showTradeHistory) {
+      SE.safe('trade:history', () => recordAndShowHistory(body, r.result.your.length, r.result.their.length, yourVal, theirVal));
+    }
   }
 
   function renderItemTable(title, rows) {

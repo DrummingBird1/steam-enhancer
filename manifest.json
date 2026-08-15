@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "__MSG_extDesc__",
   "author": "Steam Enhancer Contributors",
   "default_locale": "en",
@@ -132,6 +132,14 @@
         "*://steamcommunity.com/profiles/*/games*"
       ],
       "js": ["src/content/library.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/id/*/badges*",
+        "*://steamcommunity.com/profiles/*/badges*"
+      ],
+      "js": ["src/content/badges.js"],
       "run_at": "document_idle"
     },
     {

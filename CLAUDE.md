@@ -21,19 +21,27 @@ src/
     api.js                       Thin wrappers around ITAD / Steam storefront / ProtonDB / HLTB calls.
     prices.js                    Composite "priceSummary(appid)" used by store pages.
   content/                       Page-specific content scripts.
-    common.js                    Loads dynamicstore (owned/wishlist/ignored), dispatches `se-ready`.
-    app.js                       Store /app/, /sub/, /bundle/ pages.
+    common.js                    Loads dynamicstore (owned/wishlist/ignored), dispatches `se-ready`, onboarding/changelog modals.
+    app.js                       Store /app/, /sub/, /bundle/ pages — the biggest file; most store-page panels live here.
     search.js                    /search/, /specials/, /sale/ — row decoration + price tags.
-    wishlist.js                  Wishlist toolbar + export.
-    market.js                    Steam Community market.
+    wishlist.js                  Wishlist toolbar, export, per-row price targets.
+    market.js                    Steam Community market — net-fee, undercut, buy-order helper.
     inventory.js                 Community inventory tools (uses g_ActiveInventory via page injection).
-    profile.js                   User-profile external links.
-    tradeoffer.js                Trade-offer summary panel.
+    profile.js                   User-profile shortcuts, library/badge summaries, media links.
+    library.js                   /games/ page — sort/filter, library value estimate.
+    badges.js                    /badges/ page — per-page badge/XP summary.
+    tradeoffer.js                Trade-offer summary panel, item table, local trade history.
+    discussions.js                Forum "quote selected text" popup.
   popup/                         Toolbar popup (quick toggles + jump-to links).
   options/                       Full settings page.
   styles/injected.css            All injected DOM is scoped under `.se-*` class names.
 icons/                           16/32/48/128 PNGs (generated, not hand-drawn).
 store-assets/                    Chrome Web Store screenshots, promo images, listing text.
+scripts/smoke-test.js            Standalone Node script (no deps) that hits live, public Steam
+                                  endpoints/pages and checks the selectors/endpoints this codebase
+                                  depends on are still present. Not loaded by the extension. Run it
+                                  with `node scripts/smoke-test.js` before a release or when
+                                  something seems broken after a Steam redesign.
 ```
 
 ## Key conventions
@@ -57,8 +65,14 @@ store-assets/                    Chrome Web Store screenshots, promo images, lis
 | `protondb.com` summary API | Linux compat rating | None |
 | `howlongtobeat.com` search API | Playtime estimates | None (anti-bot may break this) |
 | `store.steampowered.com/dynamicstore/userdata/` | Owned / wishlist / ignored ids | Steam session cookie |
+| `store.steampowered.com/api/featuredcategories` | Free-promo detection (100%-off specials) | None |
+| `store.steampowered.com/appreviewhistogram/{appid}` | Review-bomb heuristic (recommendation counts over time) | None |
+| `steamcommunity.com/market/itemordershistogram` | Buy-order helper (order-book depth) | Steam session cookie; `item_nameid` is scraped from a `Market_LoadOrderSpread(...)` inline script on the listing page — **verified anonymous requests don't render this script at all** (see `scripts/smoke-test.js`), so it's untested against a real logged-in session |
+| `api.steampowered.com` GetFriendList / GetOwnedGames / ResolveVanityURL | Opt-in "owned by friends" | User-supplied Steam Web API key (Options page), never baked in |
 
 If an endpoint breaks (HLTB especially), the relevant feature should degrade to a search link rather than throw.
+
+Two endpoints I *didn't* wire up after trying to verify them — don't re-add without re-checking first: an ITAD deep price-history endpoint (docs page 404'd) and a key-free SteamRep/backpack.tf reputation API (both docs and the classic `/api/beta4/reputation/` URL 404'd). The existing profile-link-based SteamRep/backpack.tf shortcuts are what's shipped instead.
 
 ## How to load locally
 
@@ -66,6 +80,17 @@ If an endpoint breaks (HLTB especially), the relevant feature should degrade to 
 2. Enable Developer mode.
 3. "Load unpacked" → select the repo root.
 4. Open any Steam store/community page to see the injected panels.
+
+## Checking for breakage
+
+Run `node scripts/smoke-test.js` (no deps, Node 18+) before a release or whenever
+a feature that used to work stops working. It hits the live, public endpoints
+and pages this codebase depends on and checks the patterns are still there. A
+`FAIL` means go fix that feature; a `WARN` means the check needs a logged-in
+session to be meaningful and this anonymous script can't fully verify it —
+follow the note printed with it. There's no browser-based test suite here (no
+build step, no CI browser), so this script plus manual DevTools checks are the
+whole regression-detection story.
 
 ## Things to be careful about
 

@@ -103,6 +103,52 @@
       });
     },
 
+    // Steam's own "specials" feed — includes 100%-off (free-for-a-limited-time)
+    // promos alongside regular discounts. Verified live: returns
+    // { specials: { items: [{ id, name, discount_percent, ... }] } }.
+    async featuredSpecials(country = 'us') {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://store.steampowered.com/api/featuredcategories?cc=${encodeURIComponent(country)}&l=english`,
+        cacheKey: `featured:${country}`, ttl: 60
+      });
+    },
+
+    // Monthly/daily recommendation-count rollups Steam uses for its own review
+    // graph. Verified live: { results: { rollups: [...], recent: [...] } },
+    // each point has { date, recommendations_up, recommendations_down }.
+    async reviewHistogram(appid) {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://store.steampowered.com/appreviewhistogram/${encodeURIComponent(appid)}?l=english&review_score_preference=0`,
+        cacheKey: `reviewhist:${appid}`, ttl: 60 * 6
+      });
+    },
+
+    // Steam Web API — requires the user's own key (Options → "Your Steam Web
+    // API key"). Never called unless a key is present.
+    async friendsList(steamid64, key) {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/ISteamUser/GetFriendList/v1/?key=${encodeURIComponent(key)}&steamid=${encodeURIComponent(steamid64)}&relationship=friend`,
+        cacheKey: `friends:${steamid64}`, ttl: 60 * 12
+      });
+    },
+    async resolveVanityUrl(vanity, key) {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=${encodeURIComponent(key)}&vanityurl=${encodeURIComponent(vanity)}`,
+        cacheKey: `vanity:${vanity}`, ttl: 60 * 24 * 7
+      });
+    },
+    async ownedGames(steamid64, key) {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${encodeURIComponent(key)}&steamid=${encodeURIComponent(steamid64)}&include_appids=true&include_played_free_games=true`,
+        cacheKey: `ownedgames:${steamid64}`, ttl: 60 * 6
+      });
+    },
+
     async hltb(query) {
       // HLTB search endpoint is anti-bot; fall back to a link if request fails.
       return SE.bg({

@@ -32,6 +32,7 @@
   async function insertItemTools() {
     const anchor = SE.$('#largeiteminfo_item_descriptors') || SE.$('#market_buyorder_info') || SE.$('.market_listing_largeimage');
     if (!anchor || SE.$('#se-mkt-tools')) return;
+    const showBuyOrder = SE.ctx?.settings.showBuyOrderHelper;
     const box = SE.el('div', { id: 'se-mkt-tools', class: 'se-panel' },
       SE.el('div', { class: 'se-panel-h' }, 'Market quick tools'),
       SE.el('div', { class: 'se-panel-body' },
@@ -43,8 +44,8 @@
           SE.el('button', { class: 'se-btn', onclick: openSCMHistory }, 'Open SteamDB'),
           ' ',
           SE.el('button', { class: 'se-btn', onclick: salesSummary }, 'Sales summary'),
-          ' ',
-          SE.el('button', { class: 'se-btn', onclick: buyOrderHelper }, 'Buy-order helper')
+          showBuyOrder ? ' ' : null,
+          showBuyOrder ? SE.el('button', { class: 'se-btn', onclick: buyOrderHelper }, 'Buy-order helper') : null
         ),
         SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted' }, '')
       )

@@ -87,10 +87,10 @@
       SE.el('div', { class: 'se-modal-box' },
         SE.el('div', { class: 'se-modal-h' }, `Steam Enhancer v${v}`),
         SE.el('div', { class: 'se-modal-body' },
-          SE.el('p', null, 'Thanks for installing/updating!'),
+          SE.el('p', null, 'Thanks for updating!'),
           SE.el('ul', null,
-            SE.el('li', null, '25+ new features: price history graph, library sort, wishlist alerts, mass-list at median, SteamRep badges, keyboard shortcuts, Hebrew UI…'),
-            SE.el('li', null, 'See the options page (gear icon) to toggle features.'),
+            SE.el('li', null, 'New: trade item-value tables + local trade history, inventory multi-select selling, sort/group tiles, buy-order helper, live review filters, free-promo & price alerts, badge tracker.'),
+            SE.el('li', null, 'See the options page (gear icon) — most new features have their own on/off toggle now.'),
             SE.el('li', null, 'Try Ctrl+Shift+S to toggle the panel, Ctrl+Shift+W for wishlist.')
           )
         ),
@@ -102,7 +102,41 @@
     document.body.appendChild(modal);
   }
 
+  // First-run onboarding tour — shown once, on the store front page, right
+  // after a fresh install (not on updates — those get the changelog modal).
+  async function maybeShowOnboarding() {
+    const d = await new Promise((r) => chrome.storage.local.get(['se_show_onboarding'], r));
+    if (!d.se_show_onboarding) return;
+    chrome.storage.local.set({ se_show_onboarding: false });
+    if (location.hostname !== 'store.steampowered.com' || location.pathname !== '/') return;
+    if (document.getElementById('se-onboard-modal')) return;
+
+    const steps = [
+      ['🏷️', 'Browse any game page', 'Lowest price, historical low, ProtonDB rating, DLC ownership and more show up automatically in a panel.'],
+      ['⭐', 'Highlight owned/wishlisted games', 'Search and store lists mark games you own, have wishlisted, or are ignoring — with an option to hide any of them.'],
+      ['💰', 'Market & inventory tools', 'Open your Steam Market or Inventory page for net-after-fee pricing, value estimates, sort/group tiles, and more.'],
+      ['⚙️', 'Everything is toggleable', 'Click the floating "SE" badge (bottom-right of any Steam page) any time to open full settings.']
+    ];
+    const modal = SE.el('div', { id: 'se-onboard-modal', class: 'se-modal' },
+      SE.el('div', { class: 'se-modal-box' },
+        SE.el('div', { class: 'se-modal-h' }, 'Welcome to Steam Enhancer'),
+        SE.el('div', { class: 'se-modal-body' },
+          SE.el('div', { class: 'se-onboard-steps' },
+            ...steps.map(([icon, title, desc]) => SE.el('div', { class: 'se-onboard-step' },
+              SE.el('span', { class: 'se-onboard-icon' }, icon),
+              SE.el('div', null, SE.el('strong', null, title), SE.el('div', { class: 'se-muted' }, desc))
+            ))
+          )
+        ),
+        SE.el('div', { class: 'se-modal-foot' },
+          SE.el('button', { class: 'se-btn', onclick: () => modal.remove() }, "Let's go")
+        )
+      )
+    );
+    document.body.appendChild(modal);
+  }
+
   ready()
-    .then(() => { injectGlobalBadge(); maybeShowChangelog(); watchNavigation(); })
+    .then(() => { injectGlobalBadge(); maybeShowChangelog(); maybeShowOnboarding(); watchNavigation(); })
     .catch((e) => SE.err('init failed', e));
 })();

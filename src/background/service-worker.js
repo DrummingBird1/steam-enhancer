@@ -101,10 +101,15 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     });
   });
   chrome.alarms.create('se-wishlist-poll', { periodInMinutes: 60 });
+  chrome.alarms.create('se-freepromo-poll', { periodInMinutes: 120 });
+  chrome.alarms.create('se-pricealert-poll', { periodInMinutes: 60 });
 
-  // Show changelog when version changes (incl. fresh install).
-  if (details.reason === 'install' || details.reason === 'update') {
-    const v = chrome.runtime.getManifest().version;
+  const v = chrome.runtime.getManifest().version;
+  if (details.reason === 'install') {
+    // First-ever install: show the onboarding tour, not a changelog (there's
+    // nothing to "change" yet from the user's perspective).
+    chrome.storage.local.set({ se_last_seen_version: v, se_show_onboarding: true });
+  } else if (details.reason === 'update') {
     chrome.storage.local.set({ se_last_seen_version: v, se_show_changelog: true });
   }
 });
@@ -135,6 +140,8 @@ chrome.contextMenus.onClicked.addListener((info) => {
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === 'se-freepromo-poll') return handleFreePromoPoll();
+  if (alarm.name === 'se-pricealert-poll') return handlePriceAlertPoll();
   if (alarm.name !== 'se-wishlist-poll') return;
   const settings = await getSettings();
   if (!settings.notifyWishlistDeals) return;
@@ -180,3 +187,103 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     console.warn('[SE] wishlist poll failed', e);
   }
 });
+
+// Free-for-a-limited-time promo tracker. Uses Steam's own featuredcategories
+// feed (the same one the store front page itself reads) and looks for fully
+// free (100%-off) items in the specials list. We remember which promo ids
+// we've already notified about so re-running the alarm doesn't repeat itself.
+async function handleFreePromoPoll() {
+  const settings = await getSettings();
+  if (!settings.notifyFreePromos) return;
+  try {
+    const country = settings.country || 'us';
+    const r = await doFetchJson({
+      url: `https://store.steampowered.com/api/featuredcategories?cc=${country}&l=english`,
+      cacheKey: `featured:${country}`, ttl: 60
+    });
+    const items = r?.data?.specials?.items || [];
+    const freebies = items.filter((i) => i.discount_percent === 100);
+    if (!freebies.length) return;
+
+    const SEEN_KEY = 'se_seen_free_promos';
+    const seen = new Set((await new Promise((res) => chrome.storage.local.get([SEEN_KEY], (d) => res(d[SEEN_KEY] || [])))));
+    let notified = 0;
+    for (const item of freebies) {
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      if (notified < 3) {
+        chrome.notifications.create('', {
+          type: 'basic',
+          iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+          title: 'Free for a limited time!',
+          message: item.name,
+          priority: 1
+        });
+        notified++;
+      }
+    }
+    chrome.storage.local.set({ [SEEN_KEY]: [...seen].slice(-300) });
+  } catch (e) {
+    console.warn('[SE] free-promo poll failed', e);
+  }
+}
+
+// Store-page price alerts. Reuses the same se_wishlist_targets map that
+// wishlist.js's per-row "alert me at" inputs write to — app.js also writes
+// into it now, so a target set from either the wishlist or a store page works
+// the same way. We track a per-appid "already notified" flag so we only
+// notify once per dip below target, resetting it once the price rises again.
+async function handlePriceAlertPoll() {
+  const settings = await getSettings();
+  if (!settings.notifyStorePriceAlerts) return;
+  try {
+    const targets = await new Promise((res) => chrome.storage.local.get(['se_wishlist_targets'], (d) => res(d.se_wishlist_targets || {})));
+    const appids = Object.keys(targets).slice(0, 50);
+    if (!appids.length) return;
+
+    const country = settings.country || 'us';
+    const NOTIFIED_KEY = 'se_price_alert_notified';
+    const notifiedState = await new Promise((res) => chrome.storage.local.get([NOTIFIED_KEY], (d) => res(d[NOTIFIED_KEY] || {})));
+    let sent = 0;
+
+    for (const appid of appids) {
+      const target = Number(targets[appid]);
+      if (!isFinite(target) || target <= 0) continue;
+
+      const lookup = await doFetchJson({
+        url: `https://api.isthereanydeal.com/games/lookup/v1?appid=${appid}`,
+        cacheKey: `itadlookup:${appid}`, ttl: 60 * 24
+      });
+      const id = lookup?.data?.data?.game?.id;
+      if (!id) continue;
+
+      const prices = await doFetchJson({
+        url: `https://api.isthereanydeal.com/games/prices/v3?country=${country}&capacity=4&nondeals=true`,
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([id]), cacheKey: `itadprices:${id}:${country}`, ttl: 60
+      });
+      const deal = prices?.data?.data?.[0]?.deals?.[0];
+      const cur = deal?.price?.amount;
+      if (cur == null) continue;
+
+      if (cur <= target) {
+        if (!notifiedState[appid] && sent < 3) {
+          chrome.notifications.create('', {
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+            title: 'Price alert hit',
+            message: `${deal.price.amount} ${deal.price.currency || ''} @ ${deal.shop?.name || 'store'} (your target: ${target})`,
+            priority: 1
+          });
+          sent++;
+        }
+        notifiedState[appid] = true;
+      } else {
+        notifiedState[appid] = false;
+      }
+    }
+    chrome.storage.local.set({ [NOTIFIED_KEY]: notifiedState });
+  } catch (e) {
+    console.warn('[SE] price-alert poll failed', e);
+  }
+}

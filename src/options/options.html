@@ -53,6 +53,17 @@
     </section>
 
     <section>
+      <h2>Your Steam Web API key (optional)</h2>
+      <label>API key
+        <input type="text" id="steamWebApiKey" placeholder="leave blank to disable friends-ownership lookup" />
+      </label>
+      <p class="hint">Only used for the opt-in "how many friends own this game" feature. Get your own free key at
+        <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener">steamcommunity.com/dev/apikey</a>.
+        Stored only in your browser's synced settings; requests go straight from your browser to
+        <code>api.steampowered.com</code> — this extension's developers never see it.</p>
+    </section>
+
+    <section>
       <h2 data-i18n="secAdvanced">Advanced</h2>
       <label>Cache TTL (minutes)
         <input type="number" id="cacheTTLMinutes" min="5" max="1440" step="5" />

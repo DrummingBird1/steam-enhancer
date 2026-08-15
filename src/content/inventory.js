@@ -23,14 +23,16 @@
     if (SE.$('#se-inv-toolbar')) return;
     const anchor = SE.$('#inventory_pagecontrols') || SE.$('#tabcontent_inventory') || SE.$('#inventories');
     if (!anchor) return;
+    const showSortGroup = SE.ctx?.settings.showTileSortGroup;
     const bar = SE.el('div', { id: 'se-inv-toolbar', class: 'se-toolbar' },
       SE.el('button', { class: 'se-btn', onclick: showValue }, 'Estimate value'),
       SE.el('button', { class: 'se-btn', onclick: showValueHistory }, 'Value history'),
       SE.el('button', { class: 'se-btn', onclick: findDuplicates }, 'Find duplicates'),
       SE.el('button', { class: 'se-btn', onclick: selectDuplicatesUI }, 'Mark duplicates'),
       SE.el('button', { class: 'se-btn', onclick: cardSetProgress }, 'Card set progress'),
-      SE.el('button', { class: 'se-btn', onclick: sortTilesByValue }, 'Sort by value ↓'),
-      SE.el('button', { class: 'se-btn', onclick: groupTilesByType }, 'Group by type'),
+      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: sortTilesByValue }, 'Sort by value ↓') : null,
+      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: groupTilesByType }, 'Group by type') : null,
+      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: rarityBreakdown }, 'Rarity/quality breakdown') : null,
       SE.el('button', { class: 'se-btn', onclick: massListMedian }, 'Mass-list at median…'),
       SE.el('button', { class: 'se-btn', id: 'se-inv-selmode', onclick: toggleSelectMode }, 'Select items to sell'),
       SE.el('button', { class: 'se-btn', onclick: prepareSelectedListing }, 'List selected…'),
@@ -220,6 +222,24 @@
     }
     [...groups.keys()].sort().forEach(g => groups.get(g).forEach(t => container.appendChild(t)));
     out.textContent = `Grouped ${tiles.length} tiles into ${groups.size} type(s): ${[...groups.keys()].slice(0, 6).join(', ')}${groups.size > 6 ? '…' : ''}`;
+  }
+
+  // Report-only (doesn't reorder tiles): counts items by Rarity/Quality tag
+  // category — the categories CS2/TF2/Dota use for wear tiers, rarities, etc.
+  async function rarityBreakdown() {
+    const out = SE.$('#se-inv-out');
+    const items = await getItems();
+    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    const counts = new Map();
+    for (const it of items) {
+      const tier = it.tags?.find(t => t.category === 'Rarity' || t.category === 'Quality')?.name || 'Unknown';
+      counts.set(tier, (counts.get(tier) || 0) + (it.amount || 1));
+    }
+    out.innerHTML = '';
+    if (!counts.size) { out.textContent = 'No rarity/quality tags found on items in this inventory.'; return; }
+    [...counts.entries()].sort((a, b) => b[1] - a[1]).forEach(([tier, n]) => {
+      out.appendChild(SE.el('div', null, `${tier}: ${n}`));
+    });
   }
 
   // --- Manual multi-select for listing ------------------------------------

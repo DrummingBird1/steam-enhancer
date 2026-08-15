@@ -1,6 +1,6 @@
 # Privacy Policy — Steam Enhancer
 
-_Last updated: June 2026_
+_Last updated: August 2026_
 
 Steam Enhancer ("the extension") is a free, open-source Chrome extension that enhances the Steam Store and Steam Community websites. This document explains exactly what data the extension does — and does not — handle.
 
@@ -17,6 +17,8 @@ Steam Enhancer ("the extension") is a free, open-source Chrome extension that en
 | Your settings (toggles, country, deal threshold) | Remember your preferences | `chrome.storage.sync` (synced across your Chrome profile by Google) |
 | Cached price/API responses | Avoid re-fetching the same data | `chrome.storage.local`, expires per-entry |
 | Your owned / wishlisted / ignored app IDs | Highlight rows on store pages | `chrome.storage.local`, refreshed from Steam's own `dynamicstore/userdata` endpoint while you're logged in to Steam |
+| Your own Steam Web API key (optional) | Powers the opt-in "owned by friends" feature only | `chrome.storage.sync` — only if you paste one in Options; the feature is off by default and does nothing without it |
+| Local trade history, price-target alerts, library/inventory snapshots | Power the trade-history, price-alert, and value-over-time features | `chrome.storage.local`, built entirely from pages you've visited in your own browser |
 
 None of this data ever leaves your browser via the extension.
 
@@ -28,10 +30,12 @@ The extension makes direct browser requests (no proxy server) to the following e
 |---|---|---|
 | `store.steampowered.com`, `steamcommunity.com` | While you're on Steam pages | Your normal Steam cookies (same as the page itself) |
 | `api.isthereanydeal.com` | When you view a store page or use the wishlist deal-check | The Steam app ID and your selected country code |
-| `api.steampowered.com` (player count, achievements) | When you view a store app page | Steam app ID |
+| `api.steampowered.com` (player count, achievements, featured specials, review histogram) | When you view a store app page, or hourly/every-2h if price/promo alerts are enabled | Steam app ID |
+| `api.steampowered.com` (GetFriendList, GetOwnedGames, ResolveVanityURL) | Only if you enable "owned by friends" and supply your own API key | Your API key, your Steam ID, and up to 30 of your friends' Steam IDs — sent straight to Steam, not to us |
+| `open.er-api.com` | Currency converter / display-currency conversion | Currency codes only |
 | `protondb.com` | When you view a store app page | Steam app ID |
 | `howlongtobeat.com` | When you click the HLTB link | Game title (only on your click) |
-| `steamdb.info`, `steamcharts.com`, `barter.vg`, `steamladder.com`, `steamrep.com`, `backpack.tf` | Only when you click those links | None (handled by the destination site) |
+| `steamdb.info`, `steamcharts.com`, `barter.vg`, `steamladder.com`, `steamrep.com`, `backpack.tf`, `csfloat.com` | Only when you click those links | None (handled by the destination site) |
 
 The extension **does not** send your Steam ID, persona name, email, or any account credentials anywhere.
 

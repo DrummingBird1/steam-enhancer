@@ -40,6 +40,8 @@ button:hover { background: linear-gradient(to bottom, #79cdff 5%, #4f8bb1 95%); 
 button.danger { background: linear-gradient(to bottom, #c25555 5%, #7a3434 95%); }
 
 .hint { color: #8f98a0; font-size: 12px; margin: -4px 0 0; }
+.hint code { background: #0d1620; padding: 1px 4px; border-radius: 2px; }
+.hint a { color: #67c1f5; }
 .row { display: flex; gap: 8px; margin-top: 8px; }
 .status { color: #a4d007; font-size: 12px; height: 16px; margin: 8px 0 0; }
 footer { color: #6c7480; font-size: 12px; margin-top: 16px; text-align: center; }

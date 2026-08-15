@@ -33,7 +33,7 @@
       SE.safe('earlyAccess', () => addEarlyAccessBadge());
       SE.safe('drm', () => addDrmInfo());
       SE.safe('communityTags', () => addCommunityTags(appid));
-      SE.safe('reviewFilters', () => addReviewFilters());
+      if (settings.showLiveReviewFilters) SE.safe('reviewFilters', () => addReviewFilters());
       SE.safe('cardDrops', () => addCardDropsLink(appid));
       SE.safe('communityLinks', () => addCommunityLinks(appid));
       SE.safe('itadWaitlist', () => addItadWaitlistLink(appid));
@@ -42,7 +42,11 @@
       SE.safe('boosterCreator', () => addBoosterCreatorLink(appid));
       SE.safe('wishBtn', () => enhanceWishlistButton());
       SE.safe('priceDrop', () => trackPriceDrop(appid));
-      SE.safe('bundleSavings', () => addBundleSavings(appid, settings));
+      if (settings.showBundleSavings) SE.safe('bundleSavings', () => addBundleSavings(appid, settings));
+      if (settings.showStorePriceAlerts) SE.safe('priceAlert', () => addStorePriceAlert(appid));
+      if (settings.showBestReview) SE.safe('bestReview', () => addBestReview());
+      if (settings.showReviewBombDetector) SE.safe('reviewBomb', () => addReviewBombDetector(appid));
+      if (settings.showFriendsOwnership && settings.steamWebApiKey) SE.safe('friendsOwn', () => addFriendsOwnership(appid, settings));
     }
 
     if (subid) SE.safe('subContents', () => addSubContents(subid));
@@ -491,6 +495,122 @@
       ));
       break; // one box is enough context
     }
+  }
+
+  // Store-page-level price alert. Writes into the same se_wishlist_targets map
+  // that wishlist.js's per-row inputs use, so a target set here also shows up
+  // there and vice versa, and the background alarm (handlePriceAlertPoll) checks
+  // both the same way.
+  async function addStorePriceAlert(appid) {
+    const body = panelBody(); if (!body) return;
+    const targets = await new Promise((r) => chrome.storage.local.get(['se_wishlist_targets'], (d) => r(d.se_wishlist_targets || {})));
+    const input = SE.el('input', { type: 'number', step: '0.01', min: '0', class: 'se-input', style: { width: '90px' }, placeholder: 'e.g. 9.99' });
+    input.value = targets[appid] != null ? String(targets[appid]) : '';
+    input.addEventListener('change', async () => {
+      const v = parseFloat(input.value);
+      const all = await new Promise((r) => chrome.storage.local.get(['se_wishlist_targets'], (d) => r(d.se_wishlist_targets || {})));
+      if (isFinite(v) && v > 0) all[appid] = v; else delete all[appid];
+      chrome.storage.local.set({ se_wishlist_targets: all });
+    });
+    body.appendChild(SE.el('div', { class: 'se-row' },
+      SE.el('span', { class: 'se-label' }, 'Alert me at: '), input,
+      SE.el('span', { class: 'se-muted' }, ' (checked hourly — enable in Options → Notifications)')
+    ));
+  }
+
+  // Surfaces the single most-helpful review already on the page as a quoted
+  // snippet, so you don't have to scroll to find it. Reads whatever helpfulness
+  // count Steam renders per card ("N people found this review helpful"); if that
+  // text pattern isn't present (Steam changed markup), this just finds nothing.
+  async function addBestReview() {
+    const first = await SE.waitFor('.review_box', { timeout: 3000 });
+    if (!first) return;
+    let best = null, bestCount = -1;
+    for (const card of SE.$$('.review_box')) {
+      const m = (card.innerText || '').match(/([\d,]+)\s+people found this review helpful/i);
+      const count = m ? parseInt(m[1].replace(/,/g, ''), 10) : 0;
+      if (count > bestCount) { bestCount = count; best = card; }
+    }
+    if (!best || bestCount <= 0) return;
+    const snippet = (best.querySelector('.content')?.textContent || '').trim().slice(0, 300);
+    if (!snippet) return;
+    panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
+      SE.el('span', { class: 'se-label' }, `Most helpful review (${bestCount.toLocaleString()} found it helpful): ` ),
+      SE.el('div', { class: 'se-quote' }, snippet + (snippet.length >= 300 ? '…' : ''))
+    ));
+  }
+
+  // Heuristic review-bomb flag: compares the last 3 days' negative ratio
+  // (from Steam's own review-graph histogram endpoint) against the longer-run
+  // monthly baseline. Flags only when both windows have enough volume to be
+  // meaningful and the swing is large, to avoid crying wolf on quiet games.
+  async function addReviewBombDetector(appid) {
+    const r = await SE.api.reviewHistogram(appid);
+    const rollups = r?.data?.results?.rollups;
+    const recent = r?.data?.results?.recent;
+    if (!Array.isArray(rollups) || !rollups.length || !Array.isArray(recent) || !recent.length) return;
+
+    const stats = (arr) => {
+      let up = 0, down = 0;
+      for (const p of arr) { up += p.recommendations_up || 0; down += p.recommendations_down || 0; }
+      const total = up + down;
+      return { total, negRatio: total > 0 ? down / total : 0 };
+    };
+    const recentStats = stats(recent.slice(-3));
+    const baselineStats = stats(rollups.slice(0, -1)); // exclude current partial month
+    if (recentStats.total < 20 || baselineStats.total < 50) return;
+
+    const spike = recentStats.negRatio - baselineStats.negRatio;
+    if (spike >= 0.25) {
+      panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
+        SE.tag('POSSIBLE REVIEW BOMB', 'ignored'),
+        ` last 3 days ${Math.round(recentStats.negRatio * 100)}% negative vs ${Math.round(baselineStats.negRatio * 100)}% baseline`
+      ));
+    }
+  }
+
+  // Opt-in: "N of your friends own this game". Requires a user-supplied Steam
+  // Web API key (Options). Samples the first 30 friends to stay rate-limit
+  // friendly; friends with private profiles simply won't show as owning it.
+  async function resolveOwnSteamId64(key) {
+    const r = await SE.injectPage(() => window.g_steamID || null);
+    if (r?.ok && r.result) return String(r.result);
+    const navLinks = SE.$$('#global_actions a, .header_actions_ctn a, a[href*="steamcommunity.com/id/"], a[href*="steamcommunity.com/profiles/"]');
+    for (const el of navLinks) {
+      const href = el.href;
+      if (!href) continue;
+      const idMatch = href.match(/\/profiles\/(\d+)/);
+      if (idMatch) return idMatch[1];
+      const vanityMatch = href.match(/\/id\/([^/]+)/);
+      if (vanityMatch) {
+        const resolved = await SE.api.resolveVanityUrl(vanityMatch[1], key);
+        if (resolved?.data?.response?.success === 1 && resolved.data.response.steamid) return resolved.data.response.steamid;
+      }
+    }
+    return null;
+  }
+
+  async function addFriendsOwnership(appid, settings) {
+    const key = settings.steamWebApiKey;
+    const ownId = await resolveOwnSteamId64(key);
+    if (!ownId) return;
+    const friendsResp = await SE.api.friendsList(ownId, key);
+    const friends = friendsResp?.data?.friendslist?.friends || [];
+    if (!friends.length) return;
+
+    const sample = friends.slice(0, 30);
+    let ownCount = 0, checked = 0;
+    for (const f of sample) {
+      const owned = await SE.api.ownedGames(f.steamid, key);
+      const games = owned?.data?.response?.games || [];
+      checked++;
+      if (games.some((g) => String(g.appid) === String(appid))) ownCount++;
+    }
+    if (!checked) return;
+    panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
+      SE.el('span', { class: 'se-label' }, 'Owned by friends: '),
+      `${ownCount} of ${checked} friends checked (sampled, private profiles excluded)`
+    ));
   }
 
   async function trackPriceDrop(appid) {

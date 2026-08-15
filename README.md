@@ -7,59 +7,66 @@
 
 > Unofficial. Not affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
 
-Current version: **1.2.0** — see [`CHANGELOG.md`](CHANGELOG.md) for what's new (trade item-value tables + local trade history, inventory multi-select selling, sort/group tiles, buy-order helper, live review filtering, bundle savings check, display-currency conversion, and a codebase-wide crash fix).
+Current version: **1.3.0** — see [`CHANGELOG.md`](CHANGELOG.md) for what's new (free-promo & review-bomb detection, store-page price alerts, owned-by-friends, library value, badge tracker, media shortcuts, ~20 new granular settings, onboarding tour, and a new `scripts/smoke-test.js` regression checker).
 
 ## Features
 
 ### Store pages (`/app/`, `/sub/`, `/bundle/`)
-- 💸 **Lowest current price** across stores (via IsThereAnyDeal)
-- 📉 **Historical low** with shop, date, and discount
+- 💸 **Lowest current price** across stores (via IsThereAnyDeal), with an optional second **display currency**
+- 📉 **Historical low** with shop, date, discount, and an inline price-history sparkline
+- 🔔 **Price alerts** — set a target price right on the game page (shared with wishlist alerts) and get notified when it's hit
+- 🎁 **Free-for-a-limited-time promo** notifications
 - 🌍 **Regional pricing** preview (US, AR, TR, RU, IN, BR)
+- 🎒 **Bundle savings check** — buying separately vs. the bundle price
 - 🐧 **ProtonDB rating** for Linux/Deck players
 - ⏱ **HowLongToBeat** shortcut
-- 👥 **Players online right now**
+- 👥 **Players online right now**, 👫 **owned-by-friends count** (opt-in, your own Steam Web API key)
 - 🏆 **Achievement stats** (count, easiest, rarest)
-- 🧩 **Owned-DLC highlight** + count
+- 🧩 **Owned-DLC highlight** + count, **owned-in-bundle highlight**
 - 🃏 **Trading-card links** (Market + SteamCardExchange)
-- 🔗 SteamDB, SteamCharts, Barter.vg quick links
-- 📊 Review breakdown (positive / negative counts)
+- 🔗 SteamDB, SteamCharts, Barter.vg, SteamSpy, SteamGifts, SteamTrades quick links
+- 📊 Review breakdown, **most-helpful review snippet**, **possible review-bomb flag**, and a **live filter bar** (min playtime, min length, recommended/not) that re-filters loaded reviews with no page reload
+- 📝 Private per-game notes, DRM/early-access/coming-soon badges, community tags
 
 ### Search, specials, sale pages
 - 🟩 Highlight **owned**, **wishlisted**, and **ignored** games
-- 🙈 Optionally **hide owned / hide ignored**
+- 🙈 Optionally **hide owned / hide ignored**, or hide any single game forever
 - 🏷 Show **historical-low price** badge on each result
-- ✓ Mark rows that are currently at their all-time low
 
 ### Wishlist
 - 📤 Export wishlist to **CSV / JSON / clipboard text**
 - 🔍 Open as a batch on IsThereAnyDeal
-- 📈 Live count of visible items
-- 🔔 **Background notifications** when wishlisted games hit your discount threshold
+- 🎯 **Per-row price targets** with notifications, sort by best-deal-vs-low
 
 ### Steam Community Market
 - 💰 Auto-show **net amount after the 15% market fee** on every listing
-- ✂️ **Undercut calculator** for the active item
-- 📋 Copy market hash name to clipboard
-- 📊 Jump to SteamDB price history
+- ✂️ **Undercut calculator**, 💹 **buy-order helper** (reads the real order book)
+- 💱 Built-in currency converter
 
 ### Inventory
-- 💎 **Estimate inventory value** (samples your marketable items)
-- 👯 **Find duplicates**
-- 📦 **Export inventory JSON**
-- 🔗 Quick **"View on Market"** link on the selected item
-- 🧮 Trade calculator shortcut
+- 💎 **Estimate inventory value** (with a value-over-time chart) · 👯 **find/mark duplicates**
+- 🗂 **Sort by value, group by type, rarity/quality breakdown**
+- ☑️ **Manual multi-select selling** — pick items, edit each price, confirm — or auto-list at median (both are dry-run-then-confirm, nothing lists without your explicit click)
+- 🃏 Card-set progress, booster-pack creator, CS2 sticker prices & exact-item inspect links
 
 ### Trade offers
-- 📊 Live **item-count summary** of both sides
+- 📊 **Item-by-item value table** for both sides, not just a total
+- 🕓 **Local trade history** per partner (value-gap trend across offers in this browser)
+- 🛡 SteamRep/Backpack.tf/SteamID.uk shortcuts, hold-to-confirm button
 
 ### Profile pages
 - Shortcut chips to **SteamDB calculator, SteamLadder, Backpack.tf, SteamRep**
+- 📚 Library size/value snapshot, 🏅 badge count, 🖼 media (screenshots/videos/artwork/workshop) shortcuts
+
+### Library (`/games/`) & Badges (`/badges/`) pages
+- Sort by playtime, unplayed-only filter, **library value estimate**
+- Per-page badge/XP summary, closest-to-next-level list
 
 ### Browser-wide
-- 🖱 **Context-menu lookups** — select any game name → "Find lowest price on IsThereAnyDeal" / "Search on SteamDB" / "Check ProtonDB rating"
-- 🛟 Floating **SE** badge on every Steam page for quick access to settings
-- ⚙️ Full options page + popup with quick toggles
-- 🌐 Configurable country / currency
+- 🖱 **Context-menu lookups**, floating **SE** settings badge, keyboard shortcuts (`Ctrl+Shift+S/W/I`)
+- ⚙️ Full options page + popup, with **~35 independent feature toggles**
+- 🌐 Configurable country / currency / display currency
+- 👋 First-run onboarding tour, changelog on update
 
 ## Install
 
@@ -81,8 +88,10 @@ Steam Enhancer **does not collect, transmit, or sell any personal data**. All se
 - IsThereAnyDeal — only to look up prices for the app you're viewing
 - ProtonDB — only on store pages, only for the visible app
 - HowLongToBeat — only when you click the HLTB link
+- `open.er-api.com` — only for the currency converter / display-currency conversion
+- `api.steampowered.com` friends/owned-games lookups — **only if you opt in and supply your own Steam Web API key** in Options; never sent anywhere but Steam's own API, never baked into the extension
 
-No analytics. No background calls except an optional once-per-hour wishlist deal check (off by default).
+No analytics. Background alarms (all off by default, all toggleable in Options): an hourly wishlist/price-target deal check, and a two-hourly free-promo check — both read-only lookups against Steam/ITAD, nothing sent about you beyond the app IDs being checked.
 
 Full privacy policy: [`store-assets/privacy-policy.md`](store-assets/privacy-policy.md).
 
@@ -98,9 +107,11 @@ src/
   popup/             Toolbar popup
   options/           Settings page
   styles/            Injected CSS (all .se-* prefixed)
+scripts/
+  smoke-test.js       Live regression check against real Steam endpoints (see CLAUDE.md)
 ```
 
-No build step — edit a file and click "reload" in `chrome://extensions/`.
+No build step — edit a file and click "reload" in `chrome://extensions/`. Run `node scripts/smoke-test.js` to sanity-check the live endpoints/selectors this extension depends on.
 
 ## Contributing
 

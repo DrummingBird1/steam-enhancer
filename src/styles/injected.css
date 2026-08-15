@@ -166,3 +166,12 @@
 }
 .se-trade-name { color: #c7d5e0; }
 .se-trade-value { color: #a4d007; text-align: right; white-space: nowrap; }
+
+.se-quote {
+  border-left: 2px solid #2a475e; margin: 4px 0; padding: 4px 0 4px 10px;
+  color: #c7d5e0; font-style: italic; font-size: 12px; line-height: 1.5;
+}
+
+.se-onboard-steps { display: flex; flex-direction: column; gap: 10px; margin: 8px 0; }
+.se-onboard-step { display: flex; gap: 8px; align-items: flex-start; }
+.se-onboard-step .se-onboard-icon { font-size: 18px; }

@@ -35,7 +35,29 @@
     wishlistDealThreshold: 25,
     cacheTTLMinutes: 60,
     itadEnabled: true,
-    customCss: ''
+    customCss: '',
+
+    // v1.3.0 additions — granular per-feature toggles for things that used to be
+    // always-on whenever their parent area (enableMarketTools etc.) was enabled.
+    showBundleSavings: true,
+    showLiveReviewFilters: true,
+    showBestReview: true,
+    showReviewBombDetector: true,
+    showBuyOrderHelper: true,
+    showTradeHistory: true,
+    showTileSortGroup: true,
+    showStorePriceAlerts: true,
+    showFriendsOwnership: false,     // opt-in: needs steamWebApiKey
+    showLibraryValue: true,
+    showBadgeTracker: true,
+    showMediaShortcuts: true,
+    notifyFreePromos: false,
+    notifyStorePriceAlerts: false,
+    // Your own Steam Web API key (https://steamcommunity.com/dev/apikey), used
+    // only for the opt-in "owned by friends" lookup. Never baked into the
+    // extension, never sent anywhere but api.steampowered.com from your browser.
+    steamWebApiKey: '',
+    onboardingSeen: false
   };
 
   const STORAGE_KEY = 'se_settings_v1';
@@ -53,7 +75,13 @@
     async set(patch) {
       const cur = await SE.storage.getAll();
       const next = { ...cur, ...patch };
-      return new Promise((res) => chrome.storage.sync.set({ [STORAGE_KEY]: next }, () => res(next)));
+      // chrome.storage.sync has an 8KB-per-item quota (QUOTA_BYTES_PER_ITEM) and
+      // we store all settings under one key, so a large customCss/steamWebApiKey
+      // could in principle overflow it. Surface that instead of failing silently.
+      return new Promise((res, rej) => chrome.storage.sync.set({ [STORAGE_KEY]: next }, () => {
+        if (chrome.runtime.lastError) { rej(new Error(chrome.runtime.lastError.message)); return; }
+        res(next);
+      }));
     },
     async reset() {
       return new Promise((res) => chrome.storage.sync.set({ [STORAGE_KEY]: DEFAULTS }, () => res(DEFAULTS)));

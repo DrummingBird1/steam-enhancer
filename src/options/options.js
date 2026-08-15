@@ -11,7 +11,13 @@ const DEFAULTS = {
   enableMarketTools: true, enableInventoryTools: true, enableTradeOfferTools: true,
   enableWishlistExport: true, enableQuickSell: true,
   notifyWishlistDeals: false, wishlistDealThreshold: 25,
-  cacheTTLMinutes: 60, itadEnabled: true, customCss: ''
+  cacheTTLMinutes: 60, itadEnabled: true, customCss: '',
+  showBundleSavings: true, showLiveReviewFilters: true, showBestReview: true,
+  showReviewBombDetector: true, showBuyOrderHelper: true, showTradeHistory: true,
+  showTileSortGroup: true, showStorePriceAlerts: true, showFriendsOwnership: false,
+  showLibraryValue: true, showBadgeTracker: true, showMediaShortcuts: true,
+  notifyFreePromos: false, notifyStorePriceAlerts: false, steamWebApiKey: '',
+  onboardingSeen: false
 };
 
 const GROUPS = {
@@ -26,7 +32,13 @@ const GROUPS = {
     ['showAchievementStats', 'Show achievement stats'],
     ['showDlcCheck', 'Highlight owned DLC'],
     ['showCardSetValue', 'Add trading card links'],
-    ['showReviewBreakdown', 'Show review breakdown']
+    ['showReviewBreakdown', 'Show review breakdown'],
+    ['showLiveReviewFilters', 'Live (no-reload) review filter bar'],
+    ['showBestReview', 'Show most-helpful review snippet'],
+    ['showReviewBombDetector', 'Flag possible review-bomb spikes'],
+    ['showBundleSavings', 'Show bundle vs. standalone savings'],
+    ['showStorePriceAlerts', 'Show "alert me at" price field on store pages'],
+    ['showFriendsOwnership', 'Show how many friends own this game (needs API key below)']
   ],
   'grid-search': [
     ['highlightOwned', 'Highlight owned games'],
@@ -40,10 +52,18 @@ const GROUPS = {
     ['enableInventoryTools', 'Inventory tools'],
     ['enableTradeOfferTools', 'Trade offer summary'],
     ['enableWishlistExport', 'Wishlist export buttons'],
-    ['enableQuickSell', 'Quick-sell shortcuts']
+    ['enableQuickSell', 'Quick-sell shortcuts'],
+    ['showBuyOrderHelper', 'Market buy-order helper'],
+    ['showTradeHistory', 'Local trade history per partner'],
+    ['showTileSortGroup', 'Inventory sort/group tile tools'],
+    ['showLibraryValue', 'Estimate library value on /games page'],
+    ['showBadgeTracker', 'Badge completion tracker on /badges page'],
+    ['showMediaShortcuts', 'Screenshots/artwork shortcuts on profile']
   ],
   'grid-notify': [
-    ['notifyWishlistDeals', 'Notify on wishlist deals (hourly check)']
+    ['notifyWishlistDeals', 'Notify on wishlist deals (hourly check)'],
+    ['notifyStorePriceAlerts', 'Notify when a store-page price alert is hit'],
+    ['notifyFreePromos', 'Notify when a game goes fully free for a limited time']
   ]
 };
 
@@ -73,6 +93,7 @@ async function load() {
   document.getElementById('wishlistDealThreshold').value = cfg.wishlistDealThreshold;
   document.getElementById('cacheTTLMinutes').value = cfg.cacheTTLMinutes;
   document.getElementById('customCss').value = cfg.customCss || '';
+  document.getElementById('steamWebApiKey').value = cfg.steamWebApiKey || '';
 }
 
 async function save() {
@@ -86,8 +107,18 @@ async function save() {
   cur.wishlistDealThreshold = +document.getElementById('wishlistDealThreshold').value || 25;
   cur.cacheTTLMinutes = +document.getElementById('cacheTTLMinutes').value || 60;
   cur.customCss = document.getElementById('customCss').value;
-  await new Promise((r) => chrome.storage.sync.set({ [STORAGE_KEY]: cur }, r));
-  flash('Saved.');
+  cur.steamWebApiKey = document.getElementById('steamWebApiKey').value.trim();
+  try {
+    await new Promise((r, rej) => chrome.storage.sync.set({ [STORAGE_KEY]: cur }, () => {
+      if (chrome.runtime.lastError) { rej(new Error(chrome.runtime.lastError.message)); return; }
+      r();
+    }));
+    flash('Saved.');
+  } catch (err) {
+    // Most likely cause: chrome.storage.sync's ~8KB-per-item quota (we store
+    // everything under one key) — customCss is the field most likely to hit it.
+    flash('Save failed: ' + err.message + ' (try shortening Custom CSS)');
+  }
 }
 
 function flash(msg) {

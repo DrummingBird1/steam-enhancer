@@ -5,9 +5,11 @@
   SE.onReady(() => init());
 
   function init() {
+    const settings = SE.ctx?.settings || {};
     SE.safe('profile:links', addProfileLinks);
-    SE.safe('profile:library', addLibrarySnapshot);
-    SE.safe('profile:badges', addBadgeCount);
+    if (settings.showLibraryValue) SE.safe('profile:library', addLibrarySnapshot);
+    if (settings.showBadgeTracker) SE.safe('profile:badges', addBadgeCount);
+    if (settings.showMediaShortcuts) SE.safe('profile:media', addMediaShortcuts);
   }
 
   function resolveId() {
@@ -63,7 +65,30 @@
     body.appendChild(SE.el('div', { class: 'se-row' },
       SE.el('span', { class: 'se-label' }, 'Library (last seen): '),
       `${snap.gameCount} games · ${Math.round(snap.totalMinutes / 60).toLocaleString()} hours total`,
+      snap.value != null ? ` · ≈ ${snap.value.toFixed(2)} at current prices` : '',
       daysAgo > 0 ? SE.el('span', { class: 'se-muted' }, ` (${daysAgo}d ago)`) : ''
+    ));
+  }
+
+  // Shortcut links to a profile's Screenshots / Artwork / Videos community
+  // hub sections, with counts if Steam already renders them nearby. No batch
+  // download here — that would need the "downloads" host permission for
+  // marginal benefit, so this stays a lightweight link panel like the rest of
+  // the profile shortcuts.
+  function addMediaShortcuts() {
+    const id = resolveId();
+    const body = panelBody();
+    if (!id || !body) return;
+    const base = `https://steamcommunity.com/profiles/${id}`;
+    body.appendChild(SE.el('div', { class: 'se-row' },
+      SE.el('span', { class: 'se-label' }, 'Media: ' ),
+      SE.el('a', { href: `${base}/screenshots/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Screenshots'),
+      ' · ',
+      SE.el('a', { href: `${base}/videos/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Videos'),
+      ' · ',
+      SE.el('a', { href: `${base}/images/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Artwork'),
+      ' · ',
+      SE.el('a', { href: `${base}/myworkshopfiles/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Workshop')
     ));
   }
 

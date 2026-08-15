@@ -3,6 +3,54 @@
 All notable changes to Steam Enhancer are documented here. Versions follow the
 `version` field in `manifest.json`.
 
+## [1.3.0] — Closing out the roadmap
+
+Follow-up to the feature audit after 1.2.0: everything from the original
+comparison-vs-Augmented-Steam/SIH roadmap that was marked "not built" or
+"partial" is now built, with two documented exceptions (below) where I could
+not verify a real free API exists and chose not to guess one.
+
+- **Free-for-a-limited-time promo tracker**: new background alarm reads Steam's
+  own `featuredcategories` feed (verified live) and notifies on 100%-off items.
+- **Review-bomb heuristic**: reads Steam's own `appreviewhistogram` endpoint
+  (verified live) and flags a large negative-review spike in the last 3 days
+  vs. the longer-run monthly baseline, on store pages.
+- **Store-page price alerts**: "Alert me at" field now also on the game page
+  itself (previously wishlist-only), sharing storage with the wishlist targets;
+  a new background alarm checks both and notifies on a hit.
+- **Most-helpful review snippet** shown inline in the store-page panel.
+- **Owned-by-friends** (opt-in): shows how many of your friends own the game,
+  using your own Steam Web API key (Options page) — never a baked-in key.
+  Resolves vanity URLs, samples up to 30 friends.
+- **Library value estimate** on the `/games/` page (current storefront prices,
+  explicitly labeled as such — Steam doesn't expose what you actually paid),
+  shown on the profile page alongside game count/hours.
+- **Badge completion tracker**: new `/badges/` page script summarizing XP,
+  badges with progress, and which are closest to leveling up (per page shown —
+  the badges list is paginated by Steam, and the summary says so).
+- **Media shortcuts** (screenshots/videos/artwork/workshop) on profile pages.
+- **CS2/TF2/Dota rarity-quality breakdown** report in the inventory toolbar.
+- **~20 new granular per-feature settings** so each 1.2.0/1.3.0 addition can be
+  toggled independently instead of only at the enableMarketTools/etc. level.
+- **First-run onboarding tour** (fresh installs only; updates still get the
+  changelog modal).
+- **Smarter trade-offer polling**: the value cache already prevented redundant
+  price lookups, but the whole DOM/table was still rebuilt every 2s regardless
+  — now skipped entirely when the offer's contents haven't changed.
+- **`chrome.storage.sync` quota errors surfaced** in the options page instead
+  of failing silently (all settings live under one ~8KB-limited key).
+- **New: `scripts/smoke-test.js`** — a standalone, dependency-free Node script
+  that hits the live Steam endpoints/pages this codebase depends on and checks
+  the assumed markup/response shapes are still there. Not part of the
+  extension; run manually before releases.
+
+**Investigated and deliberately not built** (verified via live requests, not
+assumption): a full ITAD price-history endpoint (its docs 404'd) and a
+key-free SteamRep/backpack.tf reputation-check API (both the docs page and the
+long-standing `/api/beta4/reputation/` URL 404'd). Shipping a guessed
+endpoint here would repeat the CSFloat mistake from 1.2.0 — the existing
+profile-link shortcuts to SteamRep/backpack.tf are what's shipped instead.
+
 ## [1.2.0] — SIH/Augmented Steam depth pass
 
 - **Fixed a codebase-wide crash bug**: `SE.el(tag, null, ...children)` — used
