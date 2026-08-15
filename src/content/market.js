@@ -42,7 +42,9 @@
           ' ',
           SE.el('button', { class: 'se-btn', onclick: openSCMHistory }, 'Open SteamDB'),
           ' ',
-          SE.el('button', { class: 'se-btn', onclick: salesSummary }, 'Sales summary')
+          SE.el('button', { class: 'se-btn', onclick: salesSummary }, 'Sales summary'),
+          ' ',
+          SE.el('button', { class: 'se-btn', onclick: buyOrderHelper }, 'Buy-order helper')
         ),
         SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted' }, '')
       )
@@ -87,6 +89,43 @@
     out.appendChild(SE.el('div', null, `Lowest listed: ${d.lowest_price || '—'}`));
     out.appendChild(SE.el('div', null, `Median (24h): ${d.median_price || '—'}`));
     out.appendChild(SE.el('div', null, `Volume (24h): ${d.volume || '0'}`));
+  }
+
+  // Valve's own market page calls Market_LoadOrderSpread(item_nameid) from an
+  // inline <script>. We reuse that same id against the public itemordershistogram
+  // endpoint to read the current order book depth.
+  function findItemNameId() {
+    for (const s of document.scripts) {
+      const m = s.textContent && s.textContent.match(/Market_LoadOrderSpread\(\s*(\d+)\s*\)/);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
+  async function buyOrderHelper() {
+    const out = SE.$('#se-mkt-out');
+    const itemNameId = findItemNameId();
+    if (!itemNameId) { out.textContent = 'Could not find this listing\'s order book id on the page.'; return; }
+    out.textContent = 'Fetching order book…';
+    const r = await SE.api.itemOrdersHistogram(itemNameId);
+    if (!r?.ok || !r.data?.success) { out.textContent = 'Could not fetch order book.'; return; }
+    const d = r.data;
+    const highestBuy = d.highest_buy_order != null ? Number(d.highest_buy_order) / 100 : null;
+    const lowestSell = d.lowest_sell_order != null ? Number(d.lowest_sell_order) / 100 : null;
+    out.innerHTML = '';
+    out.appendChild(SE.el('div', null, `Highest buy order: ${highestBuy != null ? highestBuy.toFixed(2) : '—'} (${d.buy_order_count || 0} orders)`));
+    out.appendChild(SE.el('div', null, `Lowest sell listing: ${lowestSell != null ? lowestSell.toFixed(2) : '—'} (${d.sell_order_count || 0} listings)`));
+    if (highestBuy != null) {
+      const suggested = highestBuy + 0.01;
+      out.appendChild(SE.el('div', null,
+        SE.tag(`Suggested: place buy order at ${suggested.toFixed(2)}`, 'info'),
+        ' to lead the current queue by the minimum increment.'
+      ));
+    }
+    if (highestBuy != null && lowestSell != null) {
+      const spread = lowestSell - highestBuy;
+      out.appendChild(SE.el('div', { class: 'se-muted' }, `Spread: ${spread.toFixed(2)}`));
+    }
   }
 
   async function insertCurrencyConverter() {

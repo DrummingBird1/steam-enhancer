@@ -2,7 +2,7 @@
   'use strict';
   const SE = window.SteamEnhancer;
 
-  document.addEventListener('se-ready', () => init(), { once: true });
+  SE.onReady(() => init());
 
   async function init() {
     if (!SE.ctx?.settings.enableTradeOfferTools) return;
@@ -12,10 +12,15 @@
     if (SE.once('trade:refresh')) setInterval(() => SE.safe('trade:refresh', refresh), 2000);
   }
 
-  function insertSteamRepBadge() {
+  function getPartnerSteamId64() {
     const partner = location.search.match(/partner=(\d+)/)?.[1];
-    if (!partner) return;
-    const steamId64 = (BigInt(partner) + 76561197960265728n).toString();
+    if (!partner) return null;
+    return (BigInt(partner) + 76561197960265728n).toString();
+  }
+
+  function insertSteamRepBadge() {
+    const steamId64 = getPartnerSteamId64();
+    if (!steamId64) return;
     const header = SE.$('.trade_partner_headline') || SE.$('.profile_header');
     if (!header || SE.$('#se-steamrep')) return;
     header.appendChild(SE.el('div', { id: 'se-steamrep', class: 'se-row' },
@@ -117,8 +122,9 @@
     if (!r?.ok || !r.result) return;
     const body = SE.$('#se-trade-body'); if (!body) return;
 
-    const yourVal = await sumValue(r.result.your);
-    const theirVal = await sumValue(r.result.their);
+    const yourBreakdown = await sumValue(r.result.your);
+    const theirBreakdown = await sumValue(r.result.their);
+    const yourVal = yourBreakdown.total, theirVal = theirBreakdown.total;
     const diff = yourVal - theirVal;
     const pct = (Math.max(yourVal, theirVal) > 0) ? Math.abs(diff) / Math.max(yourVal, theirVal) * 100 : 0;
 
@@ -129,13 +135,36 @@
     if (pct >= 20 && (yourVal + theirVal) > 1) {
       body.appendChild(SE.el('div', { class: 'se-row' }, SE.tag('VALUE MISMATCH', 'ignored'), ` Review carefully before accepting.`));
     }
+
+    body.appendChild(renderItemTable('You offer', yourBreakdown.rows));
+    body.appendChild(renderItemTable('They offer', theirBreakdown.rows));
+
+    SE.safe('trade:history', () => recordAndShowHistory(body, r.result.your.length, r.result.their.length, yourVal, theirVal));
+  }
+
+  function renderItemTable(title, rows) {
+    if (!rows.length) return SE.el('div', { class: 'se-row se-muted' }, `${title}: (none)`);
+    const table = SE.el('table', { class: 'se-trade-table' },
+      SE.el('caption', null, title)
+    );
+    rows.forEach(({ name, value, priced }) => {
+      table.appendChild(SE.el('tr', null,
+        SE.el('td', { class: 'se-trade-name' }, name || '(unmarketable item)'),
+        SE.el('td', { class: 'se-trade-value' }, priced ? value.toFixed(2) : '—')
+      ));
+    });
+    return table;
   }
 
   const cache = new Map();
   async function sumValue(items) {
     let total = 0;
+    const rows = [];
     for (const it of items) {
-      if (!it.marketable || !it.market_hash_name) continue;
+      if (!it.marketable || !it.market_hash_name) {
+        rows.push({ name: it.name, value: 0, priced: false });
+        continue;
+      }
       const key = it.appid + ':' + it.market_hash_name;
       let val = cache.get(key);
       if (val == null) {
@@ -144,7 +173,43 @@
         cache.set(key, val);
       }
       total += val;
+      rows.push({ name: it.name || it.market_hash_name, value: val, priced: true });
     }
-    return total;
+    return { total, rows };
+  }
+
+  // Local-only trade history: remembers value snapshots per trade partner so you
+  // can see "have I traded with this person before, and was it fair?" This is
+  // built entirely from what this extension has observed in your own browser —
+  // it is not a reputation service and knows nothing about trades made elsewhere.
+  const HISTORY_KEY = 'se_trade_history_v1';
+  const HISTORY_MAX_PER_PARTNER = 20;
+  let lastHistoryKey = null, lastHistoryWrite = 0;
+
+  async function recordAndShowHistory(body, yourCount, theirCount, yourVal, theirVal) {
+    const partner = getPartnerSteamId64();
+    if (!partner) return;
+
+    const all = await new Promise((r) => chrome.storage.local.get([HISTORY_KEY], (d) => r(d[HISTORY_KEY] || {})));
+    const priorEntries = all[partner] || [];
+
+    if (priorEntries.length) {
+      const avgDiffPct = priorEntries.reduce((s, e) => s + Math.abs(e.diffPct), 0) / priorEntries.length;
+      body.appendChild(SE.el('div', { class: 'se-row se-muted' },
+        `Seen ${priorEntries.length} prior offer${priorEntries.length === 1 ? '' : 's'} with this partner in this browser · avg value gap ${avgDiffPct.toFixed(0)}%`
+      ));
+    }
+
+    // Debounce writes: only persist when the offer's shape actually changes,
+    // and at most once per 5s, so composing an offer doesn't spam storage.
+    const key = `${yourCount}:${theirCount}:${yourVal.toFixed(2)}:${theirVal.toFixed(2)}`;
+    if (key === lastHistoryKey || Date.now() - lastHistoryWrite < 5000) return;
+    lastHistoryKey = key; lastHistoryWrite = Date.now();
+
+    const diffPct = (Math.max(yourVal, theirVal) > 0)
+      ? (yourVal - theirVal) / Math.max(yourVal, theirVal) * 100 : 0;
+    const next = [...priorEntries, { ts: Date.now(), yourCount, theirCount, yourVal, theirVal, diffPct }].slice(-HISTORY_MAX_PER_PARTNER);
+    all[partner] = next;
+    chrome.storage.local.set({ [HISTORY_KEY]: all });
   }
 })();

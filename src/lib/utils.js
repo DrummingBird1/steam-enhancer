@@ -11,7 +11,10 @@
   SE.$  = (sel, root = document) => root.querySelector(sel);
   SE.$$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  SE.el = (tag, props = {}, ...children) => {
+  SE.el = (tag, props, ...children) => {
+    // Default parameters only trigger for `undefined`, not `null` — and this
+    // codebase calls SE.el(tag, null, ...children) constantly, so normalize here.
+    props = props || {};
     const node = document.createElement(tag);
     for (const [k, v] of Object.entries(props)) {
       if (k === 'class') node.className = v;
@@ -148,6 +151,14 @@
     return null;
   };
 
+  // Extracts the /id/<vanity> or /profiles/<steamid> slug so different scripts
+  // (library.js, profile.js) can key shared local data to "the same profile"
+  // without needing an authenticated Steam Web API lookup.
+  SE.profileKeyFromPath = (pathname = location.pathname) => {
+    const m = pathname.match(/\/(?:id|profiles)\/([^/]+)/);
+    return m ? m[1] : null;
+  };
+
   SE.fmtPercent = (a, b) => {
     if (!a || !b || a <= 0) return null;
     return Math.round((1 - b / a) * 100);
@@ -155,6 +166,27 @@
 
   SE.tag = (text, kind = 'info') =>
     SE.el('span', { class: `se-tag se-tag-${kind}` }, text);
+
+  // Small inline SVG sparkline for {t: timestamp, v: value} point series.
+  // Shared by the store-page price-history chart and the inventory value-over-time chart.
+  SE.sparklineSvg = (points, opts = {}) => {
+    if (!points || points.length < 2) return '';
+    const { w = 240, h = 60, pad = 4, color = '#66c0f4', bg = '#0d1620' } = opts;
+    const minV = Math.min(...points.map(p => p.v));
+    const maxV = Math.max(...points.map(p => p.v));
+    const minT = points[0].t, maxT = points[points.length - 1].t;
+    const x = (t) => pad + (w - 2 * pad) * (t - minT) / Math.max(1, maxT - minT);
+    const y = (v) => h - pad - (h - 2 * pad) * (v - minV) / Math.max(0.01, maxV - minV);
+    const d = points.map((p, i) => (i ? 'L' : 'M') + x(p.t).toFixed(1) + ',' + y(p.v).toFixed(1)).join(' ');
+    const left = opts.labelLeft != null ? opts.labelLeft : minV.toFixed(2);
+    const right = opts.labelRight != null ? opts.labelRight : new Date(maxT).toISOString().slice(0, 10);
+    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${w}" height="${h}" fill="${bg}" />
+      <path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" />
+      <text x="${pad}" y="12" fill="#8f98a0" font-size="10">${left}</text>
+      <text x="${w - pad}" y="12" fill="#8f98a0" font-size="10" text-anchor="end">${right}</text>
+    </svg>`;
+  };
 
   // Run a feature in try/catch so one broken selector can't kill the whole script.
   // Works for sync fns and promise-returning fns. Returns undefined on failure.

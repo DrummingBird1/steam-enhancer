@@ -7,7 +7,7 @@
 
 > Unofficial. Not affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
 
-Current version: **1.1.1** — see [`CHANGELOG.md`](CHANGELOG.md) for what's new (SPA-aware re-init, per-feature error isolation, library-page tools, per-row wishlist price targets, Hebrew UI, and more).
+Current version: **1.2.0** — see [`CHANGELOG.md`](CHANGELOG.md) for what's new (trade item-value tables + local trade history, inventory multi-select selling, sort/group tiles, buy-order helper, live review filtering, bundle savings check, display-currency conversion, and a codebase-wide crash fix).
 
 ## Features
 

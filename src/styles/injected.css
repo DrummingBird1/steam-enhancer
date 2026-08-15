@@ -147,3 +147,22 @@
 .se-hold-overlay.se-holding::before {
   width: 100%; transition: width 2s linear;
 }
+
+.se-select-checkbox {
+  position: absolute; top: 2px; left: 2px; z-index: 5;
+  width: 16px; height: 16px; accent-color: #a4d007; cursor: pointer;
+}
+
+.se-trade-table {
+  width: 100%; border-collapse: collapse; margin: 4px 0 8px;
+  font: 12px/1.4 'Motiva Sans', Arial, sans-serif;
+}
+.se-trade-table caption {
+  text-align: left; color: #8f98a0; font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.4px; padding-bottom: 2px;
+}
+.se-trade-table td {
+  border-top: 1px solid #2a475e; padding: 2px 4px;
+}
+.se-trade-name { color: #c7d5e0; }
+.se-trade-value { color: #a4d007; text-align: right; white-space: nowrap; }

@@ -82,6 +82,13 @@
       return SE.bg({ type: 'fetchJson', url, cacheKey: `mkt:${appid}:${market_hash_name}:${currency}`, ttl: 30 });
     },
 
+    // Order-book depth for a single listing (Valve's own market page calls this
+    // via Market_LoadOrderSpread(item_nameid)). Short TTL: the book moves fast.
+    async itemOrdersHistogram(itemNameId, country = 'US', currency = 1) {
+      const url = `https://steamcommunity.com/market/itemordershistogram?country=${encodeURIComponent(country)}&language=english&currency=${encodeURIComponent(currency)}&item_nameid=${encodeURIComponent(itemNameId)}&two_factor=0`;
+      return SE.bg({ type: 'fetchJson', url, cacheKey: `histogram:${itemNameId}:${currency}`, ttl: 2 });
+    },
+
     async dynamicStore() {
       // Returns owned/wishlist/ignored app ids; requires being logged in to Steam.
       return SE.bg({ type: 'fetchJson', url: 'https://store.steampowered.com/dynamicstore/userdata/', cacheKey: 'dynstore', ttl: 5 });

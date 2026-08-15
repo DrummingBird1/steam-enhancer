@@ -85,6 +85,19 @@
       const rates = await SE.fx.rates(from);
       const r = rates?.[to];
       return r ? amount * r : null;
+    },
+
+    // Convert an amount into the user's configured "display currency" setting
+    // (Options → Region). Returns null if the setting is unset, matches the
+    // source currency, or the conversion fails — callers should skip rendering
+    // the extra line in that case rather than show a broken value.
+    async toDisplay(amount, fromCurrency) {
+      if (!amount || !fromCurrency) return null;
+      const settings = await SE.storage.getAll();
+      const target = (settings.displayCurrency || '').trim().toUpperCase();
+      if (!target || target === fromCurrency.toUpperCase()) return null;
+      const v = await SE.fx.convert(amount, fromCurrency.toUpperCase(), target);
+      return v != null ? { amount: v, currency: target } : null;
     }
   };
 

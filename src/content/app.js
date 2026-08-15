@@ -42,6 +42,7 @@
       SE.safe('boosterCreator', () => addBoosterCreatorLink(appid));
       SE.safe('wishBtn', () => enhanceWishlistButton());
       SE.safe('priceDrop', () => trackPriceDrop(appid));
+      SE.safe('bundleSavings', () => addBundleSavings(appid, settings));
     }
 
     if (subid) SE.safe('subContents', () => addSubContents(subid));
@@ -69,19 +70,27 @@
     if (!sum) { row.appendChild(SE.el('span', { class: 'se-muted' }, 'No deal data')); return; }
     const cur = sum.currentLow;
     if (cur) {
-      row.appendChild(SE.el('div', null,
+      const dispRow = SE.el('div', null,
         SE.el('span', { class: 'se-label' }, 'Lowest now: '),
         SE.el('a', { href: cur.url, target: '_blank', rel: 'noopener', class: 'se-link' },
           `${SE.formatMoney(cur.price, cur.currency || 'USD')} @ ${cur.shop}` + (cur.cut ? ` (-${cur.cut}%)` : ''))
-      ));
+      );
+      row.appendChild(dispRow);
+      SE.fx.toDisplay(cur.price, cur.currency || 'USD').then((conv) => {
+        if (conv) dispRow.appendChild(SE.el('span', { class: 'se-muted' }, ` (≈ ${SE.formatMoney(conv.amount, conv.currency)})`));
+      });
     }
     if (sum.historicalLow) {
       const h = sum.historicalLow;
       const date = h.timestamp ? new Date(h.timestamp).toISOString().slice(0, 10) : '';
-      row.appendChild(SE.el('div', null,
+      const histRow = SE.el('div', null,
         SE.el('span', { class: 'se-label' }, 'Historical low: '),
         `${SE.formatMoney(h.price, h.currency || 'USD')} @ ${h.shop}${h.cut ? ' (-' + h.cut + '%)' : ''}${date ? ' · ' + date : ''}`
-      ));
+      );
+      row.appendChild(histRow);
+      SE.fx.toDisplay(h.price, h.currency || 'USD').then((conv) => {
+        if (conv) histRow.appendChild(SE.el('span', { class: 'se-muted' }, ` (≈ ${SE.formatMoney(conv.amount, conv.currency)})`));
+      });
     }
     if (sum.slug) {
       row.appendChild(SE.el('div', null,
@@ -276,14 +285,93 @@
     const reviewSection = SE.$('#Reviews_summary') || SE.$('#app_reviews_hash');
     if (!reviewSection) return;
     if (SE.$('#se-review-filters')) return;
-    const bar = SE.el('div', { id: 'se-review-filters', class: 'se-toolbar' },
-      SE.el('span', { class: 'se-label' }, 'Quick review filters: '),
-      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&filterLanguage=all', }, 'All languages'),
-      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=recent', }, 'Recent only'),
-      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&review_type=positive', }, 'Positive only'),
-      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&review_type=negative', }, 'Negative only')
+
+    // Reload-based filters: these hand off to Steam's own server-side filtering,
+    // so they're reliable but only take effect after a page load.
+    const reloadBar = SE.el('div', { class: 'se-toolbar' },
+      SE.el('span', { class: 'se-label' }, 'Reload with filter: '),
+      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&filterLanguage=all' }, 'All languages'),
+      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=recent' }, 'Recent only'),
+      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&review_type=positive' }, 'Positive only'),
+      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&review_type=negative' }, 'Negative only')
     );
-    reviewSection.parentElement?.insertBefore(bar, reviewSection);
+
+    // Live filters: apply instantly to whatever review cards are already
+    // rendered, and to any more that load in via infinite scroll — no reload.
+    // Best-effort against Steam's `.review_box` markup; if that markup ever
+    // changes this silently finds zero cards and does nothing (SE.safe-guarded
+    // by the caller).
+    const minHours = SE.el('input', { type: 'number', min: '0', step: '1', placeholder: 'min hrs', class: 'se-input', style: { width: '70px' } });
+    const minWords = SE.el('input', { type: 'number', min: '0', step: '5', placeholder: 'min words', class: 'se-input', style: { width: '80px' } });
+    const recFilter = SE.el('select', { class: 'se-input' },
+      SE.el('option', { value: '' }, 'Any recommendation'),
+      SE.el('option', { value: 'yes' }, 'Recommended only'),
+      SE.el('option', { value: 'no' }, 'Not recommended only')
+    );
+    const liveOut = SE.el('span', { class: 'se-muted' }, '');
+    const liveBar = SE.el('div', { class: 'se-toolbar' },
+      SE.el('span', { class: 'se-label' }, 'Live filter loaded reviews: '),
+      minHours, minWords, recFilter,
+      SE.el('button', { class: 'se-btn', onclick: applyLiveFilter }, 'Apply'),
+      SE.el('button', { class: 'se-btn', onclick: resetLiveFilter }, 'Reset'),
+      liveOut
+    );
+
+    reviewSection.parentElement?.insertBefore(liveBar, reviewSection);
+    reviewSection.parentElement?.insertBefore(reloadBar, liveBar);
+
+    let activeFilter = null;
+
+    function cardMatches(card) {
+      if (!activeFilter) return true;
+      if (activeFilter.minHours > 0) {
+        const hTxt = card.querySelector('.hours')?.textContent || '';
+        const h = parseFloat((hTxt.match(/([\d,.]+)\s*hrs?/i) || [])[1]?.replace(',', ''));
+        if (!isFinite(h) || h < activeFilter.minHours) return false;
+      }
+      if (activeFilter.minWords > 0) {
+        const words = (card.querySelector('.content')?.textContent || '').trim().split(/\s+/).filter(Boolean).length;
+        if (words < activeFilter.minWords) return false;
+      }
+      if (activeFilter.rec) {
+        const title = (card.querySelector('.title')?.textContent || '').trim().toLowerCase();
+        const isRec = title.includes('recommended') && !title.includes('not recommended');
+        if (activeFilter.rec === 'yes' && !isRec) return false;
+        if (activeFilter.rec === 'no' && isRec) return false;
+      }
+      return true;
+    }
+
+    function applyToAll() {
+      const cards = SE.$$('.review_box');
+      let shown = 0;
+      for (const card of cards) {
+        const match = cardMatches(card);
+        card.style.display = match ? '' : 'none';
+        if (match) shown++;
+      }
+      liveOut.textContent = cards.length ? `${shown}/${cards.length} shown` : 'No review cards found on this page yet.';
+    }
+
+    function applyLiveFilter() {
+      activeFilter = {
+        minHours: parseFloat(minHours.value) || 0,
+        minWords: parseFloat(minWords.value) || 0,
+        rec: recFilter.value
+      };
+      applyToAll();
+    }
+    function resetLiveFilter() {
+      activeFilter = null;
+      minHours.value = ''; minWords.value = ''; recFilter.value = '';
+      applyToAll();
+    }
+
+    // Re-apply to newly-loaded cards (infinite scroll) without re-scanning the whole page each time.
+    if (SE.once('app:review-observer')) {
+      new MutationObserver(SE.throttle(() => SE.safe('reviewFilterReapply', applyToAll), 300))
+        .observe(document.body, { childList: true, subtree: true });
+    }
   }
 
   async function addNotesBox(appid) {
@@ -346,20 +434,11 @@
     }
     if (points.length < 2) return;
 
-    const w = 240, h = 60, pad = 4;
     const minP = Math.min(...points.map(p => p.p));
-    const maxP = Math.max(...points.map(p => p.p));
-    const minT = points[0].t, maxT = points[points.length - 1].t;
-    const x = (t) => pad + (w - 2 * pad) * (t - minT) / Math.max(1, maxT - minT);
-    const y = (p) => h - pad - (h - 2 * pad) * (p - minP) / Math.max(0.01, maxP - minP);
-    const d = points.map((p, i) => (i ? 'L' : 'M') + x(p.t).toFixed(1) + ',' + y(p.p).toFixed(1)).join(' ');
-    const svg = `
-      <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
-        <rect width="${w}" height="${h}" fill="#0d1620" />
-        <path d="${d}" fill="none" stroke="#66c0f4" stroke-width="1.5" />
-        <text x="${pad}" y="12" fill="#8f98a0" font-size="10">low ${minP.toFixed(2)}</text>
-        <text x="${w - pad}" y="12" fill="#8f98a0" font-size="10" text-anchor="end">${new Date(maxT).toISOString().slice(0, 10)}</text>
-      </svg>`;
+    const svg = SE.sparklineSvg(
+      points.map(p => ({ t: p.t, v: p.p })),
+      { labelLeft: `low ${minP.toFixed(2)}` }
+    );
     const wrap = SE.el('div', { class: 'se-row', html: svg });
     body.appendChild(SE.el('div', { class: 'se-row se-label' }, 'Price history:'));
     body.appendChild(wrap);
@@ -371,6 +450,47 @@
       ' · ',
       SE.el('a', { href: `https://steamcommunity.com/my/gamecards/${appid}/?border=1`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Foil cards')
     ));
+  }
+
+  // Steam shows "Buy as a bundle" boxes on the app page when this game is part
+  // of a relevant bundle. Best-effort: extract the bundle's listed apps and its
+  // discounted total, then compare against those apps' own current prices to
+  // show whether buying separately would actually be cheaper. Selectors are
+  // guesses at Steam's bundle-purchase markup; if Steam's DOM differs this
+  // silently finds nothing (SE.safe-guarded by the caller).
+  async function addBundleSavings(appid, settings) {
+    const bundleBoxes = SE.$$('.game_area_purchase_bundle, .game_area_purchase_game[data-ds-bundleid], .bundle_base_page_content');
+    if (!bundleBoxes.length) return;
+    const country = settings.country || 'us';
+
+    for (const box of bundleBoxes.slice(0, 2)) {
+      const bundlePriceEl = box.querySelector('.discount_final_price, .price, .game_purchase_price');
+      const bundlePrice = bundlePriceEl ? SE.parsePrice(bundlePriceEl.textContent) : null;
+      if (bundlePrice == null) continue;
+
+      const subIds = SE.$$('[data-ds-appid]', box)
+        .map(el => el.getAttribute('data-ds-appid'))
+        .filter((id, i, arr) => id && arr.indexOf(id) === i);
+      if (subIds.length < 2) continue;
+
+      let sum = 0, resolved = 0;
+      for (const id of subIds.slice(0, 12)) {
+        const r = await SE.api.appDetails(id, country);
+        const po = r?.data?.[id]?.data?.price_overview;
+        if (po?.final) { sum += po.final / 100; resolved++; }
+      }
+      if (resolved < 2) continue;
+
+      const diff = sum - bundlePrice;
+      panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
+        SE.el('span', { class: 'se-label' }, 'Bundle math: '),
+        `${resolved} items separately ≈ ${sum.toFixed(2)} vs bundle ${bundlePrice.toFixed(2)} — `,
+        diff > 0.01
+          ? SE.tag(`SAVE ${diff.toFixed(2)} in bundle`, 'good')
+          : SE.tag('bundle is not cheaper here', 'ignored')
+      ));
+      break; // one box is enough context
+    }
   }
 
   async function trackPriceDrop(appid) {

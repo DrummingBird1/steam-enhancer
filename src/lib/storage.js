@@ -6,6 +6,9 @@
     currency: 'USD',
     country: 'us',
     locale: undefined,
+    // When set, price panels additionally show the amount converted into this
+    // currency (via SE.fx), independent of the Steam storefront's own currency.
+    displayCurrency: '',
     showLowestPrice: true,
     showPriceHistory: true,
     showSteamDBLink: true,

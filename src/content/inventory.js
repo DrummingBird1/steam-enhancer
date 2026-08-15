@@ -5,14 +5,17 @@
   SE.onReady(() => init());
 
   let cachedItems = null;
+  let cachedOwnerId = null;
 
   async function init() {
     if (!SE.ctx?.settings.enableInventoryTools) return;
     SE.safe('inv:toolbar', insertToolbar);
+    SE.safe('inv:prewarm', () => getItems());
     // Guard the polling loops so SPA re-ready doesn't stack duplicate intervals.
     if (SE.once('inv:intervals')) {
       setInterval(() => SE.safe('inv:selected', decorateSelected), 1000);
       setInterval(() => SE.safe('inv:tiles', decorateTiles), 4000);
+      setInterval(() => SE.safe('inv:selOverlay', renderSelectionOverlays), 1500);
     }
   }
 
@@ -22,10 +25,15 @@
     if (!anchor) return;
     const bar = SE.el('div', { id: 'se-inv-toolbar', class: 'se-toolbar' },
       SE.el('button', { class: 'se-btn', onclick: showValue }, 'Estimate value'),
+      SE.el('button', { class: 'se-btn', onclick: showValueHistory }, 'Value history'),
       SE.el('button', { class: 'se-btn', onclick: findDuplicates }, 'Find duplicates'),
       SE.el('button', { class: 'se-btn', onclick: selectDuplicatesUI }, 'Mark duplicates'),
       SE.el('button', { class: 'se-btn', onclick: cardSetProgress }, 'Card set progress'),
+      SE.el('button', { class: 'se-btn', onclick: sortTilesByValue }, 'Sort by value ↓'),
+      SE.el('button', { class: 'se-btn', onclick: groupTilesByType }, 'Group by type'),
       SE.el('button', { class: 'se-btn', onclick: massListMedian }, 'Mass-list at median…'),
+      SE.el('button', { class: 'se-btn', id: 'se-inv-selmode', onclick: toggleSelectMode }, 'Select items to sell'),
+      SE.el('button', { class: 'se-btn', onclick: prepareSelectedListing }, 'List selected…'),
       SE.el('button', { class: 'se-btn', onclick: openBoosterCreator }, 'Booster creator'),
       SE.el('button', { class: 'se-btn', onclick: stickerHelper }, 'CS2 sticker prices'),
       SE.el('button', { class: 'se-btn', onclick: exportInventory }, 'Export JSON'),
@@ -42,25 +50,43 @@
     }, 150));
   }
 
+  function tileContainer() {
+    const anyTile = SE.$('.itemHolder, .inventory_item_link');
+    return anyTile?.parentElement || null;
+  }
+
+  function assetIdFromTile(tile) {
+    // Steam inventory tile ids look like "160_2_10995123456" (appid_contextid_assetid).
+    const m = (tile.id || '').match(/(\d+)_(\d+)_(\d+)$/);
+    return m ? m[3] : null;
+  }
+
   async function getItems(force = false) {
     if (cachedItems && !force) return cachedItems;
     const r = await SE.injectPage(() => {
       try {
         const inv = window.g_ActiveInventory;
         if (!inv?.rgInventory) return null;
-        return Object.values(inv.rgInventory).map(it => {
+        const items = Object.values(inv.rgInventory).map(it => {
           const d = inv.rgDescriptions[it.classid + '_' + it.instanceid] || {};
           return {
             id: it.id, classid: it.classid, instanceid: it.instanceid,
             amount: it.amount, appid: inv.appid,
             market_hash_name: d.market_hash_name, name: d.name,
             tradable: d.tradable, marketable: d.marketable,
-            tags: (d.tags || []).map(t => t.localized_tag_name || t.name)
+            tags: (d.tags || []).map(t => ({ category: t.category, name: t.localized_tag_name || t.name })),
+            actions: d.actions || []
           };
         });
+        return { items, owner: inv.m_owner && inv.m_owner.strSteamId };
       } catch { return null; }
     });
-    cachedItems = (r?.ok && r.result) ? r.result : null;
+    if (r?.ok && r.result) {
+      cachedItems = r.result.items;
+      cachedOwnerId = r.result.owner || cachedOwnerId;
+    } else {
+      cachedItems = null;
+    }
     return cachedItems;
   }
 
@@ -77,7 +103,9 @@
       if (val != null) { total += val * (it.amount || 1); counted++; }
     }
     const avg = counted ? total / counted : 0;
-    out.textContent = `Sampled ${counted}/25 · avg ≈ ${avg.toFixed(2)} · ${marketable.length} marketable · estimate ≈ ${(avg * marketable.length).toFixed(2)}`;
+    const estimate = avg * marketable.length;
+    out.textContent = `Sampled ${counted}/25 · avg ≈ ${avg.toFixed(2)} · ${marketable.length} marketable · estimate ≈ ${estimate.toFixed(2)}`;
+    if (counted) SE.safe('inv:valueSnapshot', () => recordValueSnapshot(estimate));
   }
 
   async function findDuplicates() {
@@ -120,10 +148,10 @@
   async function cardSetProgress() {
     const items = await getItems();
     if (!items) return;
-    const cards = items.filter(i => (i.tags || []).some(t => /trading card/i.test(t)));
+    const cards = items.filter(i => (i.tags || []).some(t => /trading card/i.test(t.name)));
     const byGame = new Map();
     for (const c of cards) {
-      const game = (c.tags || []).find(t => !/trading card|foil|series/i.test(t)) || c.market_hash_name?.split(' - ')[0] || 'Unknown';
+      const game = (c.tags || []).find(t => !/trading card|foil|series/i.test(t.name))?.name || c.market_hash_name?.split(' - ')[0] || 'Unknown';
       const entry = byGame.get(game) || { unique: new Set(), total: 0 };
       entry.unique.add(c.market_hash_name);
       entry.total += (c.amount || 1);
@@ -135,6 +163,167 @@
     [...byGame.entries()].slice(0, 12).forEach(([game, info]) => {
       out.appendChild(SE.el('div', null, `${game}: ${info.unique.size} unique (${info.total} total)`));
     });
+  }
+
+  // --- Sort / group tiles -------------------------------------------------
+
+  async function sortTilesByValue() {
+    const out = SE.$('#se-inv-out');
+    const container = tileContainer();
+    if (!container) { out.textContent = 'No inventory tiles found.'; return; }
+    const items = await getItems();
+    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    const byName = new Map(items.map(i => [i.name, i]));
+
+    out.textContent = 'Pricing tiles for sort (first 60)…';
+    const tiles = SE.$$('.itemHolder, .inventory_item_link').slice(0, 60);
+    const valueCache = new Map();
+    for (const tile of tiles) {
+      const name = tile.querySelector('img')?.alt || tile.querySelector('.hover_item_name')?.textContent;
+      const it = name && byName.get(name);
+      let val = 0;
+      if (it?.marketable && it.market_hash_name) {
+        const key = it.appid + ':' + it.market_hash_name;
+        val = valueCache.get(key);
+        if (val == null) {
+          const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
+          val = SE.parsePrice(p?.data?.median_price || p?.data?.lowest_price) || 0;
+          valueCache.set(key, val);
+        }
+      }
+      tile.dataset.seValue = String(val);
+    }
+    const sorted = tiles.slice().sort((a, b) => (+b.dataset.seValue || 0) - (+a.dataset.seValue || 0));
+    sorted.forEach(t => container.appendChild(t));
+    out.textContent = `Sorted ${sorted.length} tiles by estimated value (highest first).`;
+  }
+
+  async function groupTilesByType() {
+    const out = SE.$('#se-inv-out');
+    const container = tileContainer();
+    if (!container) { out.textContent = 'No inventory tiles found.'; return; }
+    const items = await getItems();
+    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    const byName = new Map(items.map(i => [i.name, i]));
+
+    const groupOf = (it) => it?.tags?.find(t => t.category === 'Type')?.name
+      || it?.tags?.[0]?.name
+      || 'Other';
+
+    const tiles = SE.$$('.itemHolder, .inventory_item_link');
+    const groups = new Map();
+    for (const tile of tiles) {
+      const name = tile.querySelector('img')?.alt || tile.querySelector('.hover_item_name')?.textContent;
+      const group = groupOf(byName.get(name));
+      if (!groups.has(group)) groups.set(group, []);
+      groups.get(group).push(tile);
+    }
+    [...groups.keys()].sort().forEach(g => groups.get(g).forEach(t => container.appendChild(t)));
+    out.textContent = `Grouped ${tiles.length} tiles into ${groups.size} type(s): ${[...groups.keys()].slice(0, 6).join(', ')}${groups.size > 6 ? '…' : ''}`;
+  }
+
+  // --- Manual multi-select for listing ------------------------------------
+
+  let selectMode = false;
+  const selectedIds = new Set();
+
+  function toggleSelectMode() {
+    selectMode = !selectMode;
+    const btn = SE.$('#se-inv-selmode');
+    if (btn) btn.textContent = selectMode ? 'Selecting… (click to stop)' : 'Select items to sell';
+    if (!selectMode) SE.$$('.se-select-checkbox').forEach(cb => cb.remove());
+    else renderSelectionOverlays();
+    SE.$('#se-inv-out').textContent = selectMode ? `Selection mode on — ${selectedIds.size} selected` : '';
+  }
+
+  function renderSelectionOverlays() {
+    if (!selectMode) return;
+    for (const tile of SE.$$('.itemHolder, .inventory_item_link')) {
+      if (tile.querySelector('.se-select-checkbox')) continue;
+      const assetid = assetIdFromTile(tile);
+      if (!assetid) continue;
+      tile.style.position = tile.style.position || 'relative';
+      tile.appendChild(SE.el('input', {
+        type: 'checkbox', class: 'se-select-checkbox',
+        checked: selectedIds.has(assetid),
+        onclick: (e) => {
+          e.stopPropagation();
+          if (e.target.checked) selectedIds.add(assetid); else selectedIds.delete(assetid);
+          const out = SE.$('#se-inv-out');
+          if (out) out.textContent = `Selection mode on — ${selectedIds.size} selected`;
+        }
+      }));
+    }
+  }
+
+  async function prepareSelectedListing() {
+    const out = SE.$('#se-inv-out');
+    if (!selectedIds.size) { out.textContent = 'No items selected. Click "Select items to sell", then click checkboxes on tiles.'; return; }
+    const items = await getItems(true);
+    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    const chosen = items.filter(i => selectedIds.has(String(i.id)) && i.marketable && i.market_hash_name);
+    if (!chosen.length) { out.textContent = 'None of the selected items are marketable.'; return; }
+
+    out.innerHTML = '';
+    out.appendChild(SE.el('div', { class: 'se-label' }, `Pricing ${chosen.length} selected item(s) — edit prices below, nothing listed yet.`));
+
+    const plan = [];
+    for (const it of chosen) {
+      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
+      const med = SE.parsePrice(p?.data?.median_price) || SE.parsePrice(p?.data?.lowest_price) || 0;
+      const priceInput = SE.el('input', {
+        type: 'number', step: '0.01', min: '0.03', class: 'se-input', style: { width: '70px' },
+        value: med > 0.03 ? (med - 0.01).toFixed(2) : '0.03'
+      });
+      plan.push({ it, priceInput });
+      out.appendChild(SE.el('div', { class: 'se-row' },
+        `${it.market_hash_name} (median ${med ? med.toFixed(2) : '—'}) → `, priceInput
+      ));
+    }
+
+    out.appendChild(SE.el('div', { class: 'se-row' },
+      SE.el('button', {
+        class: 'se-btn',
+        style: { background: 'linear-gradient(to bottom,#c25555 5%,#7a3434 95%)' },
+        onclick: (e) => {
+          e.target.disabled = true;
+          const finalPlan = plan.map(p => ({
+            it: p.it,
+            priceCents: Math.max(3, Math.round((parseFloat(p.priceInput.value) || 0) * 100))
+          }));
+          executeListing(finalPlan, out);
+          selectedIds.clear();
+          selectMode = false;
+          SE.$$('.se-select-checkbox').forEach(cb => cb.remove());
+          const btn = SE.$('#se-inv-selmode');
+          if (btn) btn.textContent = 'Select items to sell';
+        }
+      }, `⚠ Confirm: list these ${plan.length} selected items`)
+    ));
+  }
+
+  // --- Value-over-time -----------------------------------------------------
+
+  const VALUE_HISTORY_KEY = 'se_inventory_value_history_v1';
+
+  async function recordValueSnapshot(estimate) {
+    const key = location.pathname;
+    const all = await new Promise((r) => chrome.storage.local.get([VALUE_HISTORY_KEY], (d) => r(d[VALUE_HISTORY_KEY] || {})));
+    const list = [...(all[key] || []), { ts: Date.now(), v: estimate }].slice(-30);
+    all[key] = list;
+    chrome.storage.local.set({ [VALUE_HISTORY_KEY]: all });
+  }
+
+  async function showValueHistory() {
+    const out = SE.$('#se-inv-out');
+    const key = location.pathname;
+    const all = await new Promise((r) => chrome.storage.local.get([VALUE_HISTORY_KEY], (d) => r(d[VALUE_HISTORY_KEY] || {})));
+    const list = all[key] || [];
+    out.innerHTML = '';
+    if (list.length < 2) { out.textContent = `Only ${list.length} snapshot(s) so far — click "Estimate value" a few more times over the coming days to build a trend.`; return; }
+    const svg = SE.sparklineSvg(list.map(p => ({ t: p.ts, v: p.v })), { labelLeft: `${list[0].v.toFixed(2)}` });
+    out.appendChild(SE.el('div', { html: svg }));
+    out.appendChild(SE.el('div', { class: 'se-muted' }, `${list.length} snapshots recorded from your own "Estimate value" clicks on this page.`));
   }
 
   function openBoosterCreator() {
@@ -259,13 +448,29 @@
       target: '_blank', rel: 'noopener'
     }, 'View on Market'));
 
-    // CSGO-specific inspect link / float lookup helper.
+    // CSGO-specific inspect link / float lookup helper. Prefer the exact
+    // per-item inspect link (Steam embeds one per asset) so CSFloat opens the
+    // precise item rather than a generic name search.
     if (appid === '730') {
-      sel.appendChild(SE.el('a', {
-        class: 'se-btn',
-        href: `https://csfloat.com/search?market_hash_name=${encodeURIComponent(name)}`,
-        target: '_blank', rel: 'noopener'
-      }, 'CSFloat'));
+      const items = await getItems();
+      const it = items?.find(x => x.name === name);
+      const inspectAction = it?.actions?.find(a => /inspect/i.test(a.name || ''));
+      if (inspectAction?.link && cachedOwnerId && it?.id) {
+        const inspectLink = inspectAction.link
+          .replace('%owner_steamid%', cachedOwnerId)
+          .replace('%assetid%', it.id);
+        sel.appendChild(SE.el('a', {
+          class: 'se-btn',
+          href: `https://csfloat.com/checkout/inspect?url=${encodeURIComponent(inspectLink)}`,
+          target: '_blank', rel: 'noopener'
+        }, 'CSFloat (this exact item)'));
+      } else {
+        sel.appendChild(SE.el('a', {
+          class: 'se-btn',
+          href: `https://csfloat.com/search?market_hash_name=${encodeURIComponent(name)}`,
+          target: '_blank', rel: 'noopener'
+        }, 'CSFloat'));
+      }
     }
 
     // Backpack.tf for TF2.

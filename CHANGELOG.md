@@ -3,6 +3,37 @@
 All notable changes to Steam Enhancer are documented here. Versions follow the
 `version` field in `manifest.json`.
 
+## [1.2.0] — SIH/Augmented Steam depth pass
+
+- **Fixed a codebase-wide crash bug**: `SE.el(tag, null, ...children)` — used
+  extensively throughout the extension, including in this release's own new
+  trade item table — threw a `TypeError` because JS default parameters only
+  apply to `undefined`, not `null`. Root-caused and fixed once in `SE.el`.
+- **Trade offers**: full item-by-item value breakdown table for both sides (not
+  just totals), and a **local trade history** per partner (value-gap trend across
+  offers you've composed with them in this browser — not a reputation service).
+- **Inventory**: manual multi-select ("Select items to sell" → click tiles →
+  editable per-item price → confirm) alongside the existing auto-median dry run;
+  **sort tiles by estimated value**; **group tiles by item type**; **inventory
+  value-over-time** sparkline built from your own "Estimate value" clicks;
+  CS2 inspect links now use the exact per-asset inspect URL (via CSFloat's
+  inspect-link intake) instead of a generic name search.
+- **Market**: **buy-order helper** — reads Valve's own order-book endpoint
+  (`itemordershistogram`) to suggest a queue-leading buy-order price and show
+  the current spread.
+- **Store pages**: **live review filtering** (min playtime hours, min word count,
+  recommended/not) that re-filters already-rendered review cards instantly,
+  alongside the existing reload-based quick filters; **bundle savings check** —
+  compares a bundle's discounted price against its contents' standalone prices;
+  **display-currency conversion** — an optional second currency shown next to
+  ITAD price lines, independent of the Steam storefront's own currency.
+- Shared `SE.sparklineSvg()` helper (dedupes the price-history and inventory
+  value-history charts) and `SE.profileKeyFromPath()` (lets library.js and
+  profile.js key shared local data to the same profile).
+- `tradeoffer.js` had been missed by the previous hardening pass and was still
+  using a one-shot `{ once: true }` listener; it now re-initializes on SPA
+  navigation like every other content script.
+
 ## [1.1.1] — Hardening
 
 - **Per-feature error isolation** (`SE.safe`): a broken selector in one feature no

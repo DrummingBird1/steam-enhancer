@@ -29,6 +29,19 @@
     // Total hours
     const total = games.reduce((s, g) => s + g.playtime, 0);
     SE.$('#se-library-out').textContent = `Total: ${Math.round(total / 60).toLocaleString()} hours`;
+
+    // Persist a snapshot so profile.js can show "last known library size" even
+    // when you're not on the /games page.
+    SE.safe('lib:snapshot', () => saveSnapshot(games.length, total));
+  }
+
+  const SNAPSHOT_KEY = 'se_library_snapshot_v1';
+  async function saveSnapshot(gameCount, totalMinutes) {
+    const key = SE.profileKeyFromPath();
+    if (!key) return;
+    const all = await new Promise((r) => chrome.storage.local.get([SNAPSHOT_KEY], (d) => r(d[SNAPSHOT_KEY] || {})));
+    all[key] = { gameCount, totalMinutes, ts: Date.now() };
+    chrome.storage.local.set({ [SNAPSHOT_KEY]: all });
   }
 
   function readGames() {

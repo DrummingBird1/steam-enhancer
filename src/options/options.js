@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'se_settings_v1';
 
 const DEFAULTS = {
-  currency: 'USD', country: 'us',
+  currency: 'USD', country: 'us', displayCurrency: '',
   showLowestPrice: true, showPriceHistory: true, showSteamDBLink: true,
   showProtonDB: true, showHowLongToBeat: true, showRegionalPricing: false,
   showPlayersOnline: true, showAchievementStats: true, showDlcCheck: true,
@@ -69,6 +69,7 @@ async function load() {
   });
   document.getElementById('country').value = cfg.country || 'us';
   document.getElementById('currency').value = cfg.currency || 'USD';
+  document.getElementById('displayCurrency').value = cfg.displayCurrency || '';
   document.getElementById('wishlistDealThreshold').value = cfg.wishlistDealThreshold;
   document.getElementById('cacheTTLMinutes').value = cfg.cacheTTLMinutes;
   document.getElementById('customCss').value = cfg.customCss || '';
@@ -81,6 +82,7 @@ async function save() {
   });
   cur.country = document.getElementById('country').value.trim().toLowerCase() || 'us';
   cur.currency = document.getElementById('currency').value.trim().toUpperCase() || 'USD';
+  cur.displayCurrency = document.getElementById('displayCurrency').value.trim().toUpperCase();
   cur.wishlistDealThreshold = +document.getElementById('wishlistDealThreshold').value || 25;
   cur.cacheTTLMinutes = +document.getElementById('cacheTTLMinutes').value || 60;
   cur.customCss = document.getElementById('customCss').value;
