@@ -1,72 +1,560 @@
 {
-  "extName": { "message": "Steam Enhancer" },
-  "extDesc": { "message": "שדרוג כולל ל-Steam: היסטוריית מחירים, מחירים נמוכים, רשימת משאלות, market ומלאי." },
-  "panelTitle": { "message": "Steam Enhancer" },
-  "lowestNow": { "message": "הנמוך ביותר כעת:" },
-  "historicalLow": { "message": "שפל היסטורי:" },
-  "viewOnItad": { "message": "צפה ב-ITAD" },
-  "playingNow": { "message": "משחקים כרגע:" },
-  "achievements": { "message": "הישגים:" },
-  "dlcOwned": { "message": "DLC בבעלותך:" },
-  "regional": { "message": "אזורי:" },
-  "reviews": { "message": "ביקורות:" },
-  "cards": { "message": "קלפים:" },
-  "links": { "message": "קישורים:" },
-  "community": { "message": "קהילה:" },
-  "addToWaitlist": { "message": "הוסף לרשימת המתנה ב-ITAD" },
-  "yourNotes": { "message": "ההערות שלך:" },
-  "notesPlaceholder": { "message": "הערות פרטיות (נשמרות מקומית)…" },
-  "onWishlist": { "message": "ברשימת המשאלות שלך" },
-  "owned": { "message": "בבעלות" },
-  "wishlist": { "message": "במשאלות" },
-  "ignored": { "message": "התעלמת" },
-  "earlyAccess": { "message": "גישה מוקדמת" },
-  "comingSoon": { "message": "בקרוב" },
-  "priceDrop": { "message": "ירידת מחיר" },
-  "valueMismatch": { "message": "פער שווי" },
-  "drm": { "message": "DRM:" },
-  "topTags": { "message": "תגיות מובילות:" },
-  "filterReviews": { "message": "פילטרי ביקורות מהירים:" },
-  "exportCsv": { "message": "ייצא CSV" },
-  "exportJson": { "message": "ייצא JSON" },
-  "copyAsText": { "message": "העתק כטקסט" },
-  "openOnItad": { "message": "פתח ב-ITAD" },
-  "sortByDeal": { "message": "מיון: הקרוב לשפל" },
-  "sortByPrice": { "message": "מיון: מחיר ↑" },
-  "estimateValue": { "message": "אמוד שווי" },
-  "findDuplicates": { "message": "מצא כפילויות" },
-  "markDuplicates": { "message": "סמן כפילויות" },
-  "cardSetProgress": { "message": "התקדמות סטי קלפים" },
-  "filterByName": { "message": "סינון לפי שם…" },
-  "tradeSummary": { "message": "סיכום עסקה (אומדן)" },
-  "youOffer": { "message": "אתה מציע:" },
-  "theyOffer": { "message": "הם מציעים:" },
-  "difference": { "message": "הפרש:" },
-  "settings": { "message": "הגדרות" },
-  "save": { "message": "שמור" },
-  "reset": { "message": "אפס לברירת מחדל" },
-  "clearCache": { "message": "נקה מטמון" },
-  "exportSettings": { "message": "ייצא הגדרות" },
-  "importSettings": { "message": "ייבא הגדרות" },
-  "viewOnMarket": { "message": "צפה ב-Market" },
-  "remainingCardDrops": { "message": "drops קלפים שנותרו" },
-  "openStore": { "message": "פתח את חנות Steam" },
-  "myWishlist": { "message": "רשימת המשאלות שלי" },
-  "myInventory": { "message": "המלאי שלי" },
-  "tShowLowest": { "message": "הצג מחירים נמוכים" },
-  "tHighlightOwned": { "message": "הדגש משחקים בבעלות" },
-  "tHighlightWish": { "message": "הדגש משחקים במשאלות" },
-  "tHideIgnored": { "message": "הסתר 'התעלמתי' בחיפוש" },
-  "tShowProton": { "message": "הצג דירוג ProtonDB" },
-  "tShowRegional": { "message": "הצג מחירים אזוריים" },
-  "tNotifyDeals": { "message": "התרעות על מבצעים ברשימת משאלות" },
-  "allSettings": { "message": "כל ההגדרות…" },
-  "optSubtitle": { "message": "כל ההגדרות. שינויים חלים בטעינת הדף הבאה." },
-  "secRegion": { "message": "אזור" },
-  "secStore": { "message": "דפי חנות" },
-  "secSearch": { "message": "חיפוש ורשימות" },
-  "secMarket": { "message": "Market, מלאי ועסקאות" },
-  "secNotify": { "message": "התראות" },
-  "secAdvanced": { "message": "מתקדם" },
-  "importExportNote": { "message": "ייצא או ייבא את כל ההגדרות, ההערות והחסימות כ-JSON." }
+  "extName": {
+    "message": "Steam Enhancer"
+  },
+  "extDesc": {
+    "message": "שדרוג כולל ל-Steam: היסטוריית מחירים, מחירים נמוכים, רשימת משאלות, market ומלאי."
+  },
+  "panelTitle": {
+    "message": "Steam Enhancer"
+  },
+  "lowestNow": {
+    "message": "הנמוך ביותר כעת:"
+  },
+  "historicalLow": {
+    "message": "שפל היסטורי:"
+  },
+  "viewOnItad": {
+    "message": "צפה ב-ITAD"
+  },
+  "playingNow": {
+    "message": "משחקים כרגע:"
+  },
+  "achievements": {
+    "message": "הישגים:"
+  },
+  "dlcOwned": {
+    "message": "DLC בבעלותך:"
+  },
+  "regional": {
+    "message": "אזורי:"
+  },
+  "reviews": {
+    "message": "ביקורות:"
+  },
+  "cards": {
+    "message": "קלפים:"
+  },
+  "links": {
+    "message": "קישורים:"
+  },
+  "community": {
+    "message": "קהילה:"
+  },
+  "addToWaitlist": {
+    "message": "הוסף לרשימת המתנה ב-ITAD"
+  },
+  "yourNotes": {
+    "message": "ההערות שלך:"
+  },
+  "notesPlaceholder": {
+    "message": "הערות פרטיות (נשמרות מקומית)…"
+  },
+  "onWishlist": {
+    "message": "ברשימת המשאלות שלך"
+  },
+  "owned": {
+    "message": "בבעלות"
+  },
+  "wishlist": {
+    "message": "במשאלות"
+  },
+  "ignored": {
+    "message": "התעלמת"
+  },
+  "earlyAccess": {
+    "message": "גישה מוקדמת"
+  },
+  "comingSoon": {
+    "message": "בקרוב"
+  },
+  "priceDrop": {
+    "message": "ירידת מחיר"
+  },
+  "valueMismatch": {
+    "message": "פער שווי"
+  },
+  "drm": {
+    "message": "DRM:"
+  },
+  "topTags": {
+    "message": "תגיות מובילות:"
+  },
+  "filterReviews": {
+    "message": "פילטרי ביקורות מהירים:"
+  },
+  "exportCsv": {
+    "message": "ייצא CSV"
+  },
+  "exportJson": {
+    "message": "ייצא JSON"
+  },
+  "copyAsText": {
+    "message": "העתק כטקסט"
+  },
+  "openOnItad": {
+    "message": "פתח ב-ITAD"
+  },
+  "sortByDeal": {
+    "message": "מיון: הקרוב לשפל"
+  },
+  "sortByPrice": {
+    "message": "מיון: מחיר ↑"
+  },
+  "estimateValue": {
+    "message": "אמוד שווי"
+  },
+  "findDuplicates": {
+    "message": "מצא כפילויות"
+  },
+  "markDuplicates": {
+    "message": "סמן כפילויות"
+  },
+  "cardSetProgress": {
+    "message": "התקדמות סטי קלפים"
+  },
+  "filterByName": {
+    "message": "סינון לפי שם…"
+  },
+  "tradeSummary": {
+    "message": "סיכום עסקה (אומדן)"
+  },
+  "youOffer": {
+    "message": "אתה מציע"
+  },
+  "theyOffer": {
+    "message": "הם מציעים"
+  },
+  "difference": {
+    "message": "הפרש"
+  },
+  "settings": {
+    "message": "הגדרות"
+  },
+  "save": {
+    "message": "שמור"
+  },
+  "reset": {
+    "message": "אפס לברירת מחדל"
+  },
+  "clearCache": {
+    "message": "נקה מטמון"
+  },
+  "exportSettings": {
+    "message": "ייצא הגדרות"
+  },
+  "importSettings": {
+    "message": "ייבא הגדרות"
+  },
+  "viewOnMarket": {
+    "message": "צפה ב-Market"
+  },
+  "remainingCardDrops": {
+    "message": "drops קלפים שנותרו"
+  },
+  "openStore": {
+    "message": "פתח את חנות Steam"
+  },
+  "myWishlist": {
+    "message": "רשימת המשאלות שלי"
+  },
+  "myInventory": {
+    "message": "המלאי שלי"
+  },
+  "tShowLowest": {
+    "message": "הצג מחירים נמוכים"
+  },
+  "tHighlightOwned": {
+    "message": "הדגש משחקים בבעלות"
+  },
+  "tHighlightWish": {
+    "message": "הדגש משחקים במשאלות"
+  },
+  "tHideIgnored": {
+    "message": "הסתר 'התעלמתי' בחיפוש"
+  },
+  "tShowProton": {
+    "message": "הצג דירוג ProtonDB"
+  },
+  "tShowRegional": {
+    "message": "הצג מחירים אזוריים"
+  },
+  "tNotifyDeals": {
+    "message": "התרעות על מבצעים ברשימת משאלות"
+  },
+  "allSettings": {
+    "message": "כל ההגדרות…"
+  },
+  "optSubtitle": {
+    "message": "כל ההגדרות. שינויים חלים בטעינת הדף הבאה."
+  },
+  "secRegion": {
+    "message": "אזור"
+  },
+  "secStore": {
+    "message": "דפי חנות"
+  },
+  "secSearch": {
+    "message": "חיפוש ורשימות"
+  },
+  "secMarket": {
+    "message": "Market, מלאי ועסקאות"
+  },
+  "secNotify": {
+    "message": "התראות"
+  },
+  "secAdvanced": {
+    "message": "מתקדם"
+  },
+  "importExportNote": {
+    "message": "ייצא או ייבא את כל ההגדרות, ההערות והחסימות כ-JSON."
+  },
+  "checkingDeals": {
+    "message": "בודק מבצעים…"
+  },
+  "noDealData": {
+    "message": "אין נתוני מבצע"
+  },
+  "needsItadKeyMsg": {
+    "message": "הוסף מפתח API חינמי של IsThereAnyDeal כדי לראות מחירים."
+  },
+  "openOptionsLink": {
+    "message": "פתח הגדרות →"
+  },
+  "setPricePerAlerts": {
+    "message": "הגדר התראות לפי מחיר"
+  },
+  "protonDbLabel": {
+    "message": "ProtonDB:"
+  },
+  "reportsWord": {
+    "message": "דיווחים"
+  },
+  "hltbLabel": {
+    "message": "HowLongToBeat:"
+  },
+  "searchWord": {
+    "message": "חיפוש"
+  },
+  "easiestWord": {
+    "message": "הקל ביותר"
+  },
+  "rarestWord": {
+    "message": "הנדיר ביותר"
+  },
+  "positiveWord": {
+    "message": "חיוביות"
+  },
+  "negativeWord": {
+    "message": "שליליות"
+  },
+  "cardsMarket": {
+    "message": "שוק קלפים"
+  },
+  "earlyAccessDesc": {
+    "message": "המשחק הזה בפיתוח פעיל."
+  },
+  "comingSoonDesc": {
+    "message": "עדיין לא יצא."
+  },
+  "thirdPartyDrm": {
+    "message": "DRM צד שלישי"
+  },
+  "reloadWithFilter": {
+    "message": "טען מחדש עם פילטר:"
+  },
+  "allLanguages": {
+    "message": "כל השפות"
+  },
+  "recentOnly": {
+    "message": "רק אחרונות"
+  },
+  "positiveOnly": {
+    "message": "רק חיוביות"
+  },
+  "negativeOnly": {
+    "message": "רק שליליות"
+  },
+  "minHrsPlaceholder": {
+    "message": "שעות מינ׳"
+  },
+  "minWordsPlaceholder": {
+    "message": "מילים מינ׳"
+  },
+  "anyRecommendation": {
+    "message": "כל המלצה"
+  },
+  "recommendedOnly": {
+    "message": "מומלץ בלבד"
+  },
+  "notRecommendedOnly": {
+    "message": "לא מומלץ בלבד"
+  },
+  "liveFilterLabel": {
+    "message": "סינון חי של ביקורות טעונות:"
+  },
+  "applyWord": {
+    "message": "החל"
+  },
+  "resetWord": {
+    "message": "איפוס"
+  },
+  "shownWord": {
+    "message": "מוצגות"
+  },
+  "noReviewCardsYet": {
+    "message": "לא נמצאו כרטיסי ביקורת בדף זה עדיין."
+  },
+  "alreadyOwnedInPackage": {
+    "message": "כבר בבעלותך בחבילה:"
+  },
+  "lowWord": {
+    "message": "שפל"
+  },
+  "priceHistoryLabel": {
+    "message": "היסטוריית מחיר:"
+  },
+  "boosterPackCreator": {
+    "message": "יצירת booster pack"
+  },
+  "foilCards": {
+    "message": "קלפי Foil"
+  },
+  "bundleMath": {
+    "message": "חישוב Bundle:"
+  },
+  "itemsSeparately": {
+    "message": "פריטים בנפרד"
+  },
+  "vsBundle": {
+    "message": "מול Bundle"
+  },
+  "saveWord": {
+    "message": "חיסכון"
+  },
+  "inBundle": {
+    "message": "ב-Bundle"
+  },
+  "bundleNotCheaper": {
+    "message": "ה-Bundle לא זול יותר כאן"
+  },
+  "alertMeAt": {
+    "message": "התרע לי במחיר:"
+  },
+  "alertMeAtPlaceholder": {
+    "message": "התרע לי במחיר…"
+  },
+  "alertCheckedHourly": {
+    "message": "נבדק כל שעה — הפעל באפשרויות ← התראות"
+  },
+  "mostHelpfulReview": {
+    "message": "הביקורת המועילה ביותר"
+  },
+  "foundHelpfulWord": {
+    "message": "מצאו אותה מועילה"
+  },
+  "possibleReviewBomb": {
+    "message": "ייתכן וזו הצפת ביקורות שליליות"
+  },
+  "last3Days": {
+    "message": "3 הימים האחרונים"
+  },
+  "negativeVs": {
+    "message": "שליליות מול"
+  },
+  "baselineWord": {
+    "message": "קו בסיס"
+  },
+  "ownedByFriends": {
+    "message": "בבעלות חברים:"
+  },
+  "ofWord": {
+    "message": "מתוך"
+  },
+  "friendsCheckedSampled": {
+    "message": "חברים נבדקו (מדגם, פרופילים פרטיים לא נכללים)"
+  },
+  "sinceLastVisit": {
+    "message": "מאז הביקור האחרון שלך"
+  },
+  "bundleSavings": {
+    "message": "חיסכון ב-Bundle"
+  },
+  "hideForeverTitle": {
+    "message": "הסתר לצמיתות (רשימת חסימה של התוסף)"
+  },
+  "visibleWord": {
+    "message": "מוצגות"
+  },
+  "copiedToClipboard": {
+    "message": "רשימת המשאלות הועתקה ללוח."
+  },
+  "nothingToOpen": {
+    "message": "אין מה לפתוח."
+  },
+  "vsLow": {
+    "message": "מול השפל"
+  },
+  "targetWord": {
+    "message": "יעד"
+  },
+  "atTarget": {
+    "message": "ביעד"
+  },
+  "marketQuickTools": {
+    "message": "כלים מהירים ל-Market"
+  },
+  "undercutBtn": {
+    "message": "תמחור מתחת"
+  },
+  "copyHashBtn": {
+    "message": "העתק hash name"
+  },
+  "openSteamDbBtn": {
+    "message": "פתח SteamDB"
+  },
+  "salesSummaryBtn": {
+    "message": "סיכום מכירות"
+  },
+  "buyOrderHelperBtn": {
+    "message": "עוזר הזמנת קנייה"
+  },
+  "currencyConverter": {
+    "message": "ממיר מטבעות"
+  },
+  "convertBtn": {
+    "message": "המר"
+  },
+  "priceHistoryChart": {
+    "message": "היסטוריית מחיר ב-Market"
+  },
+  "needsLoginForChart": {
+    "message": "התחבר ל-Steam כדי לראות את הגרף."
+  },
+  "valueHistoryBtn": {
+    "message": "היסטוריית שווי"
+  },
+  "sortByValueBtn": {
+    "message": "מיון לפי שווי ↓"
+  },
+  "groupByTypeBtn": {
+    "message": "קיבוץ לפי סוג"
+  },
+  "rarityBreakdownBtn": {
+    "message": "פירוט לפי נדירות/איכות"
+  },
+  "massListBtn": {
+    "message": "רישום המוני לפי חציון…"
+  },
+  "selectItemsBtn": {
+    "message": "בחר פריטים למכירה"
+  },
+  "selectingBtn": {
+    "message": "בוחר… (לחץ לעצירה)"
+  },
+  "listSelectedBtn": {
+    "message": "רשום את הנבחרים…"
+  },
+  "cs2StickerBtn": {
+    "message": "מחירי מדבקות CS2"
+  },
+  "exportJsonBtn": {
+    "message": "ייצא JSON"
+  },
+  "checkSteamRep": {
+    "message": "בדוק ב-SteamRep"
+  },
+  "holdToConfirmTitle": {
+    "message": "החזק 2 שניות לאישור"
+  },
+  "holdToConfirmTrade": {
+    "message": "החזק לאישור העסקה"
+  },
+  "useNormalButton": {
+    "message": "השתמש בכפתור הרגיל"
+  },
+  "countingItems": {
+    "message": "סופר פריטים…"
+  },
+  "itemsWord": {
+    "message": "פריטים"
+  },
+  "estWord": {
+    "message": "אומדן"
+  },
+  "reviewCarefully": {
+    "message": "בדוק בעיון לפני אישור."
+  },
+  "libraryLastSeen": {
+    "message": "ספרייה (נראתה לאחרונה):"
+  },
+  "gamesWord": {
+    "message": "משחקים"
+  },
+  "hoursTotal": {
+    "message": "שעות בסך הכל"
+  },
+  "atCurrentPrices": {
+    "message": "לפי מחירים נוכחיים"
+  },
+  "mediaLabel": {
+    "message": "מדיה:"
+  },
+  "badgesLabel": {
+    "message": "Badges:"
+  },
+  "badgesWord": {
+    "message": "badges"
+  },
+  "libraryWord": {
+    "message": "ספרייה"
+  },
+  "sortPlaytimeDesc": {
+    "message": "מיון: זמן משחק ↓"
+  },
+  "neverPlayedFirst": {
+    "message": "לא שוחקו קודם"
+  },
+  "sortAZ": {
+    "message": "א → ת"
+  },
+  "showUnplayedOnly": {
+    "message": "הצג רק לא-משוחקים"
+  },
+  "estimateLibraryValue": {
+    "message": "אמוד שווי ספרייה"
+  },
+  "badgeSummaryThisPage": {
+    "message": "סיכום badges (עמוד זה)"
+  },
+  "badgesShown": {
+    "message": "badges מוצגים"
+  },
+  "withProgress": {
+    "message": "עם התקדמות"
+  },
+  "totalWord": {
+    "message": "סה\"כ"
+  },
+  "closestToNextLevel": {
+    "message": "הקרובים ביותר לרמה הבאה:"
+  },
+  "fabTitle": {
+    "message": "הגדרות Steam Enhancer"
+  },
+  "gotIt": {
+    "message": "הבנתי"
+  },
+  "letsGo": {
+    "message": "בואו נתחיל"
+  },
+  "welcomeTitle": {
+    "message": "ברוכים הבאים ל-Steam Enhancer"
+  },
+  "thanksForUpdating": {
+    "message": "תודה על העדכון!"
+  },
+  "changelogItadKey": {
+    "message": "חשוב: IsThereAnyDeal דורש כעת מפתח API חינמי לכל פיצ׳רי המחיר. קבלו אחד ב-isthereanydeal.com/apps/my/ והדביקו באפשרויות ← אזור."
+  }
 }

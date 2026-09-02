@@ -1,6 +1,6 @@
 # Privacy Policy — Steam Enhancer
 
-_Last updated: August 2026_
+_Last updated: September 2026_
 
 Steam Enhancer ("the extension") is a free, open-source Chrome extension that enhances the Steam Store and Steam Community websites. This document explains exactly what data the extension does — and does not — handle.
 
@@ -29,7 +29,7 @@ The extension makes direct browser requests (no proxy server) to the following e
 | Endpoint | When | What is sent |
 |---|---|---|
 | `store.steampowered.com`, `steamcommunity.com` | While you're on Steam pages | Your normal Steam cookies (same as the page itself) |
-| `api.isthereanydeal.com` | When you view a store page or use the wishlist deal-check | The Steam app ID and your selected country code |
+| `api.isthereanydeal.com` | When you view a store page, search results, or use the wishlist deal-check | The Steam app ID(s), your selected country code, and **your own free ITAD API key** (required by IsThereAnyDeal as of v1.4.0 — registered per-application at isthereanydeal.com/apps/my/, not a personal credential; entered by you in Options, never baked into the extension) |
 | `api.steampowered.com` (player count, achievements, featured specials, review histogram) | When you view a store app page, or hourly/every-2h if price/promo alerts are enabled | Steam app ID |
 | `api.steampowered.com` (GetFriendList, GetOwnedGames, ResolveVanityURL) | Only if you enable "owned by friends" and supply your own API key | Your API key, your Steam ID, and up to 30 of your friends' Steam IDs — sent straight to Steam, not to us |
 | `open.er-api.com` | Currency converter / display-currency conversion | Currency codes only |

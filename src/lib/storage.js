@@ -9,6 +9,12 @@
     // When set, price panels additionally show the amount converted into this
     // currency (via SE.fx), independent of the Steam storefront's own currency.
     displayCurrency: '',
+    // Required for all price/ITAD features as of v1.4.0 — IsThereAnyDeal's v2
+    // API now requires a key on every endpoint this extension calls. Free,
+    // registered per-application (not a personal credential) at
+    // isthereanydeal.com/apps/my/ — we still route it through this field
+    // rather than baking one in, since we can't register on your behalf.
+    itadApiKey: '',
     showLowestPrice: true,
     showPriceHistory: true,
     showSteamDBLink: true,

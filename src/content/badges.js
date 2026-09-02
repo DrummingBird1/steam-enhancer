@@ -45,13 +45,13 @@
       .slice(0, 5);
 
     const panel = SE.el('div', { id: 'se-badge-summary', class: 'se-panel' },
-      SE.el('div', { class: 'se-panel-h' }, 'Steam Enhancer — badge summary (this page)'),
+      SE.el('div', { class: 'se-panel-h' }, `${SE.t('panelTitle')} — ${SE.t('badgeSummaryThisPage')}`),
       SE.el('div', { class: 'se-panel-body' },
         SE.el('div', { class: 'se-row' },
-          `${badges.length} badges shown · ${owned.length} with progress · ${totalXp.toLocaleString()} XP total`
+          `${badges.length} ${SE.t('badgesShown')} · ${owned.length} ${SE.t('withProgress')} · ${totalXp.toLocaleString()} XP ${SE.t('totalWord')}`
         ),
         closeToNext.length ? SE.el('div', { class: 'se-row' },
-          SE.el('span', { class: 'se-label' }, 'Closest to next level: '),
+          SE.el('span', { class: 'se-label' }, SE.t('closestToNextLevel')),
           closeToNext.map((b) => `${b.title} (${b.remaining} more)`).join(' · ')
         ) : null
       )

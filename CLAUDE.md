@@ -42,6 +42,13 @@ scripts/smoke-test.js            Standalone Node script (no deps) that hits live
                                   depends on are still present. Not loaded by the extension. Run it
                                   with `node scripts/smoke-test.js` before a release or when
                                   something seems broken after a Steam redesign.
+scripts/unit-test.js             Standalone Node script (no deps) testing the pure, non-DOM logic
+                                  in src/lib/utils.js (parsePrice, sparklineSvg, etc.) by loading
+                                  it into a vm sandbox. No network, runs instantly. Run with
+                                  `node scripts/unit-test.js`.
+scripts/gen-locales.js           Regenerates every _locales/*/messages.json from one source table.
+                                  Edit the table in this file, not the JSON files directly — they're
+                                  generated output and get overwritten.
 ```
 
 ## Key conventions
@@ -53,12 +60,15 @@ scripts/smoke-test.js            Standalone Node script (no deps) that hits live
 - **DOM decoration**: every injected node gets a class prefixed `se-` and most receive a `dataset.seDone = '1'` flag so MutationObservers don't re-decorate the same row.
 - **Settings** live under `chrome.storage.sync` key `se_settings_v1` and are read once on `se-ready`. Defaults are duplicated in `src/lib/storage.js` and `src/options/options.js` — keep them in sync if you change them.
 - **Cache** lives under `chrome.storage.local` key `se_bg_cache_v1` (background) and `se_cache_v1` (content, currently unused — prefer the background cache). TTL is per-entry in minutes.
+- **i18n**: content-script UI text goes through `SE.t('key')` (defined in `src/lib/i18n.js`), never a hardcoded string. Add new keys to the table in `scripts/gen-locales.js` and re-run it — don't hand-edit `_locales/*/messages.json`. Popup/options HTML uses `data-i18n="key"` attributes read by each page's own `localize()`.
 
 ## External APIs used
 
+**IsThereAnyDeal (`api.isthereanydeal.com`) requires an API key on every endpoint as of v1.4.0** — verified live, all four endpoints below return `403 Missing api key` anonymously. The key is registered per-*application* at [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) (free, identifies the extension, not a personal credential) but is still routed through a user-supplied Options field (`itadApiKey`) rather than baked in, since we can't register on a user's behalf. `service-worker.js`'s `withItadKey()` attaches it centrally to every `api.isthereanydeal.com` request — content scripts never handle the key directly, and get `{ needsItadKey: true }` back if none is configured.
+
 | Service | Why | Auth |
 |---|---|---|
-| `api.isthereanydeal.com` v2 | Current/historical lowest prices | None (public lookup endpoints) |
+| `api.isthereanydeal.com` v2 (lookup/prices/storelow/overview) | Current/historical lowest prices | **User-supplied ITAD API key (Options → IsThereAnyDeal API key), required since v1.4.0** |
 | `store.steampowered.com/api/appdetails` | Regional pricing | Cookie-based (we include credentials) |
 | `api.steampowered.com` GetNumberOfCurrentPlayers / GetGlobalAchievementPercentagesForApp | Player count, achievement rarity | None |
 | `steamcommunity.com/market/priceoverview` | Market item value | Steam session cookie |
@@ -69,6 +79,7 @@ scripts/smoke-test.js            Standalone Node script (no deps) that hits live
 | `store.steampowered.com/appreviewhistogram/{appid}` | Review-bomb heuristic (recommendation counts over time) | None |
 | `steamcommunity.com/market/itemordershistogram` | Buy-order helper (order-book depth) | Steam session cookie; `item_nameid` is scraped from a `Market_LoadOrderSpread(...)` inline script on the listing page — **verified anonymous requests don't render this script at all** (see `scripts/smoke-test.js`), so it's untested against a real logged-in session |
 | `api.steampowered.com` GetFriendList / GetOwnedGames / ResolveVanityURL | Opt-in "owned by friends" | User-supplied Steam Web API key (Options page), never baked in |
+| `steamcommunity.com/market/pricehistory` | Market item price-history chart | Steam session cookie — **verified anonymous requests get `400` with an empty body**; only works logged in (see `smoke-test.js`) |
 
 If an endpoint breaks (HLTB especially), the relevant feature should degrade to a search link rather than throw.
 
@@ -88,16 +99,26 @@ a feature that used to work stops working. It hits the live, public endpoints
 and pages this codebase depends on and checks the patterns are still there. A
 `FAIL` means go fix that feature; a `WARN` means the check needs a logged-in
 session to be meaningful and this anonymous script can't fully verify it —
-follow the note printed with it. There's no browser-based test suite here (no
-build step, no CI browser), so this script plus manual DevTools checks are the
-whole regression-detection story.
+follow the note printed with it.
+
+Run `node scripts/unit-test.js` for the pure-logic side (parsePrice,
+sparklineSvg, fmtPercent, formatMoney, profileKeyFromPath, and a standing
+regression test for the `SE.el(tag, null, …)` crash from 1.2.0) — instant, no
+network. This is what caught the `parsePrice` thousands-separator bug in
+v1.4.0 that four minor versions of manual testing hadn't. If you touch
+`utils.js`'s pure helpers, add a case here rather than only relying on the
+live smoke test.
+
+There's no browser-based test suite here (no build step, no CI browser), so
+these two scripts plus manual DevTools checks are the whole
+regression-detection story.
 
 ## Things to be careful about
 
 - **`hideOwnedInSearch` / `hideIgnoredInSearch`** mutate `display: none` on Steam's lazy-loaded rows. If Steam restructures those classes, the filter silently does nothing — that's expected, not a bug to chase.
 - **Trade offer / inventory features** rely on Steam's page-context globals. Anything reading from there must go through `SE.injectPage`. The community pages also re-render constantly; use `setInterval` polling sparingly, prefer MutationObserver scoped to a small subtree.
 - **Wishlist deal notifications** are best-effort: we sample the first 50 wishlisted appids per hour to stay polite to ITAD. Don't raise that cap without coordinating.
-- **Don't ship API keys.** ITAD v2 lookup endpoints used here are key-free; if you add a keyed endpoint, route it through a user-supplied key in options, not a baked-in secret.
+- **Don't ship API keys.** As of v1.4.0, ITAD v2 endpoints require a key (`itadApiKey` setting) and the opt-in friends-ownership feature requires a Steam Web API key (`steamWebApiKey`) — both are user-supplied via Options, never baked in. If you add another keyed endpoint, follow the same pattern.
 - Markdown docs (`README.md`, `store-assets/description.md`) reference the *unofficial* status — keep that disclaimer when editing.
 
 ## Versioning & release

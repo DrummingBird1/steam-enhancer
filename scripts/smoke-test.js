@@ -62,6 +62,17 @@ check('Storefront API: appreviewhistogram (review-bomb detector)', async () => {
   assertTruthy(Array.isArray(j?.results?.recent), 'results.recent is not an array');
 });
 
+check('IsThereAnyDeal API: key requirement (v1.4.0 finding)', async () => {
+  // Discovered in v1.4.0: every ITAD v2 endpoint this codebase calls now
+  // requires a free, per-application API key (see service-worker.js's
+  // withItadKey). This check confirms that's still true and the error shape
+  // hasn't changed, since our needsItadKey detection depends on it.
+  const r = await fetch('https://api.isthereanydeal.com/games/lookup/v1?appid=620');
+  assertTruthy(r.status === 403, `expected 403 without a key, got ${r.status} — if ITAD made this key-free again, storage.js/service-worker.js's itadApiKey requirement could be relaxed`);
+  const j = await r.json();
+  assertTruthy(/api key/i.test(j?.reason_phrase || ''), 'error shape changed — check withItadKey()\'s detection still matches');
+});
+
 check('Community market: priceoverview endpoint', async () => {
   // Mann Co. Supply Crate Key — near-always listed, good canary item.
   const url = 'https://steamcommunity.com/market/priceoverview/?appid=440&country=US&currency=1&market_hash_name=' + encodeURIComponent('Mann Co. Supply Crate Key');
@@ -81,6 +92,16 @@ checkAuthOnly('Community market: listing page order-book script (market.js buy-o
   const url = 'https://steamcommunity.com/market/listings/440/' + encodeURIComponent('Mann Co. Supply Crate Key');
   const html = await (await fetch(url, { headers: { 'User-Agent': UA } })).text();
   assertIncludes(html, 'Market_LoadOrderSpread(', 'not present in the anonymous page (expected — needs a logged-in check, see note above)');
+});
+
+checkAuthOnly('Community market: pricehistory endpoint (market.js price-history chart)', async () => {
+  // Verified (2026): returns HTTP 400 with an empty array for anonymous
+  // requests. This is Steam requiring a logged-in session, not a broken
+  // endpoint — the extension's own request goes through the user's normal
+  // session cookies via the background SW, which this anonymous script has none of.
+  const url = 'https://steamcommunity.com/market/pricehistory/?appid=440&market_hash_name=' + encodeURIComponent('Mann Co. Supply Crate Key');
+  const r = await fetch(url);
+  assertTruthy(r.status === 200, `expected 200 with a session; anonymous got ${r.status} (expected — needs a logged-in check)`);
 });
 
 function assertIncludes(haystack, needle, msg) {

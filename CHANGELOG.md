@@ -3,6 +3,63 @@
 All notable changes to Steam Enhancer are documented here. Versions follow the
 `version` field in `manifest.json`.
 
+## [1.4.0] — ITAD now requires a key, i18n everywhere, batched lookups
+
+### ⚠ Action needed if you're updating
+**IsThereAnyDeal's v2 API now requires a free API key on every endpoint this
+extension uses** (`/games/lookup/v1`, `/games/prices/v3`, `/games/storelow/v2`,
+`/games/overview/v2` — verified live, all return `403 Missing api key`
+anonymously). This wasn't a deliberate choice on ITAD's part we knew about —
+it's a change on their end that silently broke every price feature in this
+extension (lowest price, historical low, price-history chart, search/wishlist
+price tags, deal notifications) for every user, on every version back to
+v1.0.0. **Get a free key at [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/)
+(registers the extension as an "app," not you personally) and paste it into
+Options → the new "IsThereAnyDeal API key" section.** Every price feature now
+shows a clear "add a free key" message with a link straight to Options instead
+of just quietly doing nothing.
+
+### Fixed
+- **`SE.parsePrice` mis-parsed any four-figure-plus price** — `"$1,234.56"`
+  came out as `1.234`. The regex only ever captured one thousands/decimal
+  separator group; a price with both got truncated before the dot/comma
+  disambiguation logic even ran. Present since v1.0.0. Caught by the new unit
+  tests (see below), not by any user report — a good argument for the tests
+  existing at all.
+
+### Added
+- **`scripts/unit-test.js`** — zero-dependency pure-logic tests for
+  `parsePrice`, `fmtPercent`, `formatMoney`, `sparklineSvg`, `profileKeyFromPath`,
+  and a standing regression test for the `SE.el(tag, null, …)` crash fixed in
+  1.2.0. Runs instantly, no network. Complements `smoke-test.js`, which checks
+  live endpoints but can't catch a pure logic bug like the one above.
+- **Full i18n across every content-script panel** — previously only the
+  popup/options UI was translated; the actual on-page panels (store, search,
+  wishlist, market, inventory, trade offer, profile, library, badges) were
+  hardcoded English despite `_locales` existing since v1.1.0. ~180 strings
+  now route through `SE.t()`. Scope note: persistent UI chrome (button labels,
+  panel headers, field labels) is fully translated; some longer transient
+  status/result strings (e.g. inventory tool output like "Sampled 12/25…")
+  remain English-only in this pass.
+- **Russian and German locales**, plus **Portuguese (Brazil)** — alongside
+  existing English/Hebrew. Generated from a single source table via the new
+  `scripts/gen-locales.js` (also not part of the extension) so all 5 locale
+  files stay in lockstep instead of hand-editing 5 near-identical JSON files.
+- **Batched search/wishlist price lookups**: `SE.priceSummaryBatch()` resolves
+  every visible row's ITAD id in parallel (each cached 24h, so repeat visits
+  are still cheap) then makes **one** prices call and **one** storelow call
+  covering all of them, instead of a pair of calls per row. A 40-result search
+  page went from ~80 ITAD requests to 2.
+- **Market item price-history chart**: full historical price graph for a
+  market listing via Steam's own `market/pricehistory` endpoint. Like the
+  buy-order helper, this needs a logged-in session to return data (verified:
+  anonymous requests get `400` with an empty body) — shown as a clear message
+  rather than a blank chart when not signed in.
+- `itadApiKey` setting (Options → new highlighted section at the top), with
+  the background service worker centrally attaching it to every ITAD request
+  (`withItadKey` in `service-worker.js`) so no content script had to change
+  how it calls `SE.api.itad*`.
+
 ## [1.3.0] — Closing out the roadmap
 
 Follow-up to the feature audit after 1.2.0: everything from the original

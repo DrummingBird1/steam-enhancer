@@ -1,72 +1,560 @@
 {
-  "extName": { "message": "Steam Enhancer" },
-  "extDesc": { "message": "All-in-one Steam upgrade: price history, lowest prices, wishlist, market & inventory tools." },
-  "panelTitle": { "message": "Steam Enhancer" },
-  "lowestNow": { "message": "Lowest now:" },
-  "historicalLow": { "message": "Historical low:" },
-  "viewOnItad": { "message": "View on ITAD" },
-  "playingNow": { "message": "Playing now:" },
-  "achievements": { "message": "Achievements:" },
-  "dlcOwned": { "message": "DLC owned:" },
-  "regional": { "message": "Regional:" },
-  "reviews": { "message": "Reviews:" },
-  "cards": { "message": "Cards:" },
-  "links": { "message": "Links:" },
-  "community": { "message": "Community:" },
-  "addToWaitlist": { "message": "Add to ITAD waitlist" },
-  "yourNotes": { "message": "Your notes:" },
-  "notesPlaceholder": { "message": "Private notes (saved locally)…" },
-  "onWishlist": { "message": "On your wishlist" },
-  "owned": { "message": "OWNED" },
-  "wishlist": { "message": "WISHLIST" },
-  "ignored": { "message": "IGNORED" },
-  "earlyAccess": { "message": "EARLY ACCESS" },
-  "comingSoon": { "message": "COMING SOON" },
-  "priceDrop": { "message": "PRICE DROP" },
-  "valueMismatch": { "message": "VALUE MISMATCH" },
-  "drm": { "message": "DRM:" },
-  "topTags": { "message": "Top tags:" },
-  "filterReviews": { "message": "Quick review filters:" },
-  "exportCsv": { "message": "Export CSV" },
-  "exportJson": { "message": "Export JSON" },
-  "copyAsText": { "message": "Copy as text" },
-  "openOnItad": { "message": "Open on ITAD" },
-  "sortByDeal": { "message": "Sort: best deal vs low" },
-  "sortByPrice": { "message": "Sort: price ↑" },
-  "estimateValue": { "message": "Estimate value" },
-  "findDuplicates": { "message": "Find duplicates" },
-  "markDuplicates": { "message": "Mark duplicates" },
-  "cardSetProgress": { "message": "Card set progress" },
-  "filterByName": { "message": "Filter by name…" },
-  "tradeSummary": { "message": "Trade summary (estimated)" },
-  "youOffer": { "message": "You offer:" },
-  "theyOffer": { "message": "They offer:" },
-  "difference": { "message": "Difference:" },
-  "settings": { "message": "Settings" },
-  "save": { "message": "Save" },
-  "reset": { "message": "Reset to defaults" },
-  "clearCache": { "message": "Clear cache" },
-  "exportSettings": { "message": "Export settings" },
-  "importSettings": { "message": "Import settings" },
-  "viewOnMarket": { "message": "View on Market" },
-  "remainingCardDrops": { "message": "Your remaining card drops" },
-  "openStore": { "message": "Open Steam Store" },
-  "myWishlist": { "message": "My Wishlist" },
-  "myInventory": { "message": "My Inventory" },
-  "tShowLowest": { "message": "Show lowest prices" },
-  "tHighlightOwned": { "message": "Highlight owned games" },
-  "tHighlightWish": { "message": "Highlight wishlisted" },
-  "tHideIgnored": { "message": "Hide ignored in search" },
-  "tShowProton": { "message": "Show ProtonDB rating" },
-  "tShowRegional": { "message": "Show regional prices" },
-  "tNotifyDeals": { "message": "Notify on wishlist deals" },
-  "allSettings": { "message": "All settings…" },
-  "optSubtitle": { "message": "All settings. Changes apply on next page load." },
-  "secRegion": { "message": "Region" },
-  "secStore": { "message": "Store pages" },
-  "secSearch": { "message": "Search & lists" },
-  "secMarket": { "message": "Market, Inventory, Trade" },
-  "secNotify": { "message": "Notifications" },
-  "secAdvanced": { "message": "Advanced" },
-  "importExportNote": { "message": "Export or import all settings, notes and blocklist as JSON." }
+  "extName": {
+    "message": "Steam Enhancer"
+  },
+  "extDesc": {
+    "message": "All-in-one Steam upgrade: price history, lowest prices, wishlist, market & inventory tools."
+  },
+  "panelTitle": {
+    "message": "Steam Enhancer"
+  },
+  "lowestNow": {
+    "message": "Lowest now:"
+  },
+  "historicalLow": {
+    "message": "Historical low:"
+  },
+  "viewOnItad": {
+    "message": "View on ITAD"
+  },
+  "playingNow": {
+    "message": "Playing now:"
+  },
+  "achievements": {
+    "message": "Achievements:"
+  },
+  "dlcOwned": {
+    "message": "DLC owned:"
+  },
+  "regional": {
+    "message": "Regional:"
+  },
+  "reviews": {
+    "message": "Reviews:"
+  },
+  "cards": {
+    "message": "Cards:"
+  },
+  "links": {
+    "message": "Links:"
+  },
+  "community": {
+    "message": "Community:"
+  },
+  "addToWaitlist": {
+    "message": "Add to ITAD waitlist"
+  },
+  "yourNotes": {
+    "message": "Your notes:"
+  },
+  "notesPlaceholder": {
+    "message": "Private notes (saved locally)…"
+  },
+  "onWishlist": {
+    "message": "On your wishlist"
+  },
+  "owned": {
+    "message": "OWNED"
+  },
+  "wishlist": {
+    "message": "WISHLIST"
+  },
+  "ignored": {
+    "message": "IGNORED"
+  },
+  "earlyAccess": {
+    "message": "EARLY ACCESS"
+  },
+  "comingSoon": {
+    "message": "COMING SOON"
+  },
+  "priceDrop": {
+    "message": "PRICE DROP"
+  },
+  "valueMismatch": {
+    "message": "VALUE MISMATCH"
+  },
+  "drm": {
+    "message": "DRM:"
+  },
+  "topTags": {
+    "message": "Top tags:"
+  },
+  "filterReviews": {
+    "message": "Quick review filters:"
+  },
+  "exportCsv": {
+    "message": "Export CSV"
+  },
+  "exportJson": {
+    "message": "Export JSON"
+  },
+  "copyAsText": {
+    "message": "Copy as text"
+  },
+  "openOnItad": {
+    "message": "Open on ITAD"
+  },
+  "sortByDeal": {
+    "message": "Sort: best deal vs low"
+  },
+  "sortByPrice": {
+    "message": "Sort: price ↑"
+  },
+  "estimateValue": {
+    "message": "Estimate value"
+  },
+  "findDuplicates": {
+    "message": "Find duplicates"
+  },
+  "markDuplicates": {
+    "message": "Mark duplicates"
+  },
+  "cardSetProgress": {
+    "message": "Card set progress"
+  },
+  "filterByName": {
+    "message": "Filter by name…"
+  },
+  "tradeSummary": {
+    "message": "Trade summary (estimated)"
+  },
+  "youOffer": {
+    "message": "You offer"
+  },
+  "theyOffer": {
+    "message": "They offer"
+  },
+  "difference": {
+    "message": "Difference"
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "reset": {
+    "message": "Reset to defaults"
+  },
+  "clearCache": {
+    "message": "Clear cache"
+  },
+  "exportSettings": {
+    "message": "Export settings"
+  },
+  "importSettings": {
+    "message": "Import settings"
+  },
+  "viewOnMarket": {
+    "message": "View on Market"
+  },
+  "remainingCardDrops": {
+    "message": "Your remaining card drops"
+  },
+  "openStore": {
+    "message": "Open Steam Store"
+  },
+  "myWishlist": {
+    "message": "My Wishlist"
+  },
+  "myInventory": {
+    "message": "My Inventory"
+  },
+  "tShowLowest": {
+    "message": "Show lowest prices"
+  },
+  "tHighlightOwned": {
+    "message": "Highlight owned games"
+  },
+  "tHighlightWish": {
+    "message": "Highlight wishlisted"
+  },
+  "tHideIgnored": {
+    "message": "Hide ignored in search"
+  },
+  "tShowProton": {
+    "message": "Show ProtonDB rating"
+  },
+  "tShowRegional": {
+    "message": "Show regional prices"
+  },
+  "tNotifyDeals": {
+    "message": "Notify on wishlist deals"
+  },
+  "allSettings": {
+    "message": "All settings…"
+  },
+  "optSubtitle": {
+    "message": "All settings. Changes apply on next page load."
+  },
+  "secRegion": {
+    "message": "Region"
+  },
+  "secStore": {
+    "message": "Store pages"
+  },
+  "secSearch": {
+    "message": "Search & lists"
+  },
+  "secMarket": {
+    "message": "Market, Inventory, Trade"
+  },
+  "secNotify": {
+    "message": "Notifications"
+  },
+  "secAdvanced": {
+    "message": "Advanced"
+  },
+  "importExportNote": {
+    "message": "Export or import all settings, notes and blocklist as JSON."
+  },
+  "checkingDeals": {
+    "message": "Checking deals…"
+  },
+  "noDealData": {
+    "message": "No deal data"
+  },
+  "needsItadKeyMsg": {
+    "message": "Add a free IsThereAnyDeal API key to see prices."
+  },
+  "openOptionsLink": {
+    "message": "Open settings →"
+  },
+  "setPricePerAlerts": {
+    "message": "set per-price alerts"
+  },
+  "protonDbLabel": {
+    "message": "ProtonDB:"
+  },
+  "reportsWord": {
+    "message": "reports"
+  },
+  "hltbLabel": {
+    "message": "HowLongToBeat:"
+  },
+  "searchWord": {
+    "message": "Search"
+  },
+  "easiestWord": {
+    "message": "easiest"
+  },
+  "rarestWord": {
+    "message": "rarest"
+  },
+  "positiveWord": {
+    "message": "positive"
+  },
+  "negativeWord": {
+    "message": "negative"
+  },
+  "cardsMarket": {
+    "message": "Cards market"
+  },
+  "earlyAccessDesc": {
+    "message": "This game is in active development."
+  },
+  "comingSoonDesc": {
+    "message": "Not released yet."
+  },
+  "thirdPartyDrm": {
+    "message": "3rd-party DRM"
+  },
+  "reloadWithFilter": {
+    "message": "Reload with filter:"
+  },
+  "allLanguages": {
+    "message": "All languages"
+  },
+  "recentOnly": {
+    "message": "Recent only"
+  },
+  "positiveOnly": {
+    "message": "Positive only"
+  },
+  "negativeOnly": {
+    "message": "Negative only"
+  },
+  "minHrsPlaceholder": {
+    "message": "min hrs"
+  },
+  "minWordsPlaceholder": {
+    "message": "min words"
+  },
+  "anyRecommendation": {
+    "message": "Any recommendation"
+  },
+  "recommendedOnly": {
+    "message": "Recommended only"
+  },
+  "notRecommendedOnly": {
+    "message": "Not recommended only"
+  },
+  "liveFilterLabel": {
+    "message": "Live filter loaded reviews:"
+  },
+  "applyWord": {
+    "message": "Apply"
+  },
+  "resetWord": {
+    "message": "Reset"
+  },
+  "shownWord": {
+    "message": "shown"
+  },
+  "noReviewCardsYet": {
+    "message": "No review cards found on this page yet."
+  },
+  "alreadyOwnedInPackage": {
+    "message": "Already owned in package:"
+  },
+  "lowWord": {
+    "message": "low"
+  },
+  "priceHistoryLabel": {
+    "message": "Price history:"
+  },
+  "boosterPackCreator": {
+    "message": "Booster pack creator"
+  },
+  "foilCards": {
+    "message": "Foil cards"
+  },
+  "bundleMath": {
+    "message": "Bundle math:"
+  },
+  "itemsSeparately": {
+    "message": "items separately"
+  },
+  "vsBundle": {
+    "message": "vs bundle"
+  },
+  "saveWord": {
+    "message": "SAVE"
+  },
+  "inBundle": {
+    "message": "in bundle"
+  },
+  "bundleNotCheaper": {
+    "message": "bundle is not cheaper here"
+  },
+  "alertMeAt": {
+    "message": "Alert me at:"
+  },
+  "alertMeAtPlaceholder": {
+    "message": "alert me at…"
+  },
+  "alertCheckedHourly": {
+    "message": "checked hourly — enable in Options → Notifications"
+  },
+  "mostHelpfulReview": {
+    "message": "Most helpful review"
+  },
+  "foundHelpfulWord": {
+    "message": "found it helpful"
+  },
+  "possibleReviewBomb": {
+    "message": "POSSIBLE REVIEW BOMB"
+  },
+  "last3Days": {
+    "message": "last 3 days"
+  },
+  "negativeVs": {
+    "message": "negative vs"
+  },
+  "baselineWord": {
+    "message": "baseline"
+  },
+  "ownedByFriends": {
+    "message": "Owned by friends:"
+  },
+  "ofWord": {
+    "message": "of"
+  },
+  "friendsCheckedSampled": {
+    "message": "friends checked (sampled, private profiles excluded)"
+  },
+  "sinceLastVisit": {
+    "message": "since your last visit"
+  },
+  "bundleSavings": {
+    "message": "Bundle savings"
+  },
+  "hideForeverTitle": {
+    "message": "Hide forever (extension blocklist)"
+  },
+  "visibleWord": {
+    "message": "visible"
+  },
+  "copiedToClipboard": {
+    "message": "Copied wishlist to clipboard."
+  },
+  "nothingToOpen": {
+    "message": "Nothing to open."
+  },
+  "vsLow": {
+    "message": "vs low"
+  },
+  "targetWord": {
+    "message": "target"
+  },
+  "atTarget": {
+    "message": "AT TARGET"
+  },
+  "marketQuickTools": {
+    "message": "Market quick tools"
+  },
+  "undercutBtn": {
+    "message": "Undercut"
+  },
+  "copyHashBtn": {
+    "message": "Copy hash name"
+  },
+  "openSteamDbBtn": {
+    "message": "Open SteamDB"
+  },
+  "salesSummaryBtn": {
+    "message": "Sales summary"
+  },
+  "buyOrderHelperBtn": {
+    "message": "Buy-order helper"
+  },
+  "currencyConverter": {
+    "message": "Currency converter"
+  },
+  "convertBtn": {
+    "message": "Convert"
+  },
+  "priceHistoryChart": {
+    "message": "Market price history"
+  },
+  "needsLoginForChart": {
+    "message": "Sign in to Steam to see this chart."
+  },
+  "valueHistoryBtn": {
+    "message": "Value history"
+  },
+  "sortByValueBtn": {
+    "message": "Sort by value ↓"
+  },
+  "groupByTypeBtn": {
+    "message": "Group by type"
+  },
+  "rarityBreakdownBtn": {
+    "message": "Rarity/quality breakdown"
+  },
+  "massListBtn": {
+    "message": "Mass-list at median…"
+  },
+  "selectItemsBtn": {
+    "message": "Select items to sell"
+  },
+  "selectingBtn": {
+    "message": "Selecting… (click to stop)"
+  },
+  "listSelectedBtn": {
+    "message": "List selected…"
+  },
+  "cs2StickerBtn": {
+    "message": "CS2 sticker prices"
+  },
+  "exportJsonBtn": {
+    "message": "Export JSON"
+  },
+  "checkSteamRep": {
+    "message": "Check on SteamRep"
+  },
+  "holdToConfirmTitle": {
+    "message": "Hold for 2 seconds to confirm"
+  },
+  "holdToConfirmTrade": {
+    "message": "Hold to confirm trade"
+  },
+  "useNormalButton": {
+    "message": "use normal button"
+  },
+  "countingItems": {
+    "message": "Counting items…"
+  },
+  "itemsWord": {
+    "message": "items"
+  },
+  "estWord": {
+    "message": "est."
+  },
+  "reviewCarefully": {
+    "message": "Review carefully before accepting."
+  },
+  "libraryLastSeen": {
+    "message": "Library (last seen):"
+  },
+  "gamesWord": {
+    "message": "games"
+  },
+  "hoursTotal": {
+    "message": "hours total"
+  },
+  "atCurrentPrices": {
+    "message": "at current prices"
+  },
+  "mediaLabel": {
+    "message": "Media:"
+  },
+  "badgesLabel": {
+    "message": "Badges:"
+  },
+  "badgesWord": {
+    "message": "badges"
+  },
+  "libraryWord": {
+    "message": "Library"
+  },
+  "sortPlaytimeDesc": {
+    "message": "Sort: playtime ↓"
+  },
+  "neverPlayedFirst": {
+    "message": "Never played first"
+  },
+  "sortAZ": {
+    "message": "A → Z"
+  },
+  "showUnplayedOnly": {
+    "message": "Show unplayed only"
+  },
+  "estimateLibraryValue": {
+    "message": "Estimate library value"
+  },
+  "badgeSummaryThisPage": {
+    "message": "badge summary (this page)"
+  },
+  "badgesShown": {
+    "message": "badges shown"
+  },
+  "withProgress": {
+    "message": "with progress"
+  },
+  "totalWord": {
+    "message": "total"
+  },
+  "closestToNextLevel": {
+    "message": "Closest to next level:"
+  },
+  "fabTitle": {
+    "message": "Steam Enhancer settings"
+  },
+  "gotIt": {
+    "message": "Got it"
+  },
+  "letsGo": {
+    "message": "Let's go"
+  },
+  "welcomeTitle": {
+    "message": "Welcome to Steam Enhancer"
+  },
+  "thanksForUpdating": {
+    "message": "Thanks for updating!"
+  },
+  "changelogItadKey": {
+    "message": "Important: IsThereAnyDeal now requires a free API key for all price features. Get one at isthereanydeal.com/apps/my/ and paste it into Options → Region."
+  }
 }

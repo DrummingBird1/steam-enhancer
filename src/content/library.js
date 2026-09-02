@@ -17,13 +17,13 @@
     const anchor = SE.$('.profile_small_header_text') || SE.$('#mainContents') || document.body;
     const showValue = SE.ctx?.settings.showLibraryValue;
     const bar = SE.el('div', { id: 'se-library-toolbar', class: 'se-toolbar' },
-      SE.el('span', { class: 'se-label' }, `Library: ${games.length} games`),
-      SE.el('button', { class: 'se-btn', onclick: () => sort('playtime', 'desc') }, 'Sort: playtime ↓'),
-      SE.el('button', { class: 'se-btn', onclick: () => sort('playtime', 'asc') }, 'Never played first'),
-      SE.el('button', { class: 'se-btn', onclick: () => sort('name', 'asc') }, 'A → Z'),
-      SE.el('button', { class: 'se-btn', onclick: filterUnplayed }, 'Show unplayed only'),
-      SE.el('button', { class: 'se-btn', onclick: clearFilters }, 'Reset'),
-      showValue ? SE.el('button', { class: 'se-btn', onclick: estimateLibraryValue }, 'Estimate library value') : null,
+      SE.el('span', { class: 'se-label' }, `${SE.t('libraryWord')}: ${games.length} ${SE.t('gamesWord')}`),
+      SE.el('button', { class: 'se-btn', onclick: () => sort('playtime', 'desc') }, SE.t('sortPlaytimeDesc')),
+      SE.el('button', { class: 'se-btn', onclick: () => sort('playtime', 'asc') }, SE.t('neverPlayedFirst')),
+      SE.el('button', { class: 'se-btn', onclick: () => sort('name', 'asc') }, SE.t('sortAZ')),
+      SE.el('button', { class: 'se-btn', onclick: filterUnplayed }, SE.t('showUnplayedOnly')),
+      SE.el('button', { class: 'se-btn', onclick: clearFilters }, SE.t('resetWord')),
+      showValue ? SE.el('button', { class: 'se-btn', onclick: estimateLibraryValue }, SE.t('estimateLibraryValue')) : null,
       SE.el('span', { id: 'se-library-out', class: 'se-muted' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);

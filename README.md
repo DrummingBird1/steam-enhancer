@@ -11,9 +11,11 @@
 
 > Unofficial. Not affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
 
-Current version: **1.3.0** — see [`CHANGELOG.md`](CHANGELOG.md) or the [Releases page](https://github.com/DrummingBird1/steam-enhancer/releases) for what's new (free-promo & review-bomb detection, store-page price alerts, owned-by-friends, library value, badge tracker, media shortcuts, ~20 new granular settings, onboarding tour, and a new `scripts/smoke-test.js` regression checker).
+Current version: **1.4.0** — see [`CHANGELOG.md`](CHANGELOG.md) or the [Releases page](https://github.com/DrummingBird1/steam-enhancer/releases) for the full history.
 
 There is no separate project website yet — this repository (and, once published, the Chrome Web Store listing) is the canonical home for the project.
+
+> **⚠ If you're updating from an earlier version:** IsThereAnyDeal now requires a free API key for every price feature (lowest price, historical low, price-history chart, search/wishlist price tags, deal notifications) — this changed on their end, not something this project chose. Get a free key at [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) (registers the extension, not you personally) and paste it into **Options → IsThereAnyDeal API key**. Without it, those features show a message pointing you here instead of just going quiet.
 
 ## Features
 
@@ -91,7 +93,7 @@ There is no separate project website yet — this repository (and, once publishe
 Steam Enhancer **does not collect, transmit, or sell any personal data**. All settings live in `chrome.storage.sync` and never leave your browser. Network requests are made directly from your browser to:
 
 - Steam (storefront, community, market) — only when you're on a Steam page
-- IsThereAnyDeal — only to look up prices for the app you're viewing
+- IsThereAnyDeal — only to look up prices for the app you're viewing, using **your own free API key** (Options → IsThereAnyDeal API key, required as of v1.4.0 — see the note above); never baked into the extension
 - ProtonDB — only on store pages, only for the visible app
 - HowLongToBeat — only when you click the HLTB link
 - `open.er-api.com` — only for the currency converter / display-currency conversion
@@ -114,10 +116,14 @@ src/
   options/           Settings page
   styles/            Injected CSS (all .se-* prefixed)
 scripts/
-  smoke-test.js       Live regression check against real Steam endpoints (see CLAUDE.md)
+  smoke-test.js       Live regression check against real Steam/ITAD endpoints (see CLAUDE.md)
+  unit-test.js        Pure-logic tests (parsePrice, sparklineSvg, etc.) — no network, instant
+  gen-locales.js       Regenerates all _locales/*/messages.json from one source table
 ```
 
-No build step — edit a file and click "reload" in `chrome://extensions/`. Run `node scripts/smoke-test.js` to sanity-check the live endpoints/selectors this extension depends on.
+No build step — edit a file and click "reload" in `chrome://extensions/`. Run `node scripts/smoke-test.js` to sanity-check the live endpoints/selectors this extension depends on, and `node scripts/unit-test.js` for the pure-logic tests.
+
+**Languages:** the extension UI is available in English, Hebrew (RTL), Russian, German, and Portuguese (Brazil) — Chrome picks one automatically based on your browser's language. To add or fix a translation, edit the table in `scripts/gen-locales.js` and re-run it; don't hand-edit the `_locales/*/messages.json` files directly, since they're generated and will be overwritten.
 
 ## Contributing
 

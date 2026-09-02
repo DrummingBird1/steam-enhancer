@@ -1,0 +1,560 @@
+{
+  "extName": {
+    "message": "Steam Enhancer"
+  },
+  "extDesc": {
+    "message": "Всё для Steam в одном месте: история цен, минимальные цены, список желаемого, рынок и инвентарь."
+  },
+  "panelTitle": {
+    "message": "Steam Enhancer"
+  },
+  "lowestNow": {
+    "message": "Сейчас дешевле всего:"
+  },
+  "historicalLow": {
+    "message": "Исторический минимум:"
+  },
+  "viewOnItad": {
+    "message": "Открыть на ITAD"
+  },
+  "playingNow": {
+    "message": "Сейчас играют:"
+  },
+  "achievements": {
+    "message": "Достижения:"
+  },
+  "dlcOwned": {
+    "message": "DLC в наличии:"
+  },
+  "regional": {
+    "message": "По регионам:"
+  },
+  "reviews": {
+    "message": "Обзоры:"
+  },
+  "cards": {
+    "message": "Карточки:"
+  },
+  "links": {
+    "message": "Ссылки:"
+  },
+  "community": {
+    "message": "Сообщество:"
+  },
+  "addToWaitlist": {
+    "message": "Добавить в список ожидания ITAD"
+  },
+  "yourNotes": {
+    "message": "Ваши заметки:"
+  },
+  "notesPlaceholder": {
+    "message": "Личные заметки (хранятся локально)…"
+  },
+  "onWishlist": {
+    "message": "В вашем списке желаемого"
+  },
+  "owned": {
+    "message": "В НАЛИЧИИ"
+  },
+  "wishlist": {
+    "message": "ЖЕЛАЕМОЕ"
+  },
+  "ignored": {
+    "message": "ИГНОРИРУЕТСЯ"
+  },
+  "earlyAccess": {
+    "message": "РАННИЙ ДОСТУП"
+  },
+  "comingSoon": {
+    "message": "СКОРО"
+  },
+  "priceDrop": {
+    "message": "СНИЖЕНИЕ ЦЕНЫ"
+  },
+  "valueMismatch": {
+    "message": "НЕРАВНОЦЕННЫЙ ОБМЕН"
+  },
+  "drm": {
+    "message": "DRM:"
+  },
+  "topTags": {
+    "message": "Популярные теги:"
+  },
+  "filterReviews": {
+    "message": "Быстрые фильтры обзоров:"
+  },
+  "exportCsv": {
+    "message": "Экспорт в CSV"
+  },
+  "exportJson": {
+    "message": "Экспорт в JSON"
+  },
+  "copyAsText": {
+    "message": "Копировать как текст"
+  },
+  "openOnItad": {
+    "message": "Открыть на ITAD"
+  },
+  "sortByDeal": {
+    "message": "Сортировка: близость к минимуму"
+  },
+  "sortByPrice": {
+    "message": "Сортировка: цена ↑"
+  },
+  "estimateValue": {
+    "message": "Оценить стоимость"
+  },
+  "findDuplicates": {
+    "message": "Найти дубликаты"
+  },
+  "markDuplicates": {
+    "message": "Отметить дубликаты"
+  },
+  "cardSetProgress": {
+    "message": "Прогресс наборов карточек"
+  },
+  "filterByName": {
+    "message": "Фильтр по названию…"
+  },
+  "tradeSummary": {
+    "message": "Сводка обмена (оценка)"
+  },
+  "youOffer": {
+    "message": "Вы предлагаете"
+  },
+  "theyOffer": {
+    "message": "Вам предлагают"
+  },
+  "difference": {
+    "message": "Разница"
+  },
+  "settings": {
+    "message": "Настройки"
+  },
+  "save": {
+    "message": "Сохранить"
+  },
+  "reset": {
+    "message": "Сбросить настройки"
+  },
+  "clearCache": {
+    "message": "Очистить кэш"
+  },
+  "exportSettings": {
+    "message": "Экспорт настроек"
+  },
+  "importSettings": {
+    "message": "Импорт настроек"
+  },
+  "viewOnMarket": {
+    "message": "Открыть на площадке"
+  },
+  "remainingCardDrops": {
+    "message": "Оставшиеся карточки"
+  },
+  "openStore": {
+    "message": "Открыть магазин Steam"
+  },
+  "myWishlist": {
+    "message": "Мой список желаемого"
+  },
+  "myInventory": {
+    "message": "Мой инвентарь"
+  },
+  "tShowLowest": {
+    "message": "Показывать минимальные цены"
+  },
+  "tHighlightOwned": {
+    "message": "Выделять игры в наличии"
+  },
+  "tHighlightWish": {
+    "message": "Выделять из списка желаемого"
+  },
+  "tHideIgnored": {
+    "message": "Скрывать игнорируемое в поиске"
+  },
+  "tShowProton": {
+    "message": "Показывать рейтинг ProtonDB"
+  },
+  "tShowRegional": {
+    "message": "Показывать региональные цены"
+  },
+  "tNotifyDeals": {
+    "message": "Уведомлять о скидках из списка желаемого"
+  },
+  "allSettings": {
+    "message": "Все настройки…"
+  },
+  "optSubtitle": {
+    "message": "Все настройки. Изменения вступят в силу при следующей загрузке страницы."
+  },
+  "secRegion": {
+    "message": "Регион"
+  },
+  "secStore": {
+    "message": "Страницы магазина"
+  },
+  "secSearch": {
+    "message": "Поиск и списки"
+  },
+  "secMarket": {
+    "message": "Площадка, инвентарь, обмен"
+  },
+  "secNotify": {
+    "message": "Уведомления"
+  },
+  "secAdvanced": {
+    "message": "Дополнительно"
+  },
+  "importExportNote": {
+    "message": "Экспорт или импорт всех настроек, заметок и чёрного списка в формате JSON."
+  },
+  "checkingDeals": {
+    "message": "Проверка предложений…"
+  },
+  "noDealData": {
+    "message": "Нет данных о цене"
+  },
+  "needsItadKeyMsg": {
+    "message": "Добавьте бесплатный API-ключ IsThereAnyDeal, чтобы видеть цены."
+  },
+  "openOptionsLink": {
+    "message": "Открыть настройки →"
+  },
+  "setPricePerAlerts": {
+    "message": "настройка оповещений о цене"
+  },
+  "protonDbLabel": {
+    "message": "ProtonDB:"
+  },
+  "reportsWord": {
+    "message": "отчётов"
+  },
+  "hltbLabel": {
+    "message": "HowLongToBeat:"
+  },
+  "searchWord": {
+    "message": "Поиск"
+  },
+  "easiestWord": {
+    "message": "самое лёгкое"
+  },
+  "rarestWord": {
+    "message": "самое редкое"
+  },
+  "positiveWord": {
+    "message": "положительных"
+  },
+  "negativeWord": {
+    "message": "отрицательных"
+  },
+  "cardsMarket": {
+    "message": "Рынок карточек"
+  },
+  "earlyAccessDesc": {
+    "message": "Эта игра находится в активной разработке."
+  },
+  "comingSoonDesc": {
+    "message": "Ещё не вышла."
+  },
+  "thirdPartyDrm": {
+    "message": "Стороннее DRM"
+  },
+  "reloadWithFilter": {
+    "message": "Перезагрузить с фильтром:"
+  },
+  "allLanguages": {
+    "message": "Все языки"
+  },
+  "recentOnly": {
+    "message": "Только недавние"
+  },
+  "positiveOnly": {
+    "message": "Только положительные"
+  },
+  "negativeOnly": {
+    "message": "Только отрицательные"
+  },
+  "minHrsPlaceholder": {
+    "message": "мин. часов"
+  },
+  "minWordsPlaceholder": {
+    "message": "мин. слов"
+  },
+  "anyRecommendation": {
+    "message": "Любая рекомендация"
+  },
+  "recommendedOnly": {
+    "message": "Только рекомендованные"
+  },
+  "notRecommendedOnly": {
+    "message": "Только нерекомендованные"
+  },
+  "liveFilterLabel": {
+    "message": "Живой фильтр загруженных обзоров:"
+  },
+  "applyWord": {
+    "message": "Применить"
+  },
+  "resetWord": {
+    "message": "Сбросить"
+  },
+  "shownWord": {
+    "message": "показано"
+  },
+  "noReviewCardsYet": {
+    "message": "На этой странице пока нет карточек обзоров."
+  },
+  "alreadyOwnedInPackage": {
+    "message": "Уже в наличии из набора:"
+  },
+  "lowWord": {
+    "message": "минимум"
+  },
+  "priceHistoryLabel": {
+    "message": "История цен:"
+  },
+  "boosterPackCreator": {
+    "message": "Создание бустер-паков"
+  },
+  "foilCards": {
+    "message": "Фольгированные карточки"
+  },
+  "bundleMath": {
+    "message": "Расчёт набора:"
+  },
+  "itemsSeparately": {
+    "message": "товаров по отдельности"
+  },
+  "vsBundle": {
+    "message": "против набора"
+  },
+  "saveWord": {
+    "message": "ЭКОНОМИЯ"
+  },
+  "inBundle": {
+    "message": "в наборе"
+  },
+  "bundleNotCheaper": {
+    "message": "набор здесь не выгоднее"
+  },
+  "alertMeAt": {
+    "message": "Оповестить при цене:"
+  },
+  "alertMeAtPlaceholder": {
+    "message": "оповестить при…"
+  },
+  "alertCheckedHourly": {
+    "message": "проверяется ежечасно — включите в Настройки → Уведомления"
+  },
+  "mostHelpfulReview": {
+    "message": "Самый полезный обзор"
+  },
+  "foundHelpfulWord": {
+    "message": "сочли полезным"
+  },
+  "possibleReviewBomb": {
+    "message": "ВОЗМОЖНАЯ ВОЛНА НЕГАТИВНЫХ ОБЗОРОВ"
+  },
+  "last3Days": {
+    "message": "последние 3 дня"
+  },
+  "negativeVs": {
+    "message": "отрицательных против"
+  },
+  "baselineWord": {
+    "message": "базовый уровень"
+  },
+  "ownedByFriends": {
+    "message": "Есть у друзей:"
+  },
+  "ofWord": {
+    "message": "из"
+  },
+  "friendsCheckedSampled": {
+    "message": "друзей проверено (выборка, приватные профили не учтены)"
+  },
+  "sinceLastVisit": {
+    "message": "с момента вашего последнего визита"
+  },
+  "bundleSavings": {
+    "message": "Экономия в наборе"
+  },
+  "hideForeverTitle": {
+    "message": "Скрыть навсегда (чёрный список расширения)"
+  },
+  "visibleWord": {
+    "message": "видно"
+  },
+  "copiedToClipboard": {
+    "message": "Список желаемого скопирован в буфер обмена."
+  },
+  "nothingToOpen": {
+    "message": "Нечего открывать."
+  },
+  "vsLow": {
+    "message": "от минимума"
+  },
+  "targetWord": {
+    "message": "цель"
+  },
+  "atTarget": {
+    "message": "ЦЕЛЬ ДОСТИГНУТА"
+  },
+  "marketQuickTools": {
+    "message": "Быстрые инструменты площадки"
+  },
+  "undercutBtn": {
+    "message": "Демпинг"
+  },
+  "copyHashBtn": {
+    "message": "Копировать hash-имя"
+  },
+  "openSteamDbBtn": {
+    "message": "Открыть SteamDB"
+  },
+  "salesSummaryBtn": {
+    "message": "Сводка продаж"
+  },
+  "buyOrderHelperBtn": {
+    "message": "Помощник ордеров на покупку"
+  },
+  "currencyConverter": {
+    "message": "Конвертер валют"
+  },
+  "convertBtn": {
+    "message": "Конвертировать"
+  },
+  "priceHistoryChart": {
+    "message": "История цен на площадке"
+  },
+  "needsLoginForChart": {
+    "message": "Войдите в Steam, чтобы увидеть график."
+  },
+  "valueHistoryBtn": {
+    "message": "История стоимости"
+  },
+  "sortByValueBtn": {
+    "message": "Сортировка по стоимости ↓"
+  },
+  "groupByTypeBtn": {
+    "message": "Группировать по типу"
+  },
+  "rarityBreakdownBtn": {
+    "message": "Разбивка по редкости/качеству"
+  },
+  "massListBtn": {
+    "message": "Массовое выставление по медиане…"
+  },
+  "selectItemsBtn": {
+    "message": "Выбрать предметы для продажи"
+  },
+  "selectingBtn": {
+    "message": "Выбор… (нажмите, чтобы остановить)"
+  },
+  "listSelectedBtn": {
+    "message": "Выставить выбранное…"
+  },
+  "cs2StickerBtn": {
+    "message": "Цены на наклейки CS2"
+  },
+  "exportJsonBtn": {
+    "message": "Экспорт в JSON"
+  },
+  "checkSteamRep": {
+    "message": "Проверить на SteamRep"
+  },
+  "holdToConfirmTitle": {
+    "message": "Удерживайте 2 секунды для подтверждения"
+  },
+  "holdToConfirmTrade": {
+    "message": "Удерживайте для подтверждения обмена"
+  },
+  "useNormalButton": {
+    "message": "использовать обычную кнопку"
+  },
+  "countingItems": {
+    "message": "Подсчёт предметов…"
+  },
+  "itemsWord": {
+    "message": "предметов"
+  },
+  "estWord": {
+    "message": "оценка"
+  },
+  "reviewCarefully": {
+    "message": "Внимательно проверьте перед принятием."
+  },
+  "libraryLastSeen": {
+    "message": "Библиотека (последний раз видели):"
+  },
+  "gamesWord": {
+    "message": "игр"
+  },
+  "hoursTotal": {
+    "message": "часов всего"
+  },
+  "atCurrentPrices": {
+    "message": "по текущим ценам"
+  },
+  "mediaLabel": {
+    "message": "Медиа:"
+  },
+  "badgesLabel": {
+    "message": "Значки:"
+  },
+  "badgesWord": {
+    "message": "значков"
+  },
+  "libraryWord": {
+    "message": "Библиотека"
+  },
+  "sortPlaytimeDesc": {
+    "message": "Сортировка: время игры ↓"
+  },
+  "neverPlayedFirst": {
+    "message": "Неигранные сначала"
+  },
+  "sortAZ": {
+    "message": "А → Я"
+  },
+  "showUnplayedOnly": {
+    "message": "Показать только неигранные"
+  },
+  "estimateLibraryValue": {
+    "message": "Оценить стоимость библиотеки"
+  },
+  "badgeSummaryThisPage": {
+    "message": "сводка значков (эта страница)"
+  },
+  "badgesShown": {
+    "message": "значков показано"
+  },
+  "withProgress": {
+    "message": "с прогрессом"
+  },
+  "totalWord": {
+    "message": "всего"
+  },
+  "closestToNextLevel": {
+    "message": "Ближе всего к следующему уровню:"
+  },
+  "fabTitle": {
+    "message": "Настройки Steam Enhancer"
+  },
+  "gotIt": {
+    "message": "Понятно"
+  },
+  "letsGo": {
+    "message": "Начнём"
+  },
+  "welcomeTitle": {
+    "message": "Добро пожаловать в Steam Enhancer"
+  },
+  "thanksForUpdating": {
+    "message": "Спасибо за обновление!"
+  },
+  "changelogItadKey": {
+    "message": "Важно: IsThereAnyDeal теперь требует бесплатный API-ключ для всех функций цен. Получите его на isthereanydeal.com/apps/my/ и вставьте в Настройки → Регион."
+  }
+}

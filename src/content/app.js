@@ -56,7 +56,7 @@
     const anchor = SE.$('.game_meta_data') || SE.$('.rightcol') || SE.$('.game_area_purchase');
     if (!anchor || SE.$('#se-panel')) return;
     const panel = SE.el('div', { id: 'se-panel', class: 'se-panel', dataset: { seFor: String(id || '') } },
-      SE.el('div', { class: 'se-panel-h' }, 'Steam Enhancer'),
+      SE.el('div', { class: 'se-panel-h' }, SE.t('panelTitle')),
       SE.el('div', { id: 'se-panel-body', class: 'se-panel-body' },
         id ? SE.el('div', { class: 'se-row se-muted' }, `ID ${id}`) : null
       )
@@ -65,17 +65,31 @@
   }
   const panelBody = () => SE.$('#se-panel-body');
 
+  // Shown wherever an ITAD-backed feature has nothing to render because no key
+  // is configured (see service-worker.js's withItadKey / prices.js). Opens
+  // Options directly rather than just linking generically.
+  function itadKeyNotice() {
+    return SE.el('div', { class: 'se-row' },
+      SE.el('span', { class: 'se-muted' }, SE.t('needsItadKeyMsg') + ' '),
+      SE.el('a', {
+        href: 'javascript:void 0', class: 'se-link',
+        onclick: (e) => { e.preventDefault(); SE.bg({ type: 'openOptions' }); }
+      }, SE.t('openOptionsLink'))
+    );
+  }
+
   async function addPriceBox(appid, settings) {
     const body = panelBody(); if (!body) return;
-    const row = SE.el('div', { class: 'se-row se-price-row' }, SE.el('span', { class: 'se-muted' }, 'Checking deals…'));
+    const row = SE.el('div', { class: 'se-row se-price-row' }, SE.el('span', { class: 'se-muted' }, SE.t('checkingDeals')));
     body.appendChild(row);
     const sum = await SE.priceSummary(appid, settings.country || 'us');
     row.innerHTML = '';
-    if (!sum) { row.appendChild(SE.el('span', { class: 'se-muted' }, 'No deal data')); return; }
+    if (sum === 'needsItadKey') { row.appendChild(itadKeyNotice()); return; }
+    if (!sum) { row.appendChild(SE.el('span', { class: 'se-muted' }, SE.t('noDealData'))); return; }
     const cur = sum.currentLow;
     if (cur) {
       const dispRow = SE.el('div', null,
-        SE.el('span', { class: 'se-label' }, 'Lowest now: '),
+        SE.el('span', { class: 'se-label' }, SE.t('lowestNow')),
         SE.el('a', { href: cur.url, target: '_blank', rel: 'noopener', class: 'se-link' },
           `${SE.formatMoney(cur.price, cur.currency || 'USD')} @ ${cur.shop}` + (cur.cut ? ` (-${cur.cut}%)` : ''))
       );
@@ -88,7 +102,7 @@
       const h = sum.historicalLow;
       const date = h.timestamp ? new Date(h.timestamp).toISOString().slice(0, 10) : '';
       const histRow = SE.el('div', null,
-        SE.el('span', { class: 'se-label' }, 'Historical low: '),
+        SE.el('span', { class: 'se-label' }, SE.t('historicalLow')),
         `${SE.formatMoney(h.price, h.currency || 'USD')} @ ${h.shop}${h.cut ? ' (-' + h.cut + '%)' : ''}${date ? ' · ' + date : ''}`
       );
       row.appendChild(histRow);
@@ -98,7 +112,7 @@
     }
     if (sum.slug) {
       row.appendChild(SE.el('div', null,
-        SE.el('a', { href: `https://isthereanydeal.com/game/${sum.slug}/info/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'View on ITAD →')
+        SE.el('a', { href: `https://isthereanydeal.com/game/${sum.slug}/info/`, target: '_blank', rel: 'noopener', class: 'se-link' }, SE.t('viewOnItad'))
       ));
     }
   }
@@ -106,7 +120,7 @@
   function addExternalLinks(appid) {
     const body = panelBody(); if (!body) return;
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Links: '),
+      SE.el('span', { class: 'se-label' }, SE.t('links')),
       SE.el('a', { href: `https://steamdb.info/app/${appid}/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'SteamDB'),
       ' · ',
       SE.el('a', { href: `https://barter.vg/steam/app/${appid}/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Barter.vg'),
@@ -121,7 +135,7 @@
     const body = panelBody(); if (!body) return;
     const title = (SE.$('.apphub_AppName')?.textContent || '').trim();
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Community: '),
+      SE.el('span', { class: 'se-label' }, SE.t('community')),
       SE.el('a', { href: `https://www.steamgifts.com/giveaways/search?q=${encodeURIComponent(title)}`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'SteamGifts'),
       ' · ',
       SE.el('a', { href: `https://www.steamtrades.com/trades/search?q=${encodeURIComponent(title)}`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'SteamTrades'),
@@ -134,9 +148,9 @@
     const body = panelBody(); if (!body) return;
     body.appendChild(SE.el('div', { class: 'se-row' },
       SE.el('a', { href: `https://isthereanydeal.com/wait/?ids=app%2F${appid}`, target: '_blank', rel: 'noopener', class: 'se-link' },
-        '🔔 Add to ITAD waitlist'),
+        '🔔 ' + SE.t('addToWaitlist')),
       ' ',
-      SE.el('span', { class: 'se-muted' }, '(set per-price alerts)')
+      SE.el('span', { class: 'se-muted' }, `(${SE.t('setPricePerAlerts')})`)
     ));
   }
 
@@ -145,9 +159,9 @@
     const r = await SE.api.protonDB(appid);
     if (!r?.ok || !r.data?.tier) return;
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'ProtonDB: '),
+      SE.el('span', { class: 'se-label' }, SE.t('protonDbLabel')),
       SE.el('a', { href: `https://www.protondb.com/app/${appid}`, target: '_blank', rel: 'noopener', class: `se-link se-proton-${r.data.tier}` }, r.data.tier.toUpperCase()),
-      r.data.total ? ` (${r.data.total} reports)` : ''
+      r.data.total ? ` (${r.data.total} ${SE.t('reportsWord')})` : ''
     ));
   }
 
@@ -156,8 +170,8 @@
     const title = (SE.$('.apphub_AppName')?.textContent || '').trim();
     if (!title) return;
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'HowLongToBeat: '),
-      SE.el('a', { href: `https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Search')
+      SE.el('span', { class: 'se-label' }, SE.t('hltbLabel')),
+      SE.el('a', { href: `https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, target: '_blank', rel: 'noopener', class: 'se-link' }, SE.t('searchWord'))
     ));
   }
 
@@ -167,7 +181,7 @@
     const n = r?.data?.response?.player_count;
     if (typeof n === 'number') {
       body.appendChild(SE.el('div', { class: 'se-row' },
-        SE.el('span', { class: 'se-label' }, 'Playing now: '), n.toLocaleString()
+        SE.el('span', { class: 'se-label' }, SE.t('playingNow')), n.toLocaleString()
       ));
     }
   }
@@ -179,8 +193,8 @@
     if (!Array.isArray(list) || !list.length) return;
     const easiest = list[0], rarest = list[list.length - 1];
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Achievements: '),
-      `${list.length} · easiest ${easiest.name} (${Number(easiest.percent).toFixed(1)}%) · rarest ${rarest.name} (${Number(rarest.percent).toFixed(2)}%)`
+      SE.el('span', { class: 'se-label' }, SE.t('achievements')),
+      `${list.length} · ${SE.t('easiestWord')} ${easiest.name} (${Number(easiest.percent).toFixed(1)}%) · ${SE.t('rarestWord')} ${rarest.name} (${Number(rarest.percent).toFixed(2)}%)`
     ));
   }
 
@@ -199,14 +213,14 @@
       }
     }
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'DLC owned: '), `${ownedCount} / ${dlcRows.length}`
+      SE.el('span', { class: 'se-label' }, SE.t('dlcOwned')), `${ownedCount} / ${dlcRows.length}`
     ));
   }
 
   async function addRegionalPricing(appid) {
     const body = panelBody(); if (!body) return;
     const regions = ['us', 'ar', 'tr', 'ru', 'in', 'br'];
-    const wrap = SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, 'Regional: '));
+    const wrap = SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, SE.t('regional')));
     body.appendChild(wrap);
     for (const cc of regions) {
       const r = await SE.api.appDetails(appid, cc);
@@ -223,15 +237,15 @@
     const pct = +m[1], total = +m[2].replace(/,/g, '');
     const positive = Math.round(total * pct / 100);
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Reviews: '),
-      `${positive.toLocaleString()} positive · ${(total - positive).toLocaleString()} negative (${pct}%)`
+      SE.el('span', { class: 'se-label' }, SE.t('reviews')),
+      `${positive.toLocaleString()} ${SE.t('positiveWord')} · ${(total - positive).toLocaleString()} ${SE.t('negativeWord')} (${pct}%)`
     ));
   }
 
   function addCardSetValue(appid) {
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Cards: '),
-      SE.el('a', { href: `https://steamcommunity.com/market/search?appid=753&category_753_Game[]=tag_app_${appid}&category_753_item_class[]=tag_item_class_2`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Cards market'),
+      SE.el('span', { class: 'se-label' }, SE.t('cards')),
+      SE.el('a', { href: `https://steamcommunity.com/market/search?appid=753&category_753_Game[]=tag_app_${appid}&category_753_item_class[]=tag_item_class_2`, target: '_blank', rel: 'noopener', class: 'se-link' }, SE.t('cardsMarket')),
       ' · ',
       SE.el('a', { href: `https://www.steamcardexchange.net/index.php?inventorygame-appid-${appid}`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Card Exchange')
     ));
@@ -239,15 +253,15 @@
 
   function addCardDropsLink(appid) {
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('a', { href: `https://steamcommunity.com/my/gamecards/${appid}/`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🎴 Your remaining card drops →')
+      SE.el('a', { href: `https://steamcommunity.com/my/gamecards/${appid}/`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🎴 ' + SE.t('remainingCardDrops') + ' →')
     ));
   }
 
   function addEarlyAccessBadge() {
     const isEA = !!SE.$('.early_access_header') || /early access/i.test(document.body.innerText.slice(0, 4000));
     const isComing = !!SE.$('.game_area_comingsoon') || /coming soon/i.test(document.querySelector('.release_date .date')?.textContent || '');
-    if (isEA) panelBody()?.appendChild(SE.el('div', { class: 'se-row' }, SE.tag('EARLY ACCESS', 'wish'), ' This game is in active development.'));
-    if (isComing) panelBody()?.appendChild(SE.el('div', { class: 'se-row' }, SE.tag('COMING SOON', 'info'), ' Not released yet.'));
+    if (isEA) panelBody()?.appendChild(SE.el('div', { class: 'se-row' }, SE.tag(SE.t('earlyAccess'), 'wish'), ' ' + SE.t('earlyAccessDesc')));
+    if (isComing) panelBody()?.appendChild(SE.el('div', { class: 'se-row' }, SE.tag(SE.t('comingSoon'), 'info'), ' ' + SE.t('comingSoonDesc')));
   }
 
   function addDrmInfo() {
@@ -260,10 +274,10 @@
     if (haystack.includes('ubisoft connect')) drms.push('Ubisoft Connect');
     if (haystack.includes('ea app') || haystack.includes('origin')) drms.push('EA App');
     if (haystack.includes('battle.net')) drms.push('Battle.net');
-    if (text.includes('3rd-party drm') && !drms.length) drms.push('3rd-party DRM');
+    if (text.includes('3rd-party drm') && !drms.length) drms.push(SE.t('thirdPartyDrm'));
     if (!drms.length) return;
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'DRM: '), SE.tag(drms.join(' · '), 'ignored')
+      SE.el('span', { class: 'se-label' }, SE.t('drm')), SE.tag(drms.join(' · '), 'ignored')
     ));
   }
 
@@ -275,7 +289,7 @@
       .map(el => el.textContent.trim())
       .filter(t => t && t !== '+');
     if (!names.length) return;
-    const tagsRow = SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, 'Top tags: '));
+    const tagsRow = SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, SE.t('topTags')));
     names.slice(0, 10).forEach((name) => {
       tagsRow.appendChild(SE.el('a', {
         href: `https://store.steampowered.com/tags/en/${encodeURIComponent(name)}/`,
@@ -293,11 +307,11 @@
     // Reload-based filters: these hand off to Steam's own server-side filtering,
     // so they're reliable but only take effect after a page load.
     const reloadBar = SE.el('div', { class: 'se-toolbar' },
-      SE.el('span', { class: 'se-label' }, 'Reload with filter: '),
-      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&filterLanguage=all' }, 'All languages'),
-      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=recent' }, 'Recent only'),
-      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&review_type=positive' }, 'Positive only'),
-      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&review_type=negative' }, 'Negative only')
+      SE.el('span', { class: 'se-label' }, SE.t('reloadWithFilter')),
+      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&filterLanguage=all' }, SE.t('allLanguages')),
+      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=recent' }, SE.t('recentOnly')),
+      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&review_type=positive' }, SE.t('positiveOnly')),
+      SE.el('a', { class: 'se-btn', href: location.pathname + '?filter=summary&review_type=negative' }, SE.t('negativeOnly'))
     );
 
     // Live filters: apply instantly to whatever review cards are already
@@ -305,19 +319,19 @@
     // Best-effort against Steam's `.review_box` markup; if that markup ever
     // changes this silently finds zero cards and does nothing (SE.safe-guarded
     // by the caller).
-    const minHours = SE.el('input', { type: 'number', min: '0', step: '1', placeholder: 'min hrs', class: 'se-input', style: { width: '70px' } });
-    const minWords = SE.el('input', { type: 'number', min: '0', step: '5', placeholder: 'min words', class: 'se-input', style: { width: '80px' } });
+    const minHours = SE.el('input', { type: 'number', min: '0', step: '1', placeholder: SE.t('minHrsPlaceholder'), class: 'se-input', style: { width: '70px' } });
+    const minWords = SE.el('input', { type: 'number', min: '0', step: '5', placeholder: SE.t('minWordsPlaceholder'), class: 'se-input', style: { width: '80px' } });
     const recFilter = SE.el('select', { class: 'se-input' },
-      SE.el('option', { value: '' }, 'Any recommendation'),
-      SE.el('option', { value: 'yes' }, 'Recommended only'),
-      SE.el('option', { value: 'no' }, 'Not recommended only')
+      SE.el('option', { value: '' }, SE.t('anyRecommendation')),
+      SE.el('option', { value: 'yes' }, SE.t('recommendedOnly')),
+      SE.el('option', { value: 'no' }, SE.t('notRecommendedOnly'))
     );
     const liveOut = SE.el('span', { class: 'se-muted' }, '');
     const liveBar = SE.el('div', { class: 'se-toolbar' },
-      SE.el('span', { class: 'se-label' }, 'Live filter loaded reviews: '),
+      SE.el('span', { class: 'se-label' }, SE.t('liveFilterLabel')),
       minHours, minWords, recFilter,
-      SE.el('button', { class: 'se-btn', onclick: applyLiveFilter }, 'Apply'),
-      SE.el('button', { class: 'se-btn', onclick: resetLiveFilter }, 'Reset'),
+      SE.el('button', { class: 'se-btn', onclick: applyLiveFilter }, SE.t('applyWord')),
+      SE.el('button', { class: 'se-btn', onclick: resetLiveFilter }, SE.t('resetWord')),
       liveOut
     );
 
@@ -354,7 +368,7 @@
         card.style.display = match ? '' : 'none';
         if (match) shown++;
       }
-      liveOut.textContent = cards.length ? `${shown}/${cards.length} shown` : 'No review cards found on this page yet.';
+      liveOut.textContent = cards.length ? `${shown}/${cards.length} ${SE.t('shownWord')}` : SE.t('noReviewCardsYet');
     }
 
     function applyLiveFilter() {
@@ -383,7 +397,7 @@
     const cur = await SE.notes.get(appid);
     const ta = SE.el('textarea', {
       class: 'se-notes', rows: '2',
-      placeholder: 'Private notes (saved locally)…'
+      placeholder: SE.t('notesPlaceholder')
     });
     ta.value = cur;
     let t;
@@ -391,7 +405,7 @@
       clearTimeout(t);
       t = setTimeout(() => SE.notes.set(appid, ta.value), 350);
     });
-    body.appendChild(SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, 'Your notes:')));
+    body.appendChild(SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, SE.t('yourNotes'))));
     body.appendChild(ta);
   }
 
@@ -399,7 +413,7 @@
     const wishBtn = SE.$('#add_to_wishlist_area');
     if (!wishBtn || !SE.ctx.colls?.wishlist) return;
     if (SE.ctx.colls.wishlist.has(String(SE.extractAppId()))) {
-      wishBtn.parentElement?.appendChild(SE.tag('On your wishlist', 'good'));
+      wishBtn.parentElement?.appendChild(SE.tag(SE.t('onWishlist'), 'good'));
     }
   }
 
@@ -420,7 +434,7 @@
       }
     }
     if (total) panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Already owned in package: '), `${ownedCount} / ${total}`
+      SE.el('span', { class: 'se-label' }, SE.t('alreadyOwnedInPackage')), `${ownedCount} / ${total}`
     ));
   }
 
@@ -441,18 +455,18 @@
     const minP = Math.min(...points.map(p => p.p));
     const svg = SE.sparklineSvg(
       points.map(p => ({ t: p.t, v: p.p })),
-      { labelLeft: `low ${minP.toFixed(2)}` }
+      { labelLeft: `${SE.t('lowWord')} ${minP.toFixed(2)}` }
     );
     const wrap = SE.el('div', { class: 'se-row', html: svg });
-    body.appendChild(SE.el('div', { class: 'se-row se-label' }, 'Price history:'));
+    body.appendChild(SE.el('div', { class: 'se-row se-label' }, SE.t('priceHistoryLabel')));
     body.appendChild(wrap);
   }
 
   function addBoosterCreatorLink(appid) {
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('a', { href: `https://steamcommunity.com/tradingcards/boostercreator/`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🎁 Booster pack creator'),
+      SE.el('a', { href: `https://steamcommunity.com/tradingcards/boostercreator/`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🎁 ' + SE.t('boosterPackCreator')),
       ' · ',
-      SE.el('a', { href: `https://steamcommunity.com/my/gamecards/${appid}/?border=1`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Foil cards')
+      SE.el('a', { href: `https://steamcommunity.com/my/gamecards/${appid}/?border=1`, target: '_blank', rel: 'noopener', class: 'se-link' }, SE.t('foilCards'))
     ));
   }
 
@@ -487,11 +501,11 @@
 
       const diff = sum - bundlePrice;
       panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-        SE.el('span', { class: 'se-label' }, 'Bundle math: '),
-        `${resolved} items separately ≈ ${sum.toFixed(2)} vs bundle ${bundlePrice.toFixed(2)} — `,
+        SE.el('span', { class: 'se-label' }, SE.t('bundleMath')),
+        `${resolved} ${SE.t('itemsSeparately')} ≈ ${sum.toFixed(2)} ${SE.t('vsBundle')} ${bundlePrice.toFixed(2)} — `,
         diff > 0.01
-          ? SE.tag(`SAVE ${diff.toFixed(2)} in bundle`, 'good')
-          : SE.tag('bundle is not cheaper here', 'ignored')
+          ? SE.tag(`${SE.t('saveWord')} ${diff.toFixed(2)} ${SE.t('inBundle')}`, 'good')
+          : SE.tag(SE.t('bundleNotCheaper'), 'ignored')
       ));
       break; // one box is enough context
     }
@@ -513,8 +527,8 @@
       chrome.storage.local.set({ se_wishlist_targets: all });
     });
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Alert me at: '), input,
-      SE.el('span', { class: 'se-muted' }, ' (checked hourly — enable in Options → Notifications)')
+      SE.el('span', { class: 'se-label' }, SE.t('alertMeAt')), input,
+      SE.el('span', { class: 'se-muted' }, ` (${SE.t('alertCheckedHourly')})`)
     ));
   }
 
@@ -535,7 +549,7 @@
     const snippet = (best.querySelector('.content')?.textContent || '').trim().slice(0, 300);
     if (!snippet) return;
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, `Most helpful review (${bestCount.toLocaleString()} found it helpful): ` ),
+      SE.el('span', { class: 'se-label' }, `${SE.t('mostHelpfulReview')} (${bestCount.toLocaleString()} ${SE.t('foundHelpfulWord')}): `),
       SE.el('div', { class: 'se-quote' }, snippet + (snippet.length >= 300 ? '…' : ''))
     ));
   }
@@ -563,8 +577,8 @@
     const spike = recentStats.negRatio - baselineStats.negRatio;
     if (spike >= 0.25) {
       panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-        SE.tag('POSSIBLE REVIEW BOMB', 'ignored'),
-        ` last 3 days ${Math.round(recentStats.negRatio * 100)}% negative vs ${Math.round(baselineStats.negRatio * 100)}% baseline`
+        SE.tag(SE.t('possibleReviewBomb'), 'ignored'),
+        ` ${SE.t('last3Days')} ${Math.round(recentStats.negRatio * 100)}% ${SE.t('negativeVs')} ${Math.round(baselineStats.negRatio * 100)}% ${SE.t('baselineWord')}`
       ));
     }
   }
@@ -608,8 +622,8 @@
     }
     if (!checked) return;
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Owned by friends: '),
-      `${ownCount} of ${checked} friends checked (sampled, private profiles excluded)`
+      SE.el('span', { class: 'se-label' }, SE.t('ownedByFriends')),
+      `${ownCount} ${SE.t('ofWord')} ${checked} ${SE.t('friendsCheckedSampled')}`
     ));
   }
 
@@ -621,8 +635,8 @@
     if (prev && prev.price > cur) {
       const drop = SE.fmtPercent(prev.price, cur);
       panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-        SE.tag(`PRICE DROP -${drop}%`, 'good'),
-        ` since your last visit (${prev.price.toFixed(2)} → ${cur.toFixed(2)})`
+        SE.tag(`${SE.t('priceDrop')} -${drop}%`, 'good'),
+        ` ${SE.t('sinceLastVisit')} (${prev.price.toFixed(2)} → ${cur.toFixed(2)})`
       ));
     }
   }

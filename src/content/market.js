@@ -34,23 +34,56 @@
     if (!anchor || SE.$('#se-mkt-tools')) return;
     const showBuyOrder = SE.ctx?.settings.showBuyOrderHelper;
     const box = SE.el('div', { id: 'se-mkt-tools', class: 'se-panel' },
-      SE.el('div', { class: 'se-panel-h' }, 'Market quick tools'),
+      SE.el('div', { class: 'se-panel-h' }, SE.t('marketQuickTools')),
       SE.el('div', { class: 'se-panel-body' },
         SE.el('div', { class: 'se-row' },
-          SE.el('button', { class: 'se-btn', onclick: undercut }, 'Undercut'),
+          SE.el('button', { class: 'se-btn', onclick: undercut }, SE.t('undercutBtn')),
           ' ',
-          SE.el('button', { class: 'se-btn', onclick: copyHash }, 'Copy hash name'),
+          SE.el('button', { class: 'se-btn', onclick: copyHash }, SE.t('copyHashBtn')),
           ' ',
-          SE.el('button', { class: 'se-btn', onclick: openSCMHistory }, 'Open SteamDB'),
+          SE.el('button', { class: 'se-btn', onclick: openSCMHistory }, SE.t('openSteamDbBtn')),
           ' ',
-          SE.el('button', { class: 'se-btn', onclick: salesSummary }, 'Sales summary'),
+          SE.el('button', { class: 'se-btn', onclick: salesSummary }, SE.t('salesSummaryBtn')),
           showBuyOrder ? ' ' : null,
-          showBuyOrder ? SE.el('button', { class: 'se-btn', onclick: buyOrderHelper }, 'Buy-order helper') : null
+          showBuyOrder ? SE.el('button', { class: 'se-btn', onclick: buyOrderHelper }, SE.t('buyOrderHelperBtn')) : null,
+          ' ',
+          SE.el('button', { class: 'se-btn', onclick: showPriceHistoryChart }, SE.t('priceHistoryChart'))
         ),
         SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted' }, '')
       )
     );
     anchor.parentElement?.insertBefore(box, anchor);
+  }
+
+  function listingNameFromUrl() {
+    const parts = location.pathname.split('/').filter(Boolean);
+    const appid = parts[parts.indexOf('listings') + 1];
+    const name = decodeURIComponent(parts[parts.indexOf('listings') + 2] || '');
+    return { appid, name };
+  }
+
+  async function showPriceHistoryChart() {
+    const out = SE.$('#se-mkt-out');
+    const { appid, name } = listingNameFromUrl();
+    if (!appid || !name) return;
+    out.textContent = '…';
+    const r = await SE.api.marketPriceHistory(appid, name);
+    const raw = r?.data?.price_history;
+    if (!r?.ok || !Array.isArray(raw) || !raw.length) {
+      out.textContent = SE.t('needsLoginForChart');
+      return;
+    }
+    const points = raw
+      .map(([dateStr, price]) => ({ t: new Date(dateStr).getTime(), v: Number(price) }))
+      .filter((p) => isFinite(p.t) && isFinite(p.v));
+    if (points.length < 2) { out.textContent = SE.t('needsLoginForChart'); return; }
+    // Sample down to ~120 points so the SVG path stays cheap on items with years of history.
+    const step = Math.max(1, Math.floor(points.length / 120));
+    const sampled = points.filter((_, i) => i % step === 0);
+    const svg = SE.sparklineSvg(sampled, { w: 320, h: 70 });
+    out.innerHTML = '';
+    out.appendChild(SE.el('div', { class: 'se-label' }, SE.t('priceHistoryChart') + ':'));
+    out.appendChild(SE.el('div', { html: svg }));
   }
 
   function undercut() {
@@ -133,7 +166,7 @@
     const target = SE.$('.market_search_sidebar') || SE.$('#searchResultsTable') || SE.$('#mainContents');
     if (!target || SE.$('#se-fx')) return;
     const box = SE.el('div', { id: 'se-fx', class: 'se-panel' },
-      SE.el('div', { class: 'se-panel-h' }, 'Currency converter'),
+      SE.el('div', { class: 'se-panel-h' }, SE.t('currencyConverter')),
       SE.el('div', { class: 'se-panel-body' },
         SE.el('div', { class: 'se-row' },
           SE.el('input', { type: 'number', step: '0.01', value: '1', id: 'se-fx-amt', class: 'se-input' }),
@@ -142,7 +175,7 @@
           ' → ',
           SE.el('input', { type: 'text', maxlength: '3', value: 'EUR', id: 'se-fx-to', class: 'se-input se-input-cur' }),
           ' ',
-          SE.el('button', { class: 'se-btn', onclick: doFx }, 'Convert')
+          SE.el('button', { class: 'se-btn', onclick: doFx }, SE.t('convertBtn'))
         ),
         SE.el('div', { id: 'se-fx-out', class: 'se-row se-muted' }, '')
       )

@@ -24,7 +24,7 @@
     const header = SE.$('.trade_partner_headline') || SE.$('.profile_header');
     if (!header || SE.$('#se-steamrep')) return;
     header.appendChild(SE.el('div', { id: 'se-steamrep', class: 'se-row' },
-      SE.el('a', { href: `https://steamrep.com/profiles/${steamId64}`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🛡 Check on SteamRep'),
+      SE.el('a', { href: `https://steamrep.com/profiles/${steamId64}`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🛡 ' + SE.t('checkSteamRep')),
       ' · ',
       SE.el('a', { href: `https://www.backpack.tf/profiles/${steamId64}`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Backpack.tf'),
       ' · ',
@@ -38,7 +38,7 @@
       const btn = SE.$('#trade_confirmbtn');
       if (!btn || btn.dataset.seHold) return;
       btn.dataset.seHold = '1';
-      const overlay = SE.el('div', { class: 'se-hold-overlay', title: 'Hold for 2 seconds to confirm' }, 'Hold to confirm trade');
+      const overlay = SE.el('div', { class: 'se-hold-overlay', title: SE.t('holdToConfirmTitle') }, SE.t('holdToConfirmTrade'));
       let holdT = null, pressed = false;
       const startHold = () => {
         if (pressed) return;
@@ -73,7 +73,7 @@
           btn.style.opacity = '';
           btn.style.pointerEvents = '';
         }
-      }, 'use normal button');
+      }, SE.t('useNormalButton'));
       overlay.insertAdjacentElement('afterend', escape);
     };
     if (SE.once('trade:hold-interval')) setInterval(() => SE.safe('trade:hold', tryWrap), 1000);
@@ -83,9 +83,9 @@
     if (SE.$('#se-trade-summary')) return;
     const anchor = SE.$('#trade_box') || SE.$('.trade_partner_headline') || document.body;
     anchor.parentElement?.insertBefore(SE.el('div', { id: 'se-trade-summary', class: 'se-panel' },
-      SE.el('div', { class: 'se-panel-h' }, 'Trade summary (estimated)'),
+      SE.el('div', { class: 'se-panel-h' }, SE.t('tradeSummary')),
       SE.el('div', { class: 'se-panel-body', id: 'se-trade-body' },
-        SE.el('div', { class: 'se-row se-muted' }, 'Counting items…')
+        SE.el('div', { class: 'se-row se-muted' }, SE.t('countingItems'))
       )
     ), anchor);
   }
@@ -142,15 +142,15 @@
     const pct = (Math.max(yourVal, theirVal) > 0) ? Math.abs(diff) / Math.max(yourVal, theirVal) * 100 : 0;
 
     body.innerHTML = '';
-    body.appendChild(SE.el('div', { class: 'se-row' }, `You offer: ${r.result.your.length} items · est. ≈ ${yourVal.toFixed(2)}`));
-    body.appendChild(SE.el('div', { class: 'se-row' }, `They offer: ${r.result.their.length} items · est. ≈ ${theirVal.toFixed(2)}`));
-    body.appendChild(SE.el('div', { class: 'se-row' }, `Difference: ${diff >= 0 ? '+' : ''}${diff.toFixed(2)} (${pct.toFixed(0)}%)`));
+    body.appendChild(SE.el('div', { class: 'se-row' }, `${SE.t('youOffer')}: ${r.result.your.length} ${SE.t('itemsWord')} · ${SE.t('estWord')} ≈ ${yourVal.toFixed(2)}`));
+    body.appendChild(SE.el('div', { class: 'se-row' }, `${SE.t('theyOffer')}: ${r.result.their.length} ${SE.t('itemsWord')} · ${SE.t('estWord')} ≈ ${theirVal.toFixed(2)}`));
+    body.appendChild(SE.el('div', { class: 'se-row' }, `${SE.t('difference')}: ${diff >= 0 ? '+' : ''}${diff.toFixed(2)} (${pct.toFixed(0)}%)`));
     if (pct >= 20 && (yourVal + theirVal) > 1) {
-      body.appendChild(SE.el('div', { class: 'se-row' }, SE.tag('VALUE MISMATCH', 'ignored'), ` Review carefully before accepting.`));
+      body.appendChild(SE.el('div', { class: 'se-row' }, SE.tag(SE.t('valueMismatch'), 'ignored'), ` ${SE.t('reviewCarefully')}`));
     }
 
-    body.appendChild(renderItemTable('You offer', yourBreakdown.rows));
-    body.appendChild(renderItemTable('They offer', theirBreakdown.rows));
+    body.appendChild(renderItemTable(SE.t('youOffer'), yourBreakdown.rows));
+    body.appendChild(renderItemTable(SE.t('theyOffer'), theirBreakdown.rows));
 
     if (SE.ctx?.settings.showTradeHistory) {
       SE.safe('trade:history', () => recordAndShowHistory(body, r.result.your.length, r.result.their.length, yourVal, theirVal));

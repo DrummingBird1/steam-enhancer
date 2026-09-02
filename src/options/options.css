@@ -14,6 +14,13 @@ section {
 }
 section h2 { margin: 0 0 12px; font-size: 14px; color: #66c0f4; text-transform: uppercase; letter-spacing: 0.6px; }
 
+.section-highlight { border-color: #b07a1f; background: #1e1a10; }
+.req-badge {
+  display: inline-block; margin-left: 6px; padding: 1px 6px;
+  background: #b07a1f; color: #fff; border-radius: 3px;
+  font-size: 10px; text-transform: none; letter-spacing: 0.3px; vertical-align: middle;
+}
+
 label {
   display: flex; flex-direction: column; gap: 4px;
   margin-bottom: 10px; font-size: 13px;

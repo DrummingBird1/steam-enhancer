@@ -94,6 +94,7 @@ async function load() {
   document.getElementById('cacheTTLMinutes').value = cfg.cacheTTLMinutes;
   document.getElementById('customCss').value = cfg.customCss || '';
   document.getElementById('steamWebApiKey').value = cfg.steamWebApiKey || '';
+  document.getElementById('itadApiKey').value = cfg.itadApiKey || '';
 }
 
 async function save() {
@@ -108,6 +109,7 @@ async function save() {
   cur.cacheTTLMinutes = +document.getElementById('cacheTTLMinutes').value || 60;
   cur.customCss = document.getElementById('customCss').value;
   cur.steamWebApiKey = document.getElementById('steamWebApiKey').value.trim();
+  cur.itadApiKey = document.getElementById('itadApiKey').value.trim();
   try {
     await new Promise((r, rej) => chrome.storage.sync.set({ [STORAGE_KEY]: cur }, () => {
       if (chrome.runtime.lastError) { rej(new Error(chrome.runtime.lastError.message)); return; }

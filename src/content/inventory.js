@@ -25,21 +25,21 @@
     if (!anchor) return;
     const showSortGroup = SE.ctx?.settings.showTileSortGroup;
     const bar = SE.el('div', { id: 'se-inv-toolbar', class: 'se-toolbar' },
-      SE.el('button', { class: 'se-btn', onclick: showValue }, 'Estimate value'),
-      SE.el('button', { class: 'se-btn', onclick: showValueHistory }, 'Value history'),
-      SE.el('button', { class: 'se-btn', onclick: findDuplicates }, 'Find duplicates'),
-      SE.el('button', { class: 'se-btn', onclick: selectDuplicatesUI }, 'Mark duplicates'),
-      SE.el('button', { class: 'se-btn', onclick: cardSetProgress }, 'Card set progress'),
-      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: sortTilesByValue }, 'Sort by value ↓') : null,
-      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: groupTilesByType }, 'Group by type') : null,
-      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: rarityBreakdown }, 'Rarity/quality breakdown') : null,
-      SE.el('button', { class: 'se-btn', onclick: massListMedian }, 'Mass-list at median…'),
-      SE.el('button', { class: 'se-btn', id: 'se-inv-selmode', onclick: toggleSelectMode }, 'Select items to sell'),
-      SE.el('button', { class: 'se-btn', onclick: prepareSelectedListing }, 'List selected…'),
-      SE.el('button', { class: 'se-btn', onclick: openBoosterCreator }, 'Booster creator'),
-      SE.el('button', { class: 'se-btn', onclick: stickerHelper }, 'CS2 sticker prices'),
-      SE.el('button', { class: 'se-btn', onclick: exportInventory }, 'Export JSON'),
-      SE.el('input', { type: 'search', id: 'se-inv-filter', placeholder: 'Filter by name…', class: 'se-input' }),
+      SE.el('button', { class: 'se-btn', onclick: showValue }, SE.t('estimateValue')),
+      SE.el('button', { class: 'se-btn', onclick: showValueHistory }, SE.t('valueHistoryBtn')),
+      SE.el('button', { class: 'se-btn', onclick: findDuplicates }, SE.t('findDuplicates')),
+      SE.el('button', { class: 'se-btn', onclick: selectDuplicatesUI }, SE.t('markDuplicates')),
+      SE.el('button', { class: 'se-btn', onclick: cardSetProgress }, SE.t('cardSetProgress')),
+      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: sortTilesByValue }, SE.t('sortByValueBtn')) : null,
+      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: groupTilesByType }, SE.t('groupByTypeBtn')) : null,
+      showSortGroup ? SE.el('button', { class: 'se-btn', onclick: rarityBreakdown }, SE.t('rarityBreakdownBtn')) : null,
+      SE.el('button', { class: 'se-btn', onclick: massListMedian }, SE.t('massListBtn')),
+      SE.el('button', { class: 'se-btn', id: 'se-inv-selmode', onclick: toggleSelectMode }, SE.t('selectItemsBtn')),
+      SE.el('button', { class: 'se-btn', onclick: prepareSelectedListing }, SE.t('listSelectedBtn')),
+      SE.el('button', { class: 'se-btn', onclick: openBoosterCreator }, SE.t('boosterPackCreator')),
+      SE.el('button', { class: 'se-btn', onclick: stickerHelper }, SE.t('cs2StickerBtn')),
+      SE.el('button', { class: 'se-btn', onclick: exportInventory }, SE.t('exportJsonBtn')),
+      SE.el('input', { type: 'search', id: 'se-inv-filter', placeholder: SE.t('filterByName'), class: 'se-input' }),
       SE.el('span', { id: 'se-inv-out', class: 'se-muted' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);
@@ -250,7 +250,7 @@
   function toggleSelectMode() {
     selectMode = !selectMode;
     const btn = SE.$('#se-inv-selmode');
-    if (btn) btn.textContent = selectMode ? 'Selecting… (click to stop)' : 'Select items to sell';
+    if (btn) btn.textContent = selectMode ? SE.t('selectingBtn') : SE.t('selectItemsBtn');
     if (!selectMode) SE.$$('.se-select-checkbox').forEach(cb => cb.remove());
     else renderSelectionOverlays();
     SE.$('#se-inv-out').textContent = selectMode ? `Selection mode on — ${selectedIds.size} selected` : '';
@@ -316,7 +316,7 @@
           selectMode = false;
           SE.$$('.se-select-checkbox').forEach(cb => cb.remove());
           const btn = SE.$('#se-inv-selmode');
-          if (btn) btn.textContent = 'Select items to sell';
+          if (btn) btn.textContent = SE.t('selectItemsBtn');
         }
       }, `⚠ Confirm: list these ${plan.length} selected items`)
     ));
@@ -466,7 +466,7 @@
       class: 'se-btn se-quicksell',
       href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(name)}`,
       target: '_blank', rel: 'noopener'
-    }, 'View on Market'));
+    }, SE.t('viewOnMarket')));
 
     // CSGO-specific inspect link / float lookup helper. Prefer the exact
     // per-item inspect link (Steam embeds one per asset) so CSFloat opens the

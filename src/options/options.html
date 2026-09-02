@@ -15,6 +15,20 @@
       </div>
     </header>
 
+    <section class="section-highlight">
+      <h2>IsThereAnyDeal API key <span class="req-badge">required for prices</span></h2>
+      <label>API key
+        <input type="text" id="itadApiKey" placeholder="paste your free ITAD app key here" />
+      </label>
+      <p class="hint">As of v1.4.0, IsThereAnyDeal requires a free API key for every price lookup this extension does
+        (lowest price, historical low, price-history chart, wishlist/search price tags, deal notifications).
+        This changed on ITAD's end, not something we chose — without a key, all of those simply show nothing.
+        Register a free app key (registers the extension, not you personally) at
+        <a href="https://isthereanydeal.com/apps/my/" target="_blank" rel="noopener">isthereanydeal.com/apps/my/</a>
+        and paste it above. Stored only in your browser's synced settings; requests go straight from your browser to
+        <code>api.isthereanydeal.com</code> — this extension's developers never see it.</p>
+    </section>
+
     <section>
       <h2 data-i18n="secRegion">Region</h2>
       <label>Country (for prices)

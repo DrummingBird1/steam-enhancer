@@ -27,7 +27,7 @@
     const target = SE.$('.profile_header_centered_persona') || SE.$('.profile_header') || SE.$('.responsive_status_info');
     if (!target) return null;
     const panel = SE.el('div', { id: 'se-profile-panel', class: 'se-panel' },
-      SE.el('div', { class: 'se-panel-h' }, 'Steam Enhancer'),
+      SE.el('div', { class: 'se-panel-h' }, SE.t('panelTitle')),
       SE.el('div', { id: 'se-profile-panel-body', class: 'se-panel-body' })
     );
     target.appendChild(panel);
@@ -63,9 +63,9 @@
     if (!snap) return;
     const daysAgo = Math.round((Date.now() - snap.ts) / 86400000);
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Library (last seen): '),
-      `${snap.gameCount} games · ${Math.round(snap.totalMinutes / 60).toLocaleString()} hours total`,
-      snap.value != null ? ` · ≈ ${snap.value.toFixed(2)} at current prices` : '',
+      SE.el('span', { class: 'se-label' }, SE.t('libraryLastSeen')),
+      `${snap.gameCount} ${SE.t('gamesWord')} · ${Math.round(snap.totalMinutes / 60).toLocaleString()} ${SE.t('hoursTotal')}`,
+      snap.value != null ? ` · ≈ ${snap.value.toFixed(2)} ${SE.t('atCurrentPrices')}` : '',
       daysAgo > 0 ? SE.el('span', { class: 'se-muted' }, ` (${daysAgo}d ago)`) : ''
     ));
   }
@@ -81,7 +81,7 @@
     if (!id || !body) return;
     const base = `https://steamcommunity.com/profiles/${id}`;
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Media: ' ),
+      SE.el('span', { class: 'se-label' }, SE.t('mediaLabel')),
       SE.el('a', { href: `${base}/screenshots/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Screenshots'),
       ' · ',
       SE.el('a', { href: `${base}/videos/`, target: '_blank', rel: 'noopener', class: 'se-link' }, 'Videos'),
@@ -103,8 +103,8 @@
     const m = text && text.match(/(\d+)/);
     if (!m) return;
     body.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('span', { class: 'se-label' }, 'Badges: '),
-      SE.el('a', { href: badgeLink.href, target: '_blank', rel: 'noopener', class: 'se-link' }, `${m[1]} badges →`)
+      SE.el('span', { class: 'se-label' }, SE.t('badgesLabel')),
+      SE.el('a', { href: badgeLink.href, target: '_blank', rel: 'noopener', class: 'se-link' }, `${m[1]} ${SE.t('badgesWord')} →`)
     ));
   }
 })();

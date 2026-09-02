@@ -1,0 +1,560 @@
+{
+  "extName": {
+    "message": "Steam Enhancer"
+  },
+  "extDesc": {
+    "message": "O upgrade completo para a Steam: histórico de preços, preços mais baixos, lista de desejos, mercado e inventário."
+  },
+  "panelTitle": {
+    "message": "Steam Enhancer"
+  },
+  "lowestNow": {
+    "message": "Preço mais baixo agora:"
+  },
+  "historicalLow": {
+    "message": "Menor preço histórico:"
+  },
+  "viewOnItad": {
+    "message": "Ver no ITAD"
+  },
+  "playingNow": {
+    "message": "Jogando agora:"
+  },
+  "achievements": {
+    "message": "Conquistas:"
+  },
+  "dlcOwned": {
+    "message": "DLC possuído:"
+  },
+  "regional": {
+    "message": "Regional:"
+  },
+  "reviews": {
+    "message": "Avaliações:"
+  },
+  "cards": {
+    "message": "Cartas:"
+  },
+  "links": {
+    "message": "Links:"
+  },
+  "community": {
+    "message": "Comunidade:"
+  },
+  "addToWaitlist": {
+    "message": "Adicionar à lista de espera do ITAD"
+  },
+  "yourNotes": {
+    "message": "Suas notas:"
+  },
+  "notesPlaceholder": {
+    "message": "Notas privadas (salvas localmente)…"
+  },
+  "onWishlist": {
+    "message": "Na sua lista de desejos"
+  },
+  "owned": {
+    "message": "POSSUÍDO"
+  },
+  "wishlist": {
+    "message": "DESEJADO"
+  },
+  "ignored": {
+    "message": "IGNORADO"
+  },
+  "earlyAccess": {
+    "message": "ACESSO ANTECIPADO"
+  },
+  "comingSoon": {
+    "message": "EM BREVE"
+  },
+  "priceDrop": {
+    "message": "QUEDA DE PREÇO"
+  },
+  "valueMismatch": {
+    "message": "VALOR DESIGUAL"
+  },
+  "drm": {
+    "message": "DRM:"
+  },
+  "topTags": {
+    "message": "Principais tags:"
+  },
+  "filterReviews": {
+    "message": "Filtros rápidos de avaliação:"
+  },
+  "exportCsv": {
+    "message": "Exportar CSV"
+  },
+  "exportJson": {
+    "message": "Exportar JSON"
+  },
+  "copyAsText": {
+    "message": "Copiar como texto"
+  },
+  "openOnItad": {
+    "message": "Abrir no ITAD"
+  },
+  "sortByDeal": {
+    "message": "Ordenar: melhor oferta vs. mínimo"
+  },
+  "sortByPrice": {
+    "message": "Ordenar: preço ↑"
+  },
+  "estimateValue": {
+    "message": "Estimar valor"
+  },
+  "findDuplicates": {
+    "message": "Encontrar duplicatas"
+  },
+  "markDuplicates": {
+    "message": "Marcar duplicatas"
+  },
+  "cardSetProgress": {
+    "message": "Progresso do conjunto de cartas"
+  },
+  "filterByName": {
+    "message": "Filtrar por nome…"
+  },
+  "tradeSummary": {
+    "message": "Resumo da troca (estimado)"
+  },
+  "youOffer": {
+    "message": "Você oferece"
+  },
+  "theyOffer": {
+    "message": "Eles oferecem"
+  },
+  "difference": {
+    "message": "Diferença"
+  },
+  "settings": {
+    "message": "Configurações"
+  },
+  "save": {
+    "message": "Salvar"
+  },
+  "reset": {
+    "message": "Restaurar padrão"
+  },
+  "clearCache": {
+    "message": "Limpar cache"
+  },
+  "exportSettings": {
+    "message": "Exportar configurações"
+  },
+  "importSettings": {
+    "message": "Importar configurações"
+  },
+  "viewOnMarket": {
+    "message": "Ver no Mercado"
+  },
+  "remainingCardDrops": {
+    "message": "Cartas restantes para dropar"
+  },
+  "openStore": {
+    "message": "Abrir a Steam Store"
+  },
+  "myWishlist": {
+    "message": "Minha lista de desejos"
+  },
+  "myInventory": {
+    "message": "Meu inventário"
+  },
+  "tShowLowest": {
+    "message": "Mostrar preços mais baixos"
+  },
+  "tHighlightOwned": {
+    "message": "Destacar jogos possuídos"
+  },
+  "tHighlightWish": {
+    "message": "Destacar lista de desejos"
+  },
+  "tHideIgnored": {
+    "message": "Ocultar ignorados na busca"
+  },
+  "tShowProton": {
+    "message": "Mostrar avaliação do ProtonDB"
+  },
+  "tShowRegional": {
+    "message": "Mostrar preços regionais"
+  },
+  "tNotifyDeals": {
+    "message": "Notificar ofertas da lista de desejos"
+  },
+  "allSettings": {
+    "message": "Todas as configurações…"
+  },
+  "optSubtitle": {
+    "message": "Todas as configurações. As alterações se aplicam no próximo carregamento da página."
+  },
+  "secRegion": {
+    "message": "Região"
+  },
+  "secStore": {
+    "message": "Páginas da loja"
+  },
+  "secSearch": {
+    "message": "Busca e listas"
+  },
+  "secMarket": {
+    "message": "Mercado, inventário, trocas"
+  },
+  "secNotify": {
+    "message": "Notificações"
+  },
+  "secAdvanced": {
+    "message": "Avançado"
+  },
+  "importExportNote": {
+    "message": "Exportar ou importar todas as configurações, notas e lista de bloqueio como JSON."
+  },
+  "checkingDeals": {
+    "message": "Verificando ofertas…"
+  },
+  "noDealData": {
+    "message": "Sem dados de preço"
+  },
+  "needsItadKeyMsg": {
+    "message": "Adicione uma chave de API gratuita do IsThereAnyDeal para ver os preços."
+  },
+  "openOptionsLink": {
+    "message": "Abrir configurações →"
+  },
+  "setPricePerAlerts": {
+    "message": "definir alertas de preço"
+  },
+  "protonDbLabel": {
+    "message": "ProtonDB:"
+  },
+  "reportsWord": {
+    "message": "relatórios"
+  },
+  "hltbLabel": {
+    "message": "HowLongToBeat:"
+  },
+  "searchWord": {
+    "message": "Buscar"
+  },
+  "easiestWord": {
+    "message": "mais fácil"
+  },
+  "rarestWord": {
+    "message": "mais raro"
+  },
+  "positiveWord": {
+    "message": "positivas"
+  },
+  "negativeWord": {
+    "message": "negativas"
+  },
+  "cardsMarket": {
+    "message": "Mercado de cartas"
+  },
+  "earlyAccessDesc": {
+    "message": "Este jogo está em desenvolvimento ativo."
+  },
+  "comingSoonDesc": {
+    "message": "Ainda não foi lançado."
+  },
+  "thirdPartyDrm": {
+    "message": "DRM de terceiros"
+  },
+  "reloadWithFilter": {
+    "message": "Recarregar com filtro:"
+  },
+  "allLanguages": {
+    "message": "Todos os idiomas"
+  },
+  "recentOnly": {
+    "message": "Somente recentes"
+  },
+  "positiveOnly": {
+    "message": "Somente positivas"
+  },
+  "negativeOnly": {
+    "message": "Somente negativas"
+  },
+  "minHrsPlaceholder": {
+    "message": "horas mín."
+  },
+  "minWordsPlaceholder": {
+    "message": "palavras mín."
+  },
+  "anyRecommendation": {
+    "message": "Qualquer recomendação"
+  },
+  "recommendedOnly": {
+    "message": "Somente recomendados"
+  },
+  "notRecommendedOnly": {
+    "message": "Somente não recomendados"
+  },
+  "liveFilterLabel": {
+    "message": "Filtro em tempo real das avaliações carregadas:"
+  },
+  "applyWord": {
+    "message": "Aplicar"
+  },
+  "resetWord": {
+    "message": "Redefinir"
+  },
+  "shownWord": {
+    "message": "exibidas"
+  },
+  "noReviewCardsYet": {
+    "message": "Nenhuma avaliação encontrada nesta página ainda."
+  },
+  "alreadyOwnedInPackage": {
+    "message": "Já possuído no pacote:"
+  },
+  "lowWord": {
+    "message": "mínimo"
+  },
+  "priceHistoryLabel": {
+    "message": "Histórico de preços:"
+  },
+  "boosterPackCreator": {
+    "message": "Criador de pacotes de reforço"
+  },
+  "foilCards": {
+    "message": "Cartas foil"
+  },
+  "bundleMath": {
+    "message": "Cálculo do pacote:"
+  },
+  "itemsSeparately": {
+    "message": "itens separadamente"
+  },
+  "vsBundle": {
+    "message": "vs. pacote"
+  },
+  "saveWord": {
+    "message": "ECONOMIZE"
+  },
+  "inBundle": {
+    "message": "no pacote"
+  },
+  "bundleNotCheaper": {
+    "message": "o pacote não é mais barato aqui"
+  },
+  "alertMeAt": {
+    "message": "Avise-me em:"
+  },
+  "alertMeAtPlaceholder": {
+    "message": "avise-me em…"
+  },
+  "alertCheckedHourly": {
+    "message": "verificado a cada hora — ative em Opções → Notificações"
+  },
+  "mostHelpfulReview": {
+    "message": "Avaliação mais útil"
+  },
+  "foundHelpfulWord": {
+    "message": "acharam útil"
+  },
+  "possibleReviewBomb": {
+    "message": "POSSÍVEL AVALANCHE DE AVALIAÇÕES NEGATIVAS"
+  },
+  "last3Days": {
+    "message": "últimos 3 dias"
+  },
+  "negativeVs": {
+    "message": "negativas vs."
+  },
+  "baselineWord": {
+    "message": "referência"
+  },
+  "ownedByFriends": {
+    "message": "Possuído por amigos:"
+  },
+  "ofWord": {
+    "message": "de"
+  },
+  "friendsCheckedSampled": {
+    "message": "amigos verificados (amostra, perfis privados excluídos)"
+  },
+  "sinceLastVisit": {
+    "message": "desde sua última visita"
+  },
+  "bundleSavings": {
+    "message": "Economia no pacote"
+  },
+  "hideForeverTitle": {
+    "message": "Ocultar para sempre (lista de bloqueio da extensão)"
+  },
+  "visibleWord": {
+    "message": "visíveis"
+  },
+  "copiedToClipboard": {
+    "message": "Lista de desejos copiada para a área de transferência."
+  },
+  "nothingToOpen": {
+    "message": "Nada para abrir."
+  },
+  "vsLow": {
+    "message": "vs. mínimo"
+  },
+  "targetWord": {
+    "message": "meta"
+  },
+  "atTarget": {
+    "message": "NA META"
+  },
+  "marketQuickTools": {
+    "message": "Ferramentas rápidas do mercado"
+  },
+  "undercutBtn": {
+    "message": "Baixar preço"
+  },
+  "copyHashBtn": {
+    "message": "Copiar nome hash"
+  },
+  "openSteamDbBtn": {
+    "message": "Abrir SteamDB"
+  },
+  "salesSummaryBtn": {
+    "message": "Resumo de vendas"
+  },
+  "buyOrderHelperBtn": {
+    "message": "Assistente de ordem de compra"
+  },
+  "currencyConverter": {
+    "message": "Conversor de moeda"
+  },
+  "convertBtn": {
+    "message": "Converter"
+  },
+  "priceHistoryChart": {
+    "message": "Histórico de preços do mercado"
+  },
+  "needsLoginForChart": {
+    "message": "Faça login na Steam para ver este gráfico."
+  },
+  "valueHistoryBtn": {
+    "message": "Histórico de valor"
+  },
+  "sortByValueBtn": {
+    "message": "Ordenar por valor ↓"
+  },
+  "groupByTypeBtn": {
+    "message": "Agrupar por tipo"
+  },
+  "rarityBreakdownBtn": {
+    "message": "Detalhamento por raridade/qualidade"
+  },
+  "massListBtn": {
+    "message": "Listar em massa pela mediana…"
+  },
+  "selectItemsBtn": {
+    "message": "Selecionar itens para vender"
+  },
+  "selectingBtn": {
+    "message": "Selecionando… (clique para parar)"
+  },
+  "listSelectedBtn": {
+    "message": "Listar selecionados…"
+  },
+  "cs2StickerBtn": {
+    "message": "Preços de adesivos CS2"
+  },
+  "exportJsonBtn": {
+    "message": "Exportar JSON"
+  },
+  "checkSteamRep": {
+    "message": "Verificar no SteamRep"
+  },
+  "holdToConfirmTitle": {
+    "message": "Segure por 2 segundos para confirmar"
+  },
+  "holdToConfirmTrade": {
+    "message": "Segure para confirmar a troca"
+  },
+  "useNormalButton": {
+    "message": "usar botão normal"
+  },
+  "countingItems": {
+    "message": "Contando itens…"
+  },
+  "itemsWord": {
+    "message": "itens"
+  },
+  "estWord": {
+    "message": "estimado"
+  },
+  "reviewCarefully": {
+    "message": "Revise com cuidado antes de aceitar."
+  },
+  "libraryLastSeen": {
+    "message": "Biblioteca (visto por último):"
+  },
+  "gamesWord": {
+    "message": "jogos"
+  },
+  "hoursTotal": {
+    "message": "horas no total"
+  },
+  "atCurrentPrices": {
+    "message": "pelos preços atuais"
+  },
+  "mediaLabel": {
+    "message": "Mídia:"
+  },
+  "badgesLabel": {
+    "message": "Emblemas:"
+  },
+  "badgesWord": {
+    "message": "emblemas"
+  },
+  "libraryWord": {
+    "message": "Biblioteca"
+  },
+  "sortPlaytimeDesc": {
+    "message": "Ordenar: tempo de jogo ↓"
+  },
+  "neverPlayedFirst": {
+    "message": "Nunca jogados primeiro"
+  },
+  "sortAZ": {
+    "message": "A → Z"
+  },
+  "showUnplayedOnly": {
+    "message": "Mostrar somente não jogados"
+  },
+  "estimateLibraryValue": {
+    "message": "Estimar valor da biblioteca"
+  },
+  "badgeSummaryThisPage": {
+    "message": "resumo de emblemas (esta página)"
+  },
+  "badgesShown": {
+    "message": "emblemas exibidos"
+  },
+  "withProgress": {
+    "message": "com progresso"
+  },
+  "totalWord": {
+    "message": "no total"
+  },
+  "closestToNextLevel": {
+    "message": "Mais próximos do próximo nível:"
+  },
+  "fabTitle": {
+    "message": "Configurações do Steam Enhancer"
+  },
+  "gotIt": {
+    "message": "Entendi"
+  },
+  "letsGo": {
+    "message": "Vamos lá"
+  },
+  "welcomeTitle": {
+    "message": "Bem-vindo ao Steam Enhancer"
+  },
+  "thanksForUpdating": {
+    "message": "Obrigado por atualizar!"
+  },
+  "changelogItadKey": {
+    "message": "Importante: o IsThereAnyDeal agora exige uma chave de API gratuita para todos os recursos de preço. Obtenha uma em isthereanydeal.com/apps/my/ e cole em Opções → Região."
+  }
+}

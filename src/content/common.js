@@ -61,7 +61,7 @@
     if (document.getElementById('se-fab')) return;
     const fab = SE.el('div', {
       id: 'se-fab',
-      title: 'Steam Enhancer settings',
+      title: SE.t('fabTitle'),
       onclick: () => SE.bg({ type: 'openOptions' })
     }, 'SE');
     document.body && document.body.appendChild(fab);
@@ -87,15 +87,16 @@
       SE.el('div', { class: 'se-modal-box' },
         SE.el('div', { class: 'se-modal-h' }, `Steam Enhancer v${v}`),
         SE.el('div', { class: 'se-modal-body' },
-          SE.el('p', null, 'Thanks for updating!'),
+          SE.el('p', null, SE.t('thanksForUpdating')),
           SE.el('ul', null,
-            SE.el('li', null, 'New: trade item-value tables + local trade history, inventory multi-select selling, sort/group tiles, buy-order helper, live review filters, free-promo & price alerts, badge tracker.'),
+            SE.el('li', { style: { fontWeight: 'bold' } }, SE.t('changelogItadKey')),
+            SE.el('li', null, 'New: batched search/wishlist price lookups, i18n across every panel, market price-history chart, more languages.'),
             SE.el('li', null, 'See the options page (gear icon) — most new features have their own on/off toggle now.'),
             SE.el('li', null, 'Try Ctrl+Shift+S to toggle the panel, Ctrl+Shift+W for wishlist.')
           )
         ),
         SE.el('div', { class: 'se-modal-foot' },
-          SE.el('button', { class: 'se-btn', onclick: () => modal.remove() }, 'Got it')
+          SE.el('button', { class: 'se-btn', onclick: () => modal.remove() }, SE.t('gotIt'))
         )
       )
     );
@@ -119,7 +120,7 @@
     ];
     const modal = SE.el('div', { id: 'se-onboard-modal', class: 'se-modal' },
       SE.el('div', { class: 'se-modal-box' },
-        SE.el('div', { class: 'se-modal-h' }, 'Welcome to Steam Enhancer'),
+        SE.el('div', { class: 'se-modal-h' }, SE.t('welcomeTitle')),
         SE.el('div', { class: 'se-modal-body' },
           SE.el('div', { class: 'se-onboard-steps' },
             ...steps.map(([icon, title, desc]) => SE.el('div', { class: 'se-onboard-step' },
@@ -129,7 +130,7 @@
           )
         ),
         SE.el('div', { class: 'se-modal-foot' },
-          SE.el('button', { class: 'se-btn', onclick: () => modal.remove() }, "Let's go")
+          SE.el('button', { class: 'se-btn', onclick: () => modal.remove() }, SE.t('letsGo'))
         )
       )
     );

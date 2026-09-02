@@ -68,9 +68,14 @@
     if (!raw) return null;
     const s = String(raw).trim();
     if (/free|kostenlos|gratis|gratuito|gratuit|חינם/i.test(s)) return 0;
-    const m = s.replace(/[^\d.,-]/g, '').match(/(-?\d+(?:[.,]\d+)?)/);
+    // Capture the WHOLE contiguous digits/separators run (not just one
+    // separator group) so thousands + decimal together — "$1,234.56" — don't
+    // get truncated to "1,234" before the dot/comma disambiguation below runs.
+    // (Regression covered by scripts/unit-test.js — this silently mis-parsed
+    // any four-figure-plus price from v1.0.0 through v1.3.0.)
+    const m = s.replace(/[^\d.,-]/g, '').match(/-?[\d.,]+/);
     if (!m) return null;
-    let n = m[1];
+    let n = m[0];
     // Heuristic: if string has both . and , the last is the decimal separator.
     const hasDot = n.includes('.'), hasComma = n.includes(',');
     if (hasDot && hasComma) {

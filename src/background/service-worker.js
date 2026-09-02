@@ -31,10 +31,33 @@ async function getSettings() {
   return new Promise((res) => chrome.storage.sync.get([SETTINGS_KEY], (d) => res(d[SETTINGS_KEY] || {})));
 }
 
+// IsThereAnyDeal's v2 API requires an API key on every endpoint this codebase
+// uses (verified live — /games/lookup/v1, /games/prices/v3, /games/storelow/v2,
+// /games/overview/v2 all return 403 "Missing api key" with none). The key is
+// registered per-*application* (isthereanydeal.com/apps/my/, free), not a
+// personal credential — but we still route it through a user-supplied Options
+// field rather than baking one in, per this project's "no baked-in keys"
+// convention, since we can't register an app on the user's behalf. Centralized
+// here so every call site (content scripts via api.js, and this file's own
+// alarm handlers) gets it automatically without passing it around.
+async function withItadKey(url) {
+  if (!url.startsWith('https://api.isthereanydeal.com/')) return url;
+  const settings = await getSettings();
+  const key = settings.itadApiKey;
+  if (!key) return null; // signals "no key configured" to the caller
+  const sep = url.includes('?') ? '&' : '?';
+  return `${url}${sep}key=${encodeURIComponent(key)}`;
+}
+
 async function doFetchJson({ url, method = 'GET', headers, body, cacheKey, ttl }) {
   if (cacheKey) {
     const cached = await cacheGet(cacheKey);
     if (cached !== null) return { ok: true, data: cached, cached: true };
+  }
+  if (url.startsWith('https://api.isthereanydeal.com/')) {
+    const keyedUrl = await withItadKey(url);
+    if (!keyedUrl) return { ok: false, needsItadKey: true, error: 'No IsThereAnyDeal API key configured (Options → Region)' };
+    url = keyedUrl;
   }
   try {
     const resp = await fetch(url, {

@@ -5,7 +5,10 @@
   // All network calls go through the background service worker so we can centralize caching/CORS.
 
   SE.api = {
-    // IsThereAnyDeal v2 public endpoints (no key required for /games/prices/v3 lookup via /games/lookup/v1).
+    // IsThereAnyDeal v2 endpoints — as of v1.4.0 these all require a free,
+    // per-application API key (Options → Region). The background service
+    // worker attaches it automatically (see withItadKey in service-worker.js);
+    // callers just get back { needsItadKey: true } if none is configured.
     async itadLookup(appid) {
       return SE.bg({ type: 'fetchJson', url: `https://api.isthereanydeal.com/games/lookup/v1?appid=${encodeURIComponent(appid)}` , cacheKey: `itadlookup:${appid}`, ttl: 60 * 24 });
     },
@@ -33,6 +36,31 @@
         body,
         cacheKey: `itadlow:${itadId}:${country}`,
         ttl: 60 * 6
+      });
+    },
+
+    // Batch variants for list pages: same endpoints, but take an array of ITAD
+    // ids and cover them all in one request. Not individually cached (the
+    // composition varies per page) — the per-id itadLookup cache upstream is
+    // what keeps repeat visits cheap.
+    async itadPricesBatch(ids, country = 'us') {
+      if (!ids?.length) return { ok: true, data: [] };
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.isthereanydeal.com/games/prices/v3?country=${encodeURIComponent(country)}&capacity=8&nondeals=true&vouchers=true`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ids)
+      });
+    },
+    async itadHistoryLowBatch(ids, country = 'us') {
+      if (!ids?.length) return { ok: true, data: [] };
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.isthereanydeal.com/games/storelow/v2?country=${encodeURIComponent(country)}&shops=61`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ids)
       });
     },
 
@@ -87,6 +115,16 @@
     async itemOrdersHistogram(itemNameId, country = 'US', currency = 1) {
       const url = `https://steamcommunity.com/market/itemordershistogram?country=${encodeURIComponent(country)}&language=english&currency=${encodeURIComponent(currency)}&item_nameid=${encodeURIComponent(itemNameId)}&two_factor=0`;
       return SE.bg({ type: 'fetchJson', url, cacheKey: `histogram:${itemNameId}:${currency}`, ttl: 2 });
+    },
+
+    // Full price-history graph for a market item. Verified live: returns 400
+    // with an empty body for anonymous requests — this endpoint only returns
+    // real data with a logged-in Steam session (your normal browser cookies,
+    // sent automatically since this goes through the background SW). Not an
+    // ITAD/key issue — just needs you to be signed in to Steam.
+    async marketPriceHistory(appid, market_hash_name) {
+      const url = `https://steamcommunity.com/market/pricehistory/?appid=${encodeURIComponent(appid)}&market_hash_name=${encodeURIComponent(market_hash_name)}`;
+      return SE.bg({ type: 'fetchJson', url, cacheKey: `pricehist:${appid}:${market_hash_name}`, ttl: 120 });
     },
 
     async dynamicStore() {

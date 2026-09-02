@@ -4,6 +4,8 @@
 
   SE.onReady(() => init());
 
+  let keyNoticeShown = false;
+
   async function init() {
     if (!/\/wishlist\//.test(location.pathname)) return;
     SE.safe('wl:toolbar', insertToolbar);
@@ -14,12 +16,12 @@
     if (SE.$('#se-wishlist-toolbar')) return;
     const anchor = SE.$('#wishlist_ctn') || SE.$('.wishlist_content') || document.body;
     const bar = SE.el('div', { id: 'se-wishlist-toolbar', class: 'se-toolbar' },
-      SE.el('button', { class: 'se-btn', onclick: exportCSV }, 'Export CSV'),
-      SE.el('button', { class: 'se-btn', onclick: exportJSON }, 'Export JSON'),
-      SE.el('button', { class: 'se-btn', onclick: exportText }, 'Copy as text'),
-      SE.el('button', { class: 'se-btn', onclick: openAllOnITAD }, 'Open on ITAD'),
-      SE.el('button', { class: 'se-btn', onclick: sortByDealVsLow }, 'Sort: best deal vs low'),
-      SE.el('button', { class: 'se-btn', onclick: sortByPrice }, 'Sort: price ↑'),
+      SE.el('button', { class: 'se-btn', onclick: exportCSV }, SE.t('exportCsv')),
+      SE.el('button', { class: 'se-btn', onclick: exportJSON }, SE.t('exportJson')),
+      SE.el('button', { class: 'se-btn', onclick: exportText }, SE.t('copyAsText')),
+      SE.el('button', { class: 'se-btn', onclick: openAllOnITAD }, SE.t('openOnItad')),
+      SE.el('button', { class: 'se-btn', onclick: sortByDealVsLow }, SE.t('sortByDeal')),
+      SE.el('button', { class: 'se-btn', onclick: sortByPrice }, SE.t('sortByPrice')),
       SE.el('span', { id: 'se-wishlist-count', class: 'se-muted' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);
@@ -30,7 +32,7 @@
   const rows = () => SE.$$('.wishlist_row');
   function refreshCount() {
     const el = SE.$('#se-wishlist-count');
-    if (el) el.textContent = `${rows().length} visible`;
+    if (el) el.textContent = `${rows().length} ${SE.t('visibleWord')}`;
   }
 
   function collect() {
@@ -60,48 +62,60 @@
   function exportJSON() { download('steam-wishlist.json', JSON.stringify(collect(), null, 2), 'application/json'); }
   function exportText() {
     navigator.clipboard.writeText(collect().map(r => `- ${r.title} (${r.price})`).join('\n'))
-      .then(() => alert('Copied wishlist to clipboard.'));
+      .then(() => alert(SE.t('copiedToClipboard')));
   }
   function openAllOnITAD() {
     const ids = collect().map(r => r.appid).filter(Boolean).slice(0, 30);
-    if (!ids.length) return alert('Nothing to open.');
+    if (!ids.length) return alert(SE.t('nothingToOpen'));
     window.open(`https://isthereanydeal.com/search/?q=${encodeURIComponent(ids.join(','))}`, '_blank');
   }
 
   async function decorateRowsLoop() {
-    // Each row gets a "low: X · diff%" annotation.
+    const observer = new MutationObserver(SE.throttle(decorate, 200));
+    observer.observe(document.body, { childList: true, subtree: true });
+    decorate();
+  }
+
+  // Batched: one ITAD prices call + one storelow call for every not-yet-decorated
+  // row, instead of one pair of calls per row.
+  async function decorate() {
     const { settings } = SE.ctx;
     const country = settings.country || 'us';
-    const observer = new MutationObserver(SE.throttle(() => decorate(country), 200));
-    observer.observe(document.body, { childList: true, subtree: true });
-    decorate(country);
-  }
-  async function decorate(country) {
-    for (const r of rows()) {
-      if (r.dataset.seDone) continue;
-      r.dataset.seDone = '1';
+    const pending = rows().filter((r) => !r.dataset.seDone);
+    if (!pending.length) return;
+    pending.forEach((r) => { r.dataset.seDone = '1'; });
+
+    const withAppid = pending.map((r) => ({ row: r, appid: r.getAttribute('data-app-key') })).filter((x) => x.appid);
+    const summaries = await SE.priceSummaryBatch(withAppid.map((x) => x.appid), country);
+    const noKey = summaries === 'needsItadKey';
+    if (noKey && !keyNoticeShown) { keyNoticeShown = true; showKeyNotice(); }
+
+    const targets = await getTargets();
+
+    for (const r of pending) {
       const appid = r.getAttribute('data-app-key');
-      if (!appid) continue;
       const priceEl = r.querySelector('.discount_final_price, .price');
       const cur = priceEl ? SE.parsePrice(priceEl.textContent) : null;
-      const sum = await SE.priceSummary(appid, country);
-      if (!sum) continue;
-      const low = sum.historicalLow?.price;
+      const sum = !noKey && appid ? summaries.get(appid) : null;
+      const low = sum?.historicalLow?.price;
       const diff = (cur != null && low != null) ? Math.round(((cur - low) / Math.max(low, 0.01)) * 100) : null;
-      const tag = SE.el('div', { class: 'se-row-tag' },
-        low != null ? `low: ${low.toFixed(2)}${diff != null ? ` · ${diff >= 0 ? '+' : ''}${diff}% vs low` : ''}` : '—'
-      );
-      if (diff != null && diff <= 5) tag.classList.add('se-row-tag-match');
-      (r.querySelector('.discount_block, .price') || r).appendChild(tag);
-      // Also stash diff for sorting.
+
+      if (!noKey) {
+        const tag = SE.el('div', { class: 'se-row-tag' },
+          low != null ? `${SE.t('lowWord')}: ${low.toFixed(2)}${diff != null ? ` · ${diff >= 0 ? '+' : ''}${diff}% ${SE.t('vsLow')}` : ''}` : '—'
+        );
+        if (diff != null && diff <= 5) tag.classList.add('se-row-tag-match');
+        (r.querySelector('.discount_block, .price') || r).appendChild(tag);
+      }
       r.dataset.seDiff = diff != null ? String(diff) : '9999';
       r.dataset.sePrice = cur != null ? String(cur) : '9999';
 
+      if (!appid) continue;
+
       // Per-app price-target input.
-      const targets = await getTargets();
       const tgt = targets[appid];
       const input = SE.el('input', {
-        type: 'number', step: '0.01', min: '0', placeholder: 'alert me at…',
+        type: 'number', step: '0.01', min: '0', placeholder: SE.t('alertMeAtPlaceholder'),
         class: 'se-input', style: { width: '90px' }
       });
       input.value = tgt != null ? String(tgt) : '';
@@ -109,14 +123,26 @@
         const v = parseFloat(input.value);
         setTarget(appid, isFinite(v) && v > 0 ? v : null);
       });
-      const wrap = SE.el('div', { class: 'se-row-tag' }, 'target: ', input);
+      const wrap = SE.el('div', { class: 'se-row-tag' }, `${SE.t('targetWord')}: `, input);
       (r.querySelector('.discount_block, .price') || r).appendChild(wrap);
 
       if (tgt != null && cur != null && cur <= tgt) {
         r.style.outline = '2px solid #a4d007';
-        r.appendChild(SE.tag('AT TARGET', 'good'));
+        r.appendChild(SE.tag(SE.t('atTarget'), 'good'));
       }
     }
+  }
+
+  function showKeyNotice() {
+    const anchor = SE.$('#se-wishlist-toolbar');
+    if (!anchor || SE.$('#se-itad-key-notice')) return;
+    anchor.parentElement?.insertBefore(SE.el('div', { id: 'se-itad-key-notice', class: 'se-toolbar' },
+      SE.el('span', { class: 'se-muted' }, SE.t('needsItadKeyMsg') + ' '),
+      SE.el('a', {
+        href: 'javascript:void 0', class: 'se-link',
+        onclick: (e) => { e.preventDefault(); SE.bg({ type: 'openOptions' }); }
+      }, SE.t('openOptionsLink'))
+    ), anchor.nextSibling);
   }
 
   async function getTargets() {
