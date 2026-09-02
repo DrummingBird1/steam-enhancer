@@ -2,12 +2,18 @@
 
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/DrummingBird1/steam-enhancer?include_prereleases)](https://github.com/DrummingBird1/steam-enhancer/releases)
+[![Issues](https://img.shields.io/github/issues/DrummingBird1/steam-enhancer)](https://github.com/DrummingBird1/steam-enhancer/issues)
+
+**🌐 עברית: [README.he.md](README.he.md)**
 
 **Steam Enhancer** is an all-in-one Chrome extension that adds the most-loved features of *Augmented Steam* and *Steam Inventory Helper* into one clean, original, Manifest V3 codebase — with no build step and no telemetry.
 
 > Unofficial. Not affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
 
-Current version: **1.3.0** — see [`CHANGELOG.md`](CHANGELOG.md) for what's new (free-promo & review-bomb detection, store-page price alerts, owned-by-friends, library value, badge tracker, media shortcuts, ~20 new granular settings, onboarding tour, and a new `scripts/smoke-test.js` regression checker).
+Current version: **1.3.0** — see [`CHANGELOG.md`](CHANGELOG.md) or the [Releases page](https://github.com/DrummingBird1/steam-enhancer/releases) for what's new (free-promo & review-bomb detection, store-page price alerts, owned-by-friends, library value, badge tracker, media shortcuts, ~20 new granular settings, onboarding tour, and a new `scripts/smoke-test.js` regression checker).
+
+There is no separate project website yet — this repository (and, once published, the Chrome Web Store listing) is the canonical home for the project.
 
 ## Features
 
@@ -115,10 +121,13 @@ No build step — edit a file and click "reload" in `chrome://extensions/`. Run 
 
 ## Contributing
 
-Issues and PRs welcome. Please:
+Issues and PRs welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full guide (dev loop, code conventions, how to handle undocumented Steam endpoints). Short version:
 - Don't import code from other Steam extensions (license cleanliness matters).
 - Keep all DOM injections under the `se-` class prefix.
 - Route all `fetch` through the background service worker.
+- No build step, no ES modules in content scripts — see [`CLAUDE.md`](CLAUDE.md) for why.
+
+[Open an issue](https://github.com/DrummingBird1/steam-enhancer/issues) · [See past releases](https://github.com/DrummingBird1/steam-enhancer/releases)
 
 ## License
 
