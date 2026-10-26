@@ -144,3 +144,9 @@ MIT — see [`LICENSE`](LICENSE).
 Inspired by the excellent work of the [Augmented Steam](https://github.com/IsThereAnyDeal/AugmentedSteam) and [Steam Inventory Helper](https://chromewebstore.google.com/) communities. This is an independent reimplementation, not a fork.
 
 Trademarks: "Steam" is a trademark of Valve Corporation. This project is not affiliated with or endorsed by Valve.
+
+## Support
+
+If this project is useful to you, you can support its development:
+
+[Ko-fi](https://ko-fi.com/idanlights) · [Buy Me a Coffee](https://buymeacoffee.com/MrIdan) · [Patreon](https://www.patreon.com/c/IdanLights)
