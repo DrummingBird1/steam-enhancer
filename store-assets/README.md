@@ -6,7 +6,7 @@ Everything needed to fill in the Chrome Web Store Developer Dashboard.
 
 | File | Spec | Status |
 |---|---|---|
-| `../icons/icon128.png` | 128×128 PNG, store icon | ✅ |
+| `store-icon-128x128.png` | 128×128 PNG, store icon (96×96 artwork with 16 px transparent padding, per Chrome's guidance); the in-extension icons stay in `../icons/` | ✅ |
 | `promo-small-440x280.png` | 440×280 PNG, small promo tile | ✅ |
 | `promo-marquee-1400x560.png` | 1400×560 PNG, marquee tile (optional) | ✅ |
 | `screenshot-1-store-page.png` | 1280×800 PNG, real capture: store page panel | ✅ |
