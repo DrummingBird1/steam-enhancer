@@ -1,37 +1,43 @@
 # Chrome Web Store submission package
 
-Drop these into the Chrome Web Store Developer Dashboard when submitting.
+Everything needed to fill in the Chrome Web Store Developer Dashboard.
 
-## Required assets
+## Graphics
 
 | File | Spec | Status |
 |---|---|---|
 | `../icons/icon128.png` | 128×128 PNG, store icon | ✅ |
-| `promo-small-440x280.png` | 440×280 PNG, "small promo tile" | ✅ |
-| `promo-marquee-1400x560.png` | 1400×560 PNG, marquee tile (optional, recommended) | ✅ |
-| `screenshot-1-store-page.png` | 1280×800 PNG | ✅ |
-| `screenshot-2-search.png` | 1280×800 PNG | ✅ |
-| `screenshot-3-wishlist.png` | 1280×800 PNG | ✅ |
-| `screenshot-4-market.png` | 1280×800 PNG | ✅ |
-| `screenshot-5-options.png` | 1280×800 PNG | ✅ |
+| `promo-small-440x280.png` | 440×280 PNG, small promo tile | ✅ |
+| `promo-marquee-1400x560.png` | 1400×560 PNG, marquee tile (optional) | ⚠ tagline text is cut off at the right edge |
+| `screenshot-1..5-*.png` | 1280×800 PNG | ⚠ text mock-ups, not real screenshots of the extension. Replace with real captures from Steam pages before submitting. |
 
-You need at least 1 screenshot; up to 5 are allowed. All five are provided.
+At least 1 screenshot is required, up to 5 allowed.
 
-## Required listing text
-- **Short description** — see `description.md`
-- **Detailed description** — see `description.md`
-- **Category** — Productivity
-- **Privacy policy URL** — host `privacy-policy.md` (e.g. as a GitHub raw URL) and paste the URL into the dashboard.
+## Listing text
 
-## Permission justifications
-Each requested permission has a justification in `description.md` for the "permissions justification" form in the dashboard.
+| Language | File |
+|---|---|
+| English (default) | `description.md` |
+| Hebrew | `listing/he.md` |
+| German | `listing/de.md` |
+| Portuguese (Brazil) | `listing/pt_BR.md` |
+| Russian | `listing/ru.md` |
+
+Each file has a short description (132 characters max) and a detailed description. Paste them into the matching language tab of the dashboard. `description.md` also has the single-purpose statement and the permission justifications.
+
+- **Category**: Productivity
+- **Privacy policy URL**: `https://raw.githubusercontent.com/DrummingBird1/steam-enhancer/main/store-assets/privacy-policy.md`
 
 ## Packaging
-From the repo root:
+
+The upload package is built into `../dist/` (git-ignored) as `steam-enhancer-vX.Y.Z.zip`; older versions go in `../dist/ARCHIVE/`.
+
+It must contain only: `manifest.json`, `src/`, `icons/`, `_locales/`, `LICENSE`. Do **not** include `.git/`, `.claude/`, `store-assets/`, `scripts/`, `assets/`, `dist/` or `node_modules/`.
+
+For a tagged release, build it from the tag so it matches exactly what was released:
 
 ```
-# Windows PowerShell
-Compress-Archive -Path manifest.json, src, icons, LICENSE, README.md -DestinationPath steam-enhancer-v1.0.0.zip -Force
+git archive --format=zip -o dist/steam-enhancer-vX.Y.Z.zip vX.Y.Z -- manifest.json src icons _locales LICENSE
 ```
 
-Upload the zip to the dashboard. Make sure to **exclude** `.git/`, `.claude/`, `store-assets/`, and `node_modules/`.
+Before uploading, check that the `version` inside the ZIP's `manifest.json` is higher than the one already on the store.

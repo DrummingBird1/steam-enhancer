@@ -3,6 +3,17 @@
 All notable changes to Steam Enhancer are documented here. Versions follow the
 `version` field in `manifest.json`.
 
+## [1.4.1] — Store-readiness: trimmed permissions
+
+### Changed
+- Removed the unused `scripting` permission and the `tabs` permission from
+  `manifest.json`. Nothing called `chrome.scripting`, and `tabs.query` / `create`
+  / `sendMessage` don't need `tabs`; the active tab's URL is still readable on
+  Steam pages through the existing host permissions.
+- Rewrote the Chrome Web Store listing text (`store-assets/description.md`) to
+  cover everything through 1.4.0, and added translated listings for Hebrew,
+  German, Portuguese (Brazil) and Russian in `store-assets/listing/`.
+
 ## [1.4.0] — ITAD now requires a key, i18n everywhere, batched lookups
 
 ### ⚠ Action needed if you're updating
