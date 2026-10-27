@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "__MSG_extDesc__",
   "author": "Steam Enhancer Contributors",
   "default_locale": "en",
@@ -54,9 +54,7 @@
     "storage",
     "alarms",
     "contextMenus",
-    "notifications",
-    "scripting",
-    "tabs"
+    "notifications"
   ],
 
   "host_permissions": [
