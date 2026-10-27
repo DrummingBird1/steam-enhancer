@@ -8,8 +8,13 @@ Everything needed to fill in the Chrome Web Store Developer Dashboard.
 |---|---|---|
 | `../icons/icon128.png` | 128×128 PNG, store icon | ✅ |
 | `promo-small-440x280.png` | 440×280 PNG, small promo tile | ✅ |
-| `promo-marquee-1400x560.png` | 1400×560 PNG, marquee tile (optional) | ⚠ tagline text is cut off at the right edge |
-| `screenshot-1..5-*.png` | 1280×800 PNG | ⚠ text mock-ups, not real screenshots of the extension. Replace with real captures from Steam pages before submitting. |
+| `promo-marquee-1400x560.png` | 1400×560 PNG, marquee tile (optional) | ✅ |
+| `screenshot-1-store-page.png` | 1280×800 PNG, real capture: store page panel | ✅ |
+| `screenshot-2-search.png` | 1280×800 PNG, real capture: search / specials | ✅ |
+| `screenshot-3-options.png` | 1280×800 PNG, real capture: options page | ✅ |
+| `screenshot-4-popup.png` | 1280×800 PNG, real capture: toolbar popup (enlarged) | ✅ |
+
+The screenshots were captured from the real extension on live Steam pages while signed out and without an IsThereAnyDeal key, so the price panels show the "add a free key" notice. Market, inventory, wishlist and trade-offer screens need a signed-in session and are not included; add them if you want a fuller gallery.
 
 At least 1 screenshot is required, up to 5 allowed.
 

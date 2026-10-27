@@ -1,8 +1,14 @@
 const STORAGE_KEY = 'se_settings_v1';
+// Defaults for the toggles shown in the popup — keep in sync with DEFAULTS in options.js / storage.js.
+const POPUP_DEFAULTS = {
+  showLowestPrice: true, highlightOwned: true, highlightWishlist: true,
+  hideIgnoredInSearch: true, showProtonDB: true, showRegionalPricing: false,
+  notifyWishlistDeals: false
+};
 
 async function load() {
   const data = await new Promise((r) => chrome.storage.sync.get([STORAGE_KEY], r));
-  const cfg = data[STORAGE_KEY] || {};
+  const cfg = { ...POPUP_DEFAULTS, ...(data[STORAGE_KEY] || {}) };
   document.querySelectorAll('input[data-setting]').forEach((el) => {
     el.checked = !!cfg[el.dataset.setting];
   });
