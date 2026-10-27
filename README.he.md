@@ -5,6 +5,8 @@
 
 **גרסה זו בעברית. הגרסה הראשית (אנגלית) נמצאת ב-[README.md](README.md).**
 
+🗺 **מפת דרכים (באנגלית): [ROADMAP.md](ROADMAP.md).**
+
 **Steam Enhancer** הוא תוסף Chrome כולל שמוסיף ל-Steam את הפיצ'רים האהובים ביותר מהתוספים *Augmented Steam* ו-*Steam Inventory Helper* — לתוך קודבייס Manifest V3 אחד, נקי ומקורי, ללא שלב build וללא טלמטריה.
 
 > תוסף לא רשמי. אינו קשור ל-Valve, Augmented Steam או Steam Inventory Helper.

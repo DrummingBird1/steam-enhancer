@@ -7,6 +7,8 @@
 
 **🌐 עברית: [README.he.md](README.he.md)**
 
+🗺 **Planned work: see [ROADMAP.md](ROADMAP.md).**
+
 **Steam Enhancer** is an all-in-one Chrome extension that adds the most-loved features of *Augmented Steam* and *Steam Inventory Helper* into one clean, original, Manifest V3 codebase — with no build step and no telemetry.
 
 > Unofficial. Not affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
