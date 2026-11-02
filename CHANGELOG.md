@@ -3,7 +3,11 @@
 All notable changes to Steam Enhancer are documented here. Versions follow the
 `version` field in `manifest.json`.
 
-## [1.5.0] — Unreleased (in progress, see docs/PLAN-1.5.0.md)
+## [1.5.0] — Wishlist dashboard, Market Pro, price charts
+
+The biggest release so far: a round of real bug fixes (some had been there
+since 1.0), the wishlist rebuilt for Steam's new wishlist page, and a set of
+new tools. How it was planned: `docs/PLAN-1.5.0.md`.
 
 ### Fixed
 - **Mass-list and "list selected" could sell at the wrong price.** Prices were
