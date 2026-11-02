@@ -174,6 +174,17 @@ t('effectiveCountry: override > detected > us', () => {
   assert.strictEqual(SE.effectiveCountry({}, null), 'us');
 });
 
+t('compareRegions: cheapest first, % vs mine, unsold dropped', () => {
+  const r = SE.compareRegions([
+    { cc: 'il', amount: 50 }, { cc: 'us', amount: 60 }, { cc: 'tr', amount: 20 }, { cc: 'ru', amount: null }
+  ], 'il');
+  assert.strictEqual(r.map((x) => x.cc).join(','), 'tr,il,us');
+  assert.strictEqual(r[0].pct, -60);
+  assert.strictEqual(r[1].mine, true);
+  assert.strictEqual(r[2].pct, 20);
+  assert.strictEqual(SE.compareRegions([{ cc: 'us', amount: 5 }], 'il')[0].pct, null);
+});
+
 console.log('SE.itad (response parsers)');
 const GAME = '018d937f-1234-7000-9000-000000000001';
 t('lookup: found / not found', () => {

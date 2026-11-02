@@ -38,7 +38,7 @@
       if (settings.showPlayersOnline) SE.safe('players', () => addPlayersOnline(appid));
       if (settings.showAchievementStats) SE.safe('achievements', () => addAchievementStats(appid));
       if (settings.showDlcCheck) SE.safe('dlc', () => addDlcOwnership(appid));
-      if (settings.showRegionalPricing) SE.safe('regional', () => addRegionalPricing(appid));
+      if (settings.showRegionalPricing) SE.safe('regional', () => addRegionalPricing(appid, settings));
       if (settings.showReviewBreakdown) SE.safe('reviewBreakdown', () => addReviewBreakdown());
       if (settings.showCardSetValue) SE.safe('cards', () => addCardSetValue(appid));
       SE.safe('earlyAccess', () => addEarlyAccessBadge());

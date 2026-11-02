@@ -210,3 +210,9 @@
 .se-chart-axis { fill: #8f98a0; font-size: 9px; }
 .se-chart-tip { font-size: 11px; color: #c7d5e0; margin-top: 2px; unicode-bidi: plaintext; }
 .se-chart-note { font-size: 11px; }
+
+/* Regional prices (1.5.0) */
+.se-region-table { border-collapse: collapse; font-size: 12px; margin: 2px 0; }
+.se-region-table td { padding: 1px 8px 1px 0; white-space: nowrap; unicode-bidi: plaintext; }
+.se-region-table .se-tag { unicode-bidi: plaintext; }
+.se-region-mine td { color: #66c0f4; font-weight: 600; }

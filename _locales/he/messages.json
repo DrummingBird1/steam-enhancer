@@ -901,5 +901,11 @@
   },
   "chartFromVisits": {
     "message": "מהביקורים שלך בעמוד הזה (הוסף מפתח IsThereAnyDeal באפשרויות להיסטוריה מלאה)."
+  },
+  "regionYou": {
+    "message": "אתה"
+  },
+  "regionNote": {
+    "message": "הומר ל-{0} לפי שער היום. Steam בדרך כלל לא מאפשר לקנות מחנות של אזור אחר."
   }
 }

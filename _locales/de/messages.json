@@ -901,5 +901,11 @@
   },
   "chartFromVisits": {
     "message": "Aus deinen eigenen Besuchen dieser Seite (für den vollen Verlauf einen IsThereAnyDeal-Schlüssel in den Optionen eintragen)."
+  },
+  "regionYou": {
+    "message": "du"
+  },
+  "regionNote": {
+    "message": "Umgerechnet in {0} zum heutigen Kurs. Käufe im Shop einer anderen Region erlaubt Steam meist nicht."
   }
 }

@@ -45,16 +45,39 @@
     }
   }
 
-  async function addRegionalPricing(appid) {
+  // Steam's price in a spread of storefront regions, converted to one currency
+  // (Options → display currency, else your own country's) so they can actually
+  // be compared, cheapest first, each against your own price.
+  const REGIONS = ['us', 'gb', 'de', 'pl', 'br', 'tr', 'ar', 'in', 'ua', 'kz', 'jp', 'au'];
+  async function addRegionalPricing(appid, settings) {
     const body = panelBody(); if (!body) return;
-    const regions = ['us', 'ar', 'tr', 'ru', 'in', 'br'];
-    const wrap = SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, SE.t('regional')));
-    body.appendChild(wrap);
-    for (const cc of regions) {
+    const mine = SE.ctx.country;
+    const target = String(settings?.displayCurrency || '').trim().toUpperCase() || SE.currency.forCountry(mine);
+    const out = SE.el('div', { class: 'se-muted' }, SE.t('mktFetching'));
+    body.appendChild(SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, SE.t('regional')), out));
+
+    const rows = [];
+    for (const cc of [...new Set([mine, ...REGIONS])]) {
       const r = await SE.api.appDetails(appid, cc);
       const po = r?.data?.[appid]?.data?.price_overview;
-      if (po?.final_formatted) wrap.appendChild(SE.el('span', { class: 'se-region' }, `${cc.toUpperCase()}: ${po.final_formatted}`));
+      if (!po || !Number.isFinite(po.final)) { rows.push({ cc, amount: null }); continue; }
+      const local = po.final / 100;
+      const amount = await SE.fx.convert(local, po.currency, target);
+      rows.push({ cc, amount: Number.isFinite(amount) ? amount : null, local: po.final_formatted, discount: po.discount_percent || 0 });
     }
+    const ranked = SE.compareRegions(rows, mine);
+    if (!ranked.length) { out.textContent = SE.t('noDealData'); return; }
+
+    const table = SE.el('table', { class: 'se-region-table' },
+      ...ranked.map((r) => SE.el('tr', { class: r.mine ? 'se-region-mine' : '' },
+        SE.el('td', null, r.cc.toUpperCase() + (r.mine ? ` (${SE.t('regionYou')})` : '')),
+        SE.el('td', null, SE.formatMoney(r.amount, target)),
+        SE.el('td', { class: 'se-muted' }, r.local || ''),
+        SE.el('td', null, r.mine || r.pct == null ? '' : SE.tag(`${r.pct > 0 ? '+' : ''}${r.pct}%`, r.pct < 0 ? 'good' : 'ignored')),
+        SE.el('td', null, r.discount ? SE.tag(`-${r.discount}%`, 'wish') : '')
+      )));
+    out.replaceWith(table);
+    body.appendChild(SE.el('div', { class: 'se-row se-muted' }, SE.t('regionNote', target)));
   }
 
   async function addPriceChart(appid) {

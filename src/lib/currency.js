@@ -37,6 +37,21 @@
     }
   };
 
+  // Regional price comparison. `rows`: [{ cc, amount }] already converted to
+  // one currency (amount null = not sold there). Returns the sold rows cheapest
+  // first, each with `pct` relative to `mine`'s price and `mine: true` on it.
+  SE.compareRegions = (rows, mine) => {
+    const sold = (rows || []).filter((r) => r && Number.isFinite(r.amount));
+    const own = sold.find((r) => r.cc === mine);
+    return sold
+      .map((r) => ({
+        ...r,
+        mine: r.cc === mine,
+        pct: own && own.amount > 0 ? Math.round(((r.amount - own.amount) / own.amount) * 100) : null
+      }))
+      .sort((a, b) => a.amount - b.amount);
+  };
+
   // Detect current Steam currency from page if available (set by Steam JS).
   SE.detectSteamCurrency = () => {
     try {

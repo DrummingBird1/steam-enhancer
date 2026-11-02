@@ -901,5 +901,11 @@
   },
   "chartFromVisits": {
     "message": "From your own visits to this page (add an IsThereAnyDeal key in Options for full history)."
+  },
+  "regionYou": {
+    "message": "you"
+  },
+  "regionNote": {
+    "message": "Converted to {0} at today's exchange rate. Buying from another region's store usually isn't allowed by Steam."
   }
 }

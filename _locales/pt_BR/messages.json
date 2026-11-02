@@ -901,5 +901,11 @@
   },
   "chartFromVisits": {
     "message": "Das suas próprias visitas a esta página (adicione uma chave do IsThereAnyDeal nas Opções para o histórico completo)."
+  },
+  "regionYou": {
+    "message": "você"
+  },
+  "regionNote": {
+    "message": "Convertido para {0} pelo câmbio de hoje. Comprar na loja de outra região geralmente não é permitido pela Steam."
   }
 }

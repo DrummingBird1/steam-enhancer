@@ -747,7 +747,11 @@ const T = {
   range3M: { en: '3M', he: '3 ח׳', ru: '3 мес.', de: '3 Mon.', ptBR: '3M' },
   range1Y: { en: '1Y', he: 'שנה', ru: '1 год', de: '1 J.', ptBR: '1A' },
   rangeALL: { en: 'All', he: 'הכול', ru: 'Всё', de: 'Alles', ptBR: 'Tudo' },
-  chartFromVisits: { en: 'From your own visits to this page (add an IsThereAnyDeal key in Options for full history).', he: 'מהביקורים שלך בעמוד הזה (הוסף מפתח IsThereAnyDeal באפשרויות להיסטוריה מלאה).', ru: 'По вашим посещениям этой страницы (добавьте ключ IsThereAnyDeal в настройках для полной истории).', de: 'Aus deinen eigenen Besuchen dieser Seite (für den vollen Verlauf einen IsThereAnyDeal-Schlüssel in den Optionen eintragen).', ptBR: 'Das suas próprias visitas a esta página (adicione uma chave do IsThereAnyDeal nas Opções para o histórico completo).' }
+  chartFromVisits: { en: 'From your own visits to this page (add an IsThereAnyDeal key in Options for full history).', he: 'מהביקורים שלך בעמוד הזה (הוסף מפתח IsThereAnyDeal באפשרויות להיסטוריה מלאה).', ru: 'По вашим посещениям этой страницы (добавьте ключ IsThereAnyDeal в настройках для полной истории).', de: 'Aus deinen eigenen Besuchen dieser Seite (für den vollen Verlauf einen IsThereAnyDeal-Schlüssel in den Optionen eintragen).', ptBR: 'Das suas próprias visitas a esta página (adicione uma chave do IsThereAnyDeal nas Opções para o histórico completo).' },
+
+  // v1.5.0 — regional prices.
+  regionYou: { en: 'you', he: 'אתה', ru: 'вы', de: 'du', ptBR: 'você' },
+  regionNote: { en: 'Converted to {0} at today\'s exchange rate. Buying from another region\'s store usually isn\'t allowed by Steam.', he: 'הומר ל-{0} לפי שער היום. Steam בדרך כלל לא מאפשר לקנות מחנות של אזור אחר.', ru: 'Пересчитано в {0} по сегодняшнему курсу. Покупать в магазине другого региона Steam обычно не разрешает.', de: 'Umgerechnet in {0} zum heutigen Kurs. Käufe im Shop einer anderen Region erlaubt Steam meist nicht.', ptBR: 'Convertido para {0} pelo câmbio de hoje. Comprar na loja de outra região geralmente não é permitido pela Steam.' }
 };
 
 function build(lang) {
