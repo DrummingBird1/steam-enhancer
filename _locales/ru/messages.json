@@ -80,9 +80,6 @@
   "topTags": {
     "message": "Популярные теги:"
   },
-  "filterReviews": {
-    "message": "Быстрые фильтры обзоров:"
-  },
   "exportCsv": {
     "message": "Экспорт в CSV"
   },
@@ -91,15 +88,6 @@
   },
   "copyAsText": {
     "message": "Копировать как текст"
-  },
-  "openOnItad": {
-    "message": "Открыть на ITAD"
-  },
-  "sortByDeal": {
-    "message": "Сортировка: близость к минимуму"
-  },
-  "sortByPrice": {
-    "message": "Сортировка: цена ↑"
   },
   "estimateValue": {
     "message": "Оценить стоимость"
@@ -128,23 +116,8 @@
   "difference": {
     "message": "Разница"
   },
-  "settings": {
-    "message": "Настройки"
-  },
-  "save": {
-    "message": "Сохранить"
-  },
-  "reset": {
-    "message": "Сбросить настройки"
-  },
   "clearCache": {
     "message": "Очистить кэш"
-  },
-  "exportSettings": {
-    "message": "Экспорт настроек"
-  },
-  "importSettings": {
-    "message": "Импорт настроек"
   },
   "viewOnMarket": {
     "message": "Открыть на площадке"
@@ -184,30 +157,6 @@
   },
   "allSettings": {
     "message": "Все настройки…"
-  },
-  "optSubtitle": {
-    "message": "Все настройки. Изменения вступят в силу при следующей загрузке страницы."
-  },
-  "secRegion": {
-    "message": "Регион"
-  },
-  "secStore": {
-    "message": "Страницы магазина"
-  },
-  "secSearch": {
-    "message": "Поиск и списки"
-  },
-  "secMarket": {
-    "message": "Площадка, инвентарь, обмен"
-  },
-  "secNotify": {
-    "message": "Уведомления"
-  },
-  "secAdvanced": {
-    "message": "Дополнительно"
-  },
-  "importExportNote": {
-    "message": "Экспорт или импорт всех настроек, заметок и чёрного списка в формате JSON."
   },
   "checkingDeals": {
     "message": "Проверка предложений…"
@@ -383,20 +332,11 @@
   "hideForeverTitle": {
     "message": "Скрыть навсегда (чёрный список расширения)"
   },
-  "visibleWord": {
-    "message": "видно"
-  },
   "copiedToClipboard": {
     "message": "Список желаемого скопирован в буфер обмена."
   },
-  "nothingToOpen": {
-    "message": "Нечего открывать."
-  },
   "vsLow": {
     "message": "от минимума"
-  },
-  "targetWord": {
-    "message": "цель"
   },
   "atTarget": {
     "message": "ЦЕЛЬ ДОСТИГНУТА"

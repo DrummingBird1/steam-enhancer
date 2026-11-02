@@ -80,9 +80,6 @@
   "topTags": {
     "message": "תגיות מובילות:"
   },
-  "filterReviews": {
-    "message": "פילטרי ביקורות מהירים:"
-  },
   "exportCsv": {
     "message": "ייצא CSV"
   },
@@ -91,15 +88,6 @@
   },
   "copyAsText": {
     "message": "העתק כטקסט"
-  },
-  "openOnItad": {
-    "message": "פתח ב-ITAD"
-  },
-  "sortByDeal": {
-    "message": "מיון: הקרוב לשפל"
-  },
-  "sortByPrice": {
-    "message": "מיון: מחיר ↑"
   },
   "estimateValue": {
     "message": "אמוד שווי"
@@ -128,23 +116,8 @@
   "difference": {
     "message": "הפרש"
   },
-  "settings": {
-    "message": "הגדרות"
-  },
-  "save": {
-    "message": "שמור"
-  },
-  "reset": {
-    "message": "אפס לברירת מחדל"
-  },
   "clearCache": {
     "message": "נקה מטמון"
-  },
-  "exportSettings": {
-    "message": "ייצא הגדרות"
-  },
-  "importSettings": {
-    "message": "ייבא הגדרות"
   },
   "viewOnMarket": {
     "message": "צפה ב-Market"
@@ -184,30 +157,6 @@
   },
   "allSettings": {
     "message": "כל ההגדרות…"
-  },
-  "optSubtitle": {
-    "message": "כל ההגדרות. שינויים חלים בטעינת הדף הבאה."
-  },
-  "secRegion": {
-    "message": "אזור"
-  },
-  "secStore": {
-    "message": "דפי חנות"
-  },
-  "secSearch": {
-    "message": "חיפוש ורשימות"
-  },
-  "secMarket": {
-    "message": "Market, מלאי ועסקאות"
-  },
-  "secNotify": {
-    "message": "התראות"
-  },
-  "secAdvanced": {
-    "message": "מתקדם"
-  },
-  "importExportNote": {
-    "message": "ייצא או ייבא את כל ההגדרות, ההערות והחסימות כ-JSON."
   },
   "checkingDeals": {
     "message": "בודק מבצעים…"
@@ -383,20 +332,11 @@
   "hideForeverTitle": {
     "message": "הסתר לצמיתות (רשימת חסימה של התוסף)"
   },
-  "visibleWord": {
-    "message": "מוצגות"
-  },
   "copiedToClipboard": {
     "message": "רשימת המשאלות הועתקה ללוח."
   },
-  "nothingToOpen": {
-    "message": "אין מה לפתוח."
-  },
   "vsLow": {
     "message": "מול השפל"
-  },
-  "targetWord": {
-    "message": "יעד"
   },
   "atTarget": {
     "message": "ביעד"

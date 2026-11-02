@@ -80,9 +80,6 @@
   "topTags": {
     "message": "Principais tags:"
   },
-  "filterReviews": {
-    "message": "Filtros rápidos de avaliação:"
-  },
   "exportCsv": {
     "message": "Exportar CSV"
   },
@@ -91,15 +88,6 @@
   },
   "copyAsText": {
     "message": "Copiar como texto"
-  },
-  "openOnItad": {
-    "message": "Abrir no ITAD"
-  },
-  "sortByDeal": {
-    "message": "Ordenar: melhor oferta vs. mínimo"
-  },
-  "sortByPrice": {
-    "message": "Ordenar: preço ↑"
   },
   "estimateValue": {
     "message": "Estimar valor"
@@ -128,23 +116,8 @@
   "difference": {
     "message": "Diferença"
   },
-  "settings": {
-    "message": "Configurações"
-  },
-  "save": {
-    "message": "Salvar"
-  },
-  "reset": {
-    "message": "Restaurar padrão"
-  },
   "clearCache": {
     "message": "Limpar cache"
-  },
-  "exportSettings": {
-    "message": "Exportar configurações"
-  },
-  "importSettings": {
-    "message": "Importar configurações"
   },
   "viewOnMarket": {
     "message": "Ver no Mercado"
@@ -184,30 +157,6 @@
   },
   "allSettings": {
     "message": "Todas as configurações…"
-  },
-  "optSubtitle": {
-    "message": "Todas as configurações. As alterações se aplicam no próximo carregamento da página."
-  },
-  "secRegion": {
-    "message": "Região"
-  },
-  "secStore": {
-    "message": "Páginas da loja"
-  },
-  "secSearch": {
-    "message": "Busca e listas"
-  },
-  "secMarket": {
-    "message": "Mercado, inventário, trocas"
-  },
-  "secNotify": {
-    "message": "Notificações"
-  },
-  "secAdvanced": {
-    "message": "Avançado"
-  },
-  "importExportNote": {
-    "message": "Exportar ou importar todas as configurações, notas e lista de bloqueio como JSON."
   },
   "checkingDeals": {
     "message": "Verificando ofertas…"
@@ -383,20 +332,11 @@
   "hideForeverTitle": {
     "message": "Ocultar para sempre (lista de bloqueio da extensão)"
   },
-  "visibleWord": {
-    "message": "visíveis"
-  },
   "copiedToClipboard": {
     "message": "Lista de desejos copiada para a área de transferência."
   },
-  "nothingToOpen": {
-    "message": "Nada para abrir."
-  },
   "vsLow": {
     "message": "vs. mínimo"
-  },
-  "targetWord": {
-    "message": "meta"
   },
   "atTarget": {
     "message": "NA META"

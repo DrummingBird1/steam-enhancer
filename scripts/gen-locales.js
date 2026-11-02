@@ -43,13 +43,9 @@ const T = {
   valueMismatch: { en: 'VALUE MISMATCH', he: 'פער שווי', ru: 'НЕРАВНОЦЕННЫЙ ОБМЕН', de: 'WERTUNTERSCHIED', ptBR: 'VALOR DESIGUAL' },
   drm: { en: 'DRM:', he: 'DRM:', ru: 'DRM:', de: 'DRM:', ptBR: 'DRM:' },
   topTags: { en: 'Top tags:', he: 'תגיות מובילות:', ru: 'Популярные теги:', de: 'Top-Tags:', ptBR: 'Principais tags:' },
-  filterReviews: { en: 'Quick review filters:', he: 'פילטרי ביקורות מהירים:', ru: 'Быстрые фильтры обзоров:', de: 'Schnelle Rezensionsfilter:', ptBR: 'Filtros rápidos de avaliação:' },
   exportCsv: { en: 'Export CSV', he: 'ייצא CSV', ru: 'Экспорт в CSV', de: 'CSV exportieren', ptBR: 'Exportar CSV' },
   exportJson: { en: 'Export JSON', he: 'ייצא JSON', ru: 'Экспорт в JSON', de: 'JSON exportieren', ptBR: 'Exportar JSON' },
   copyAsText: { en: 'Copy as text', he: 'העתק כטקסט', ru: 'Копировать как текст', de: 'Als Text kopieren', ptBR: 'Copiar como texto' },
-  openOnItad: { en: 'Open on ITAD', he: 'פתח ב-ITAD', ru: 'Открыть на ITAD', de: 'Auf ITAD öffnen', ptBR: 'Abrir no ITAD' },
-  sortByDeal: { en: 'Sort: best deal vs low', he: 'מיון: הקרוב לשפל', ru: 'Сортировка: близость к минимуму', de: 'Sortieren: bester Deal vs. Tiefstpreis', ptBR: 'Ordenar: melhor oferta vs. mínimo' },
-  sortByPrice: { en: 'Sort: price ↑', he: 'מיון: מחיר ↑', ru: 'Сортировка: цена ↑', de: 'Sortieren: Preis ↑', ptBR: 'Ordenar: preço ↑' },
   estimateValue: { en: 'Estimate value', he: 'אמוד שווי', ru: 'Оценить стоимость', de: 'Wert schätzen', ptBR: 'Estimar valor' },
   findDuplicates: { en: 'Find duplicates', he: 'מצא כפילויות', ru: 'Найти дубликаты', de: 'Duplikate finden', ptBR: 'Encontrar duplicatas' },
   markDuplicates: { en: 'Mark duplicates', he: 'סמן כפילויות', ru: 'Отметить дубликаты', de: 'Duplikate markieren', ptBR: 'Marcar duplicatas' },
@@ -59,12 +55,7 @@ const T = {
   youOffer: { en: 'You offer', he: 'אתה מציע', ru: 'Вы предлагаете', de: 'Du bietest', ptBR: 'Você oferece' },
   theyOffer: { en: 'They offer', he: 'הם מציעים', ru: 'Вам предлагают', de: 'Gegenüber bietet', ptBR: 'Eles oferecem' },
   difference: { en: 'Difference', he: 'הפרש', ru: 'Разница', de: 'Differenz', ptBR: 'Diferença' },
-  settings: { en: 'Settings', he: 'הגדרות', ru: 'Настройки', de: 'Einstellungen', ptBR: 'Configurações' },
-  save: { en: 'Save', he: 'שמור', ru: 'Сохранить', de: 'Speichern', ptBR: 'Salvar' },
-  reset: { en: 'Reset to defaults', he: 'אפס לברירת מחדל', ru: 'Сбросить настройки', de: 'Auf Standard zurücksetzen', ptBR: 'Restaurar padrão' },
   clearCache: { en: 'Clear cache', he: 'נקה מטמון', ru: 'Очистить кэш', de: 'Cache leeren', ptBR: 'Limpar cache' },
-  exportSettings: { en: 'Export settings', he: 'ייצא הגדרות', ru: 'Экспорт настроек', de: 'Einstellungen exportieren', ptBR: 'Exportar configurações' },
-  importSettings: { en: 'Import settings', he: 'ייבא הגדרות', ru: 'Импорт настроек', de: 'Einstellungen importieren', ptBR: 'Importar configurações' },
   viewOnMarket: { en: 'View on Market', he: 'צפה ב-Market', ru: 'Открыть на площадке', de: 'Im Markt ansehen', ptBR: 'Ver no Mercado' },
   remainingCardDrops: { en: 'Your remaining card drops', he: 'drops קלפים שנותרו', ru: 'Оставшиеся карточки', de: 'Verbleibende Kartendrops', ptBR: 'Cartas restantes para dropar' },
   openStore: { en: 'Open Steam Store', he: 'פתח את חנות Steam', ru: 'Открыть магазин Steam', de: 'Steam Store öffnen', ptBR: 'Abrir a Steam Store' },
@@ -78,14 +69,6 @@ const T = {
   tShowRegional: { en: 'Show regional prices', he: 'הצג מחירים אזוריים', ru: 'Показывать региональные цены', de: 'Regionale Preise anzeigen', ptBR: 'Mostrar preços regionais' },
   tNotifyDeals: { en: 'Notify on wishlist deals', he: 'התרעות על מבצעים ברשימת משאלות', ru: 'Уведомлять о скидках из списка желаемого', de: 'Bei Wunschlisten-Angeboten benachrichtigen', ptBR: 'Notificar ofertas da lista de desejos' },
   allSettings: { en: 'All settings…', he: 'כל ההגדרות…', ru: 'Все настройки…', de: 'Alle Einstellungen…', ptBR: 'Todas as configurações…' },
-  optSubtitle: { en: 'All settings. Changes apply on next page load.', he: 'כל ההגדרות. שינויים חלים בטעינת הדף הבאה.', ru: 'Все настройки. Изменения вступят в силу при следующей загрузке страницы.', de: 'Alle Einstellungen. Änderungen gelten beim nächsten Laden der Seite.', ptBR: 'Todas as configurações. As alterações se aplicam no próximo carregamento da página.' },
-  secRegion: { en: 'Region', he: 'אזור', ru: 'Регион', de: 'Region', ptBR: 'Região' },
-  secStore: { en: 'Store pages', he: 'דפי חנות', ru: 'Страницы магазина', de: 'Store-Seiten', ptBR: 'Páginas da loja' },
-  secSearch: { en: 'Search & lists', he: 'חיפוש ורשימות', ru: 'Поиск и списки', de: 'Suche & Listen', ptBR: 'Busca e listas' },
-  secMarket: { en: 'Market, Inventory, Trade', he: 'Market, מלאי ועסקאות', ru: 'Площадка, инвентарь, обмен', de: 'Markt, Inventar, Handel', ptBR: 'Mercado, inventário, trocas' },
-  secNotify: { en: 'Notifications', he: 'התראות', ru: 'Уведомления', de: 'Benachrichtigungen', ptBR: 'Notificações' },
-  secAdvanced: { en: 'Advanced', he: 'מתקדם', ru: 'Дополнительно', de: 'Erweitert', ptBR: 'Avançado' },
-  importExportNote: { en: 'Export or import all settings, notes and blocklist as JSON.', he: 'ייצא או ייבא את כל ההגדרות, ההערות והחסימות כ-JSON.', ru: 'Экспорт или импорт всех настроек, заметок и чёрного списка в формате JSON.', de: 'Alle Einstellungen, Notizen und die Sperrliste als JSON exportieren oder importieren.', ptBR: 'Exportar ou importar todas as configurações, notas e lista de bloqueio como JSON.' },
 
   // --- v1.4.0 additions ---
   checkingDeals: { en: 'Checking deals…', he: 'בודק מבצעים…', ru: 'Проверка предложений…', de: 'Angebote werden geprüft…', ptBR: 'Verificando ofertas…' },
@@ -148,11 +131,8 @@ const T = {
 
   // Search/wishlist
   hideForeverTitle: { en: 'Hide forever (extension blocklist)', he: 'הסתר לצמיתות (רשימת חסימה של התוסף)', ru: 'Скрыть навсегда (чёрный список расширения)', de: 'Für immer ausblenden (Sperrliste der Erweiterung)', ptBR: 'Ocultar para sempre (lista de bloqueio da extensão)' },
-  visibleWord: { en: 'visible', he: 'מוצגות', ru: 'видно', de: 'sichtbar', ptBR: 'visíveis' },
   copiedToClipboard: { en: 'Copied wishlist to clipboard.', he: 'רשימת המשאלות הועתקה ללוח.', ru: 'Список желаемого скопирован в буфер обмена.', de: 'Wunschliste in die Zwischenablage kopiert.', ptBR: 'Lista de desejos copiada para a área de transferência.' },
-  nothingToOpen: { en: 'Nothing to open.', he: 'אין מה לפתוח.', ru: 'Нечего открывать.', de: 'Nichts zu öffnen.', ptBR: 'Nada para abrir.' },
   vsLow: { en: 'vs low', he: 'מול השפל', ru: 'от минимума', de: 'vs. Tief', ptBR: 'vs. mínimo' },
-  targetWord: { en: 'target', he: 'יעד', ru: 'цель', de: 'Ziel', ptBR: 'meta' },
   atTarget: { en: 'AT TARGET', he: 'ביעד', ru: 'ЦЕЛЬ ДОСТИГНУТА', de: 'ZIEL ERREICHT', ptBR: 'NA META' },
 
   // Market

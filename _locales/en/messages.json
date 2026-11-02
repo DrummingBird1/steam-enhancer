@@ -80,9 +80,6 @@
   "topTags": {
     "message": "Top tags:"
   },
-  "filterReviews": {
-    "message": "Quick review filters:"
-  },
   "exportCsv": {
     "message": "Export CSV"
   },
@@ -91,15 +88,6 @@
   },
   "copyAsText": {
     "message": "Copy as text"
-  },
-  "openOnItad": {
-    "message": "Open on ITAD"
-  },
-  "sortByDeal": {
-    "message": "Sort: best deal vs low"
-  },
-  "sortByPrice": {
-    "message": "Sort: price ↑"
   },
   "estimateValue": {
     "message": "Estimate value"
@@ -128,23 +116,8 @@
   "difference": {
     "message": "Difference"
   },
-  "settings": {
-    "message": "Settings"
-  },
-  "save": {
-    "message": "Save"
-  },
-  "reset": {
-    "message": "Reset to defaults"
-  },
   "clearCache": {
     "message": "Clear cache"
-  },
-  "exportSettings": {
-    "message": "Export settings"
-  },
-  "importSettings": {
-    "message": "Import settings"
   },
   "viewOnMarket": {
     "message": "View on Market"
@@ -184,30 +157,6 @@
   },
   "allSettings": {
     "message": "All settings…"
-  },
-  "optSubtitle": {
-    "message": "All settings. Changes apply on next page load."
-  },
-  "secRegion": {
-    "message": "Region"
-  },
-  "secStore": {
-    "message": "Store pages"
-  },
-  "secSearch": {
-    "message": "Search & lists"
-  },
-  "secMarket": {
-    "message": "Market, Inventory, Trade"
-  },
-  "secNotify": {
-    "message": "Notifications"
-  },
-  "secAdvanced": {
-    "message": "Advanced"
-  },
-  "importExportNote": {
-    "message": "Export or import all settings, notes and blocklist as JSON."
   },
   "checkingDeals": {
     "message": "Checking deals…"
@@ -383,20 +332,11 @@
   "hideForeverTitle": {
     "message": "Hide forever (extension blocklist)"
   },
-  "visibleWord": {
-    "message": "visible"
-  },
   "copiedToClipboard": {
     "message": "Copied wishlist to clipboard."
   },
-  "nothingToOpen": {
-    "message": "Nothing to open."
-  },
   "vsLow": {
     "message": "vs low"
-  },
-  "targetWord": {
-    "message": "target"
   },
   "atTarget": {
     "message": "AT TARGET"

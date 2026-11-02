@@ -13,70 +13,67 @@
 
 > Unofficial. Not affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
 
-Current version: **1.4.0** — see [`CHANGELOG.md`](CHANGELOG.md) or the [Releases page](https://github.com/DrummingBird1/steam-enhancer/releases) for the full history.
+Current version: **1.5.0** — see [`CHANGELOG.md`](CHANGELOG.md) or the [Releases page](https://github.com/DrummingBird1/steam-enhancer/releases) for the full history.
 
 There is no separate project website yet — this repository (and, once published, the Chrome Web Store listing) is the canonical home for the project.
 
-> **⚠ If you're updating from an earlier version:** IsThereAnyDeal now requires a free API key for every price feature (lowest price, historical low, price-history chart, search/wishlist price tags, deal notifications) — this changed on their end, not something this project chose. Get a free key at [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) (registers the extension, not you personally) and paste it into **Options → IsThereAnyDeal API key**. Without it, those features show a message pointing you here instead of just going quiet.
+> **Price features need a free IsThereAnyDeal API key** (lowest price, historical low, full price history, search/wishlist price tags, deal alerts). IsThereAnyDeal requires one for every app using their API. Register a free app at [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) and paste its key into **Options → Prices & keys**. Without it, those features show a short notice with a link to Options.
 
 ## Features
 
 ### Store pages (`/app/`, `/sub/`, `/bundle/`)
-- 💸 **Lowest current price** across stores (via IsThereAnyDeal), with an optional second **display currency**
-- 📉 **Historical low** with shop, date, discount, and an inline price-history sparkline
-- 🔔 **Price alerts** — set a target price right on the game page (shared with wishlist alerts) and get notified when it's hit
-- 🎁 **Free-for-a-limited-time promo** notifications
-- 🌍 **Regional pricing** preview (US, AR, TR, RU, IN, BR)
-- 🎒 **Bundle savings check** — buying separately vs. the bundle price
-- 🐧 **ProtonDB rating** for Linux/Deck players
-- ⏱ **HowLongToBeat** shortcut
-- 👥 **Players online right now**, 👫 **owned-by-friends count** (opt-in, your own Steam Web API key)
-- 🏆 **Achievement stats** (count, easiest, rarest)
-- 🧩 **Owned-DLC highlight** + count, **owned-in-bundle highlight**
-- 🃏 **Trading-card links** (Market + SteamCardExchange)
-- 🔗 SteamDB, SteamCharts, Barter.vg, SteamSpy, SteamGifts, SteamTrades quick links
-- 📊 Review breakdown, **most-helpful review snippet**, **possible review-bomb flag**, and a **live filter bar** (min playtime, min length, recommended/not) that re-filters loaded reviews with no page reload
-- 📝 Private per-game notes, DRM/early-access/coming-soon badges, community tags
+- 💸 **Lowest current price** across stores and **Steam's historical low** (via IsThereAnyDeal), with an optional second **display currency**
+- 📈 **Interactive price-history chart** — Steam's price over three years, hover for date and price, 3M / 1Y / All ranges, a line at the lowest price. Without an ITAD key it charts the prices you've seen on your own visits
+- 🌍 **Regional prices in your currency** — a dozen regions converted to one currency, cheapest first, each compared to your own price
+- 🔔 **Price alerts** — set a target right on the game page (shared with the wishlist) and get notified when it's hit
+- 🎒 **Bundle check** — buying separately vs. the bundle price
+- 🎮 **Steam Deck status** (Verified / Playable / Unsupported) and 🐧 **ProtonDB rating**
+- 🏆 **Achievement stats** (count, easiest, rarest) and **your own progress** for games you own (with your Steam Web API key)
+- 👥 **Players online now**, 👫 **friends who own it** (opt-in, your own Steam Web API key)
+- 📊 Review breakdown, **most-helpful review**, **possible review-bomb flag**, and a **live review filter** (playtime, length, recommended or not) — all of these work whatever language your Steam is in
+- 🧩 Owned-DLC highlighting, owned items in packages, DRM / Early Access / Coming Soon badges, community tags
+- 🃏 Trading-card links, ⏱ HowLongToBeat, 🔗 SteamDB, SteamCharts, Barter.vg, SteamSpy, SteamGifts, SteamTrades
+- 📝 Private per-game notes
 
-### Search, specials, sale pages
-- 🟩 Highlight **owned**, **wishlisted**, and **ignored** games
-- 🙈 Optionally **hide owned / hide ignored**, or hide any single game forever
-- 🏷 Show **historical-low price** badge on each result
+### Search, specials, sales
+- 🟩 Highlight **owned**, **wishlisted** and **ignored** games
+- 🙈 Hide owned / ignored games, or hide any single game for good
+- 🏷 **Historical-low tag** on each result, in the same currency as the price next to it
 
 ### Wishlist
-- 📤 Export wishlist to **CSV / JSON / clipboard text**
-- 🔍 Open as a batch on IsThereAnyDeal
-- 🎯 **Per-row price targets** with notifications, sort by best-deal-vs-low
+A panel above Steam's own wishlist, built from Steam's wishlist and store data — works on anyone's public wishlist:
+- 📋 One table: price, discount, historical low and how far above it you are, reviews, Steam Deck status, your alert price, date added
+- 🧮 Summary: total now vs. full price, how many are on sale, at their historical low, or at your alert price
+- 🔎 Search, 8 sort orders, filters (on sale, at historical low, at my target, max price)
+- 📤 Export what's shown to **CSV / JSON**, or copy it as a list
+- 🔔 Background check of the **whole wishlist** (up to 500 games) — each deal is announced once
 
 ### Steam Community Market
-- 💰 Auto-show **net amount after the 15% market fee** on every listing
-- ✂️ **Undercut calculator**, 💹 **buy-order helper** (reads the real order book)
-- 💱 Built-in currency converter
+- 💰 **What you'd actually receive** after Steam's fees, on every listing (Steam's own fee rounding)
+- 📋 **My listings check** — each of your listings marked LOWEST or UNDERCUT by how much; select the undercut ones and remove them together
+- ✂️ Undercut calculator, 💹 buy-order helper (the real order book), 📈 price-history chart
+- 💱 Currency converter
 
 ### Inventory
-- 💎 **Estimate inventory value** (with a value-over-time chart) · 👯 **find/mark duplicates**
-- 🗂 **Sort by value, group by type, rarity/quality breakdown**
-- ☑️ **Manual multi-select selling** — pick items, edit each price, confirm — or auto-list at median (both are dry-run-then-confirm, nothing lists without your explicit click)
-- 🃏 Card-set progress, booster-pack creator, CS2 sticker prices & exact-item inspect links
+- ⚡ **Quick sell** (one cent under the cheapest listing) and **Instant sell** (to the highest buy order) for the selected item
+- ☑️ **Multi-select selling** and **list at median** — each item shows *buyer pays / you receive* in your wallet currency, and nothing is listed without your explicit confirm click
+- 💎 Inventory value estimate with a value-over-time chart · 👯 duplicates · 🗂 sort by value, group by type, rarity breakdown
+- 🃏 Card-set progress, booster-pack creator, CS2 sticker prices and exact-item inspect links
 
 ### Trade offers
-- 📊 **Item-by-item value table** for both sides, not just a total
-- 🕓 **Local trade history** per partner (value-gap trend across offers in this browser)
-- 🛡 SteamRep/Backpack.tf/SteamID.uk shortcuts, hold-to-confirm button
+- 📊 **Item-by-item value table** for both sides — including Steam items (cards, gems)
+- 🕓 Local trade history per partner (value gap across offers in this browser)
+- 🛡 SteamRep / Backpack.tf / SteamID.uk shortcuts, hold-to-confirm button
 
-### Profile pages
-- Shortcut chips to **SteamDB calculator, SteamLadder, Backpack.tf, SteamRep**
-- 📚 Library size/value snapshot, 🏅 badge count, 🖼 media (screenshots/videos/artwork/workshop) shortcuts
+### Profiles, library (`/games/`) and badges (`/badges/`)
+- Shortcuts to SteamDB calculator, SteamLadder, Backpack.tf, SteamRep; media shortcuts
+- Sort by playtime, unplayed filter, **library value estimate**; badge / XP summary
 
-### Library (`/games/`) & Badges (`/badges/`) pages
-- Sort by playtime, unplayed-only filter, **library value estimate**
-- Per-page badge/XP summary, closest-to-next-level list
-
-### Browser-wide
-- 🖱 **Context-menu lookups**, floating **SE** settings badge, keyboard shortcuts (`Ctrl+Shift+S/W/I`)
-- ⚙️ Full options page + popup, with **~35 independent feature toggles**
-- 🌐 Configurable country / currency / display currency
-- 👋 First-run onboarding tour, changelog on update
+### Everywhere
+- 🔔 **Notification center** — every alert kept in the toolbar popup with an unread badge; click one to open the game; **quiet hours**
+- ⚙️ **Settings page** with search, presets (Minimal / Deal hunter / Trader / Everything), saves as you go, full **backup & restore**, custom CSS
+- 🖱 Right-click lookups, floating **SE** badge, keyboard shortcuts (`Ctrl+Shift+S/W/I`)
+- 🌐 Prices follow the country Steam shows you (or your own choice); English, Hebrew (RTL), Russian, German, Portuguese (Brazil)
 
 ## Install
 
@@ -92,16 +89,17 @@ There is no separate project website yet — this repository (and, once publishe
 
 ## Privacy
 
-Steam Enhancer **does not collect, transmit, or sell any personal data**. All settings live in `chrome.storage.sync` and never leave your browser. Network requests are made directly from your browser to:
+Steam Enhancer **does not collect, transmit, or sell any personal data**. Settings live in Chrome's own storage (`storage.sync`, plus `storage.local` for custom CSS and the data the extension keeps for you) and never go to us. Network requests are made directly from your browser to:
 
-- Steam (storefront, community, market) — only when you're on a Steam page
-- IsThereAnyDeal — only to look up prices for the app you're viewing, using **your own free API key** (Options → IsThereAnyDeal API key, required as of v1.4.0 — see the note above); never baked into the extension
+- Steam (storefront, community, market, and the public wishlist / store-item Web APIs) — only when you're on a Steam page, or for the background checks you turn on
+- IsThereAnyDeal — only to look up prices for the games you're viewing (or have alerts on), using **your own free API key** (Options → Prices & keys); never baked into the extension
 - ProtonDB — only on store pages, only for the visible app
-- HowLongToBeat — only when you click the HLTB link
 - `open.er-api.com` — only for the currency converter / display-currency conversion
-- `api.steampowered.com` friends/owned-games lookups — **only if you opt in and supply your own Steam Web API key** in Options; never sent anywhere but Steam's own API, never baked into the extension
+- `api.steampowered.com` friends / owned-games / your-achievements lookups — **only if you supply your own Steam Web API key** in Options; never sent anywhere but Steam's own API, never baked into the extension
 
-No analytics. Background alarms (all off by default, all toggleable in Options): an hourly wishlist/price-target deal check, and a two-hourly free-promo check — both read-only lookups against Steam/ITAD, nothing sent about you beyond the app IDs being checked.
+No analytics. Background alarms (all off by default, all toggleable in Options): an hourly wishlist / price-alert check and a two-hourly free-promo check — read-only lookups against Steam and ITAD, nothing sent about you beyond the app IDs being checked.
+
+Selling and removing market listings only ever happens on your own click, after a confirmation that shows exactly what the buyer pays and what you receive.
 
 Full privacy policy: [`store-assets/privacy-policy.md`](store-assets/privacy-policy.md).
 
@@ -119,11 +117,13 @@ src/
   styles/            Injected CSS (all .se-* prefixed)
 scripts/
   smoke-test.js       Live regression check against real Steam/ITAD endpoints (see CLAUDE.md)
-  unit-test.js        Pure-logic tests (parsePrice, sparklineSvg, etc.) — no network, instant
-  gen-locales.js       Regenerates all _locales/*/messages.json from one source table
+  unit-test.js        Pure-logic tests (prices, fees, API parsers, wishlist, chart…) — no network, instant
+  check-manifest.js   Manifest file references and i18n keys
+  gen-locales.js      Regenerates all _locales/*/messages.json from one source table
+  package.js          Builds the Chrome Web Store ZIP into dist/
 ```
 
-No build step — edit a file and click "reload" in `chrome://extensions/`. Run `node scripts/smoke-test.js` to sanity-check the live endpoints/selectors this extension depends on, and `node scripts/unit-test.js` for the pure-logic tests.
+No build step — edit a file and click "reload" in `chrome://extensions/`. Run `node scripts/smoke-test.js` to sanity-check the live endpoints/selectors this extension depends on, and `node scripts/unit-test.js` for the pure-logic tests. CI runs the unit tests and checks on every pull request.
 
 **Languages:** the extension UI is available in English, Hebrew (RTL), Russian, German, and Portuguese (Brazil) — Chrome picks one automatically based on your browser's language. To add or fix a translation, edit the table in `scripts/gen-locales.js` and re-run it; don't hand-edit the `_locales/*/messages.json` files directly, since they're generated and will be overwritten.
 

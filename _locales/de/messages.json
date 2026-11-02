@@ -80,9 +80,6 @@
   "topTags": {
     "message": "Top-Tags:"
   },
-  "filterReviews": {
-    "message": "Schnelle Rezensionsfilter:"
-  },
   "exportCsv": {
     "message": "CSV exportieren"
   },
@@ -91,15 +88,6 @@
   },
   "copyAsText": {
     "message": "Als Text kopieren"
-  },
-  "openOnItad": {
-    "message": "Auf ITAD öffnen"
-  },
-  "sortByDeal": {
-    "message": "Sortieren: bester Deal vs. Tiefstpreis"
-  },
-  "sortByPrice": {
-    "message": "Sortieren: Preis ↑"
   },
   "estimateValue": {
     "message": "Wert schätzen"
@@ -128,23 +116,8 @@
   "difference": {
     "message": "Differenz"
   },
-  "settings": {
-    "message": "Einstellungen"
-  },
-  "save": {
-    "message": "Speichern"
-  },
-  "reset": {
-    "message": "Auf Standard zurücksetzen"
-  },
   "clearCache": {
     "message": "Cache leeren"
-  },
-  "exportSettings": {
-    "message": "Einstellungen exportieren"
-  },
-  "importSettings": {
-    "message": "Einstellungen importieren"
   },
   "viewOnMarket": {
     "message": "Im Markt ansehen"
@@ -184,30 +157,6 @@
   },
   "allSettings": {
     "message": "Alle Einstellungen…"
-  },
-  "optSubtitle": {
-    "message": "Alle Einstellungen. Änderungen gelten beim nächsten Laden der Seite."
-  },
-  "secRegion": {
-    "message": "Region"
-  },
-  "secStore": {
-    "message": "Store-Seiten"
-  },
-  "secSearch": {
-    "message": "Suche & Listen"
-  },
-  "secMarket": {
-    "message": "Markt, Inventar, Handel"
-  },
-  "secNotify": {
-    "message": "Benachrichtigungen"
-  },
-  "secAdvanced": {
-    "message": "Erweitert"
-  },
-  "importExportNote": {
-    "message": "Alle Einstellungen, Notizen und die Sperrliste als JSON exportieren oder importieren."
   },
   "checkingDeals": {
     "message": "Angebote werden geprüft…"
@@ -383,20 +332,11 @@
   "hideForeverTitle": {
     "message": "Für immer ausblenden (Sperrliste der Erweiterung)"
   },
-  "visibleWord": {
-    "message": "sichtbar"
-  },
   "copiedToClipboard": {
     "message": "Wunschliste in die Zwischenablage kopiert."
   },
-  "nothingToOpen": {
-    "message": "Nichts zu öffnen."
-  },
   "vsLow": {
     "message": "vs. Tief"
-  },
-  "targetWord": {
-    "message": "Ziel"
   },
   "atTarget": {
     "message": "ZIEL ERREICHT"
