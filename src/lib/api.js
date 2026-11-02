@@ -131,6 +131,30 @@
       return SE.bg({ type: 'fetchJson', url, cacheKey: `pricehist:${appid}:${market_hash_name}`, ttl: 120 });
     },
 
+    // Anyone's public wishlist (appid, priority, date added). No key needed.
+    async wishlist(steamid64) {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/IWishlistService/GetWishlist/v1/?steamid=${encodeURIComponent(steamid64)}`,
+        cacheKey: `wishlist:${steamid64}`, ttl: 10
+      });
+    },
+
+    // Store details (name, price in the country's currency, discount, reviews,
+    // Steam Deck category) for up to 100 apps per call. No key needed.
+    async storeItems(appids, country = 'us', language = 'english') {
+      const input = {
+        ids: appids.map((appid) => ({ appid: Number(appid) })),
+        context: { language, country_code: String(country).toUpperCase() },
+        data_request: { include_reviews: true, include_platforms: true, include_release: true }
+      };
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/IStoreBrowseService/GetItems/v1/?input_json=${encodeURIComponent(JSON.stringify(input))}`,
+        cacheKey: `storeitems:${country}:${language}:${appids.join(',')}`, ttl: 60
+      });
+    },
+
     async dynamicStore() {
       // Returns owned/wishlist/ignored app ids; requires being logged in to Steam.
       return SE.bg({ type: 'fetchJson', url: 'https://store.steampowered.com/dynamicstore/userdata/', cacheKey: 'dynstore', ttl: 5 });

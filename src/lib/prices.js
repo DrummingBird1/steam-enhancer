@@ -50,20 +50,23 @@
     const resolved = lookups.filter((l) => l.itadId);
     if (!resolved.length) return new Map();
 
-    const ids = resolved.map((l) => l.itadId);
-    const [pricesResp, lowResp] = await Promise.all([
-      SE.api.itadPricesBatch(ids, country),
-      SE.api.itadHistoryLowBatch(ids, country)
-    ]);
-    if (pricesResp?.needsItadKey || lowResp?.needsItadKey) return 'needsItadKey';
-
+    // ITAD's batch endpoints take at most 200 ids per call.
     const out = new Map();
-    for (const { appid, itadId, slug } of resolved) {
-      out.set(appid, {
-        itadId, slug,
-        currentLow: SE.itad.bestDeal(pricesResp?.data, itadId),
-        historicalLow: SE.itad.storeLow(lowResp?.data, itadId)
-      });
+    for (let i = 0; i < resolved.length; i += 200) {
+      const chunk = resolved.slice(i, i + 200);
+      const ids = chunk.map((l) => l.itadId);
+      const [pricesResp, lowResp] = await Promise.all([
+        SE.api.itadPricesBatch(ids, country),
+        SE.api.itadHistoryLowBatch(ids, country)
+      ]);
+      if (pricesResp?.needsItadKey || lowResp?.needsItadKey) return 'needsItadKey';
+      for (const { appid, itadId, slug } of chunk) {
+        out.set(appid, {
+          itadId, slug,
+          currentLow: SE.itad.bestDeal(pricesResp?.data, itadId),
+          historicalLow: SE.itad.storeLow(lowResp?.data, itadId)
+        });
+      }
     }
     return out;
   };

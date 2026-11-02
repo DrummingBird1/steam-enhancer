@@ -35,6 +35,35 @@ check('Store app page: purchase/DLC/tags markup (app.js selectors)', async () =>
   assertIncludes(html, 'apphub_AppName', 'no .apphub_AppName (used by HLTB/community links titles)');
 });
 
+check('Store app page: review summary + country (reviews.js, SE.pageCountry)', async () => {
+  const html = await (await fetch('https://store.steampowered.com/app/620/Portal_2/?l=german', { headers: { 'User-Agent': UA } })).text();
+  assertTruthy(/user_reviews_summary_row[^>]*data-tooltip-html="[^"]*\d\s*%/.test(html), 'review summary tooltip with a % missing (addReviewBreakdown)');
+  assertTruthy(/itemprop="reviewCount" content="\d+"/.test(html), 'meta[itemprop=reviewCount] missing (addReviewBreakdown total)');
+  assertTruthy(/id="application_config"[^>]*data-userinfo="[^"]*country_code/.test(html), '#application_config country_code missing (SE.pageCountry)');
+});
+
+check('Wishlist page: owner steamid + country in #valve-ssr-data (wishlist.js)', async () => {
+  // A vanity URL, so the owner has to come from the server-rendered state.
+  const html = await (await fetch('https://store.steampowered.com/wishlist/id/gabelogannewell/', { headers: { 'User-Agent': UA } })).text();
+  const ssr = (html.match(/<script[^>]*id="valve-ssr-data"[^>]*>([\s\S]*?)<\/script>/) || [])[1] || '';
+  assertTruthy(ssr.length > 0, 'no #valve-ssr-data script');
+  assertTruthy(/\\?"steamid\\?"\s*:\s*\\?"7656119\d{10}\\?"\s*,\s*\\?"sort\\?"/.test(ssr), 'wishlist owner steamid not found (SE.wishlistModel.ownerSteamId)');
+  assertTruthy(/\\?"country_code\\?"\s*:\s*\\?"[A-Z]{2}\\?"/.test(ssr), 'country_code not found (SE.pageCountry)');
+  assertIncludes(html, 'id="StoreTemplate"', 'no #StoreTemplate (wishlist panel anchor)');
+});
+
+check('Steam Web API: GetWishlist + StoreBrowse GetItems shapes (wishlist.js)', async () => {
+  const wl = await (await fetch('https://api.steampowered.com/IWishlistService/GetWishlist/v1/?steamid=76561197960287930')).json();
+  assertTruthy(wl && typeof wl.response === 'object', 'GetWishlist: no response object');
+  const input = { ids: [{ appid: 620 }], context: { language: 'english', country_code: 'US' }, data_request: { include_reviews: true, include_platforms: true } };
+  const j = await (await fetch(`https://api.steampowered.com/IStoreBrowseService/GetItems/v1/?input_json=${encodeURIComponent(JSON.stringify(input))}`)).json();
+  const item = j?.response?.store_items?.[0];
+  assertTruthy(item?.success === 1 && item.name, 'GetItems: store_items[0] missing name/success');
+  assertTruthy(item.best_purchase_option?.final_price_in_cents != null, 'GetItems: best_purchase_option.final_price_in_cents missing');
+  assertTruthy(typeof item.reviews?.summary_filtered?.percent_positive === 'number', 'GetItems: reviews.summary_filtered.percent_positive missing');
+  assertTruthy('steam_deck_compat_category' in (item.platforms || {}), 'GetItems: platforms.steam_deck_compat_category missing');
+});
+
 check('Store search page: result row markup (search.js selectors)', async () => {
   const html = await (await fetch('https://store.steampowered.com/search/?term=portal', { headers: { 'User-Agent': UA } })).text();
   assertIncludes(html, 'search_result_row', 'no .search_result_row (used to decorate search results)');

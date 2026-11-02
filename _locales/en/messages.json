@@ -766,5 +766,128 @@
   },
   "obStep4Desc": {
     "message": "Click the floating \"SE\" badge (bottom-right of any Steam page) any time to open full settings."
+  },
+  "wlPanelTitle": {
+    "message": "Steam Enhancer — Wishlist"
+  },
+  "wlLoading": {
+    "message": "Loading wishlist…"
+  },
+  "wlLoadingDetails": {
+    "message": "Loading store details {0}/{1}…"
+  },
+  "wlLoadingPrices": {
+    "message": "Looking up historical lows…"
+  },
+  "wlPrivateOrEmpty": {
+    "message": "This wishlist is private or empty."
+  },
+  "wlNoOwner": {
+    "message": "Couldn't tell whose wishlist this is."
+  },
+  "wlSummary": {
+    "message": "{0} games · {1} now · {2} at full price"
+  },
+  "wlOnSale": {
+    "message": "{0} on sale"
+  },
+  "wlAtLow": {
+    "message": "{0} at historical low"
+  },
+  "wlAtTarget": {
+    "message": "{0} at your target"
+  },
+  "wlSearch": {
+    "message": "Search…"
+  },
+  "wlReverse": {
+    "message": "Reverse order"
+  },
+  "wlSortPriority": {
+    "message": "Your order"
+  },
+  "wlSortPrice": {
+    "message": "Price"
+  },
+  "wlSortDiscount": {
+    "message": "Discount"
+  },
+  "wlSortVsLow": {
+    "message": "Closest to historical low"
+  },
+  "wlSortReviews": {
+    "message": "Reviews"
+  },
+  "wlSortAdded": {
+    "message": "Recently added"
+  },
+  "wlSortReleased": {
+    "message": "Release date"
+  },
+  "wlSortName": {
+    "message": "Name"
+  },
+  "wlOnSaleOnly": {
+    "message": "On sale"
+  },
+  "wlAtLowOnly": {
+    "message": "At historical low"
+  },
+  "wlAtTargetOnly": {
+    "message": "At my target"
+  },
+  "wlMaxPrice": {
+    "message": "Max price"
+  },
+  "wlColGame": {
+    "message": "Game"
+  },
+  "wlColPrice": {
+    "message": "Price"
+  },
+  "wlColDiscount": {
+    "message": "Discount"
+  },
+  "wlColLow": {
+    "message": "Historical low"
+  },
+  "wlColVsLow": {
+    "message": "vs low"
+  },
+  "wlColReviews": {
+    "message": "Reviews"
+  },
+  "wlColDeck": {
+    "message": "Steam Deck"
+  },
+  "wlColTarget": {
+    "message": "Alert at"
+  },
+  "wlColAdded": {
+    "message": "Added"
+  },
+  "wlNoMatches": {
+    "message": "No games match these filters."
+  },
+  "wlShowing": {
+    "message": "Showing {0} of {1}"
+  },
+  "wlShowMore": {
+    "message": "Show {0} more"
+  },
+  "wlFree": {
+    "message": "Free"
+  },
+  "wlLowNow": {
+    "message": "LOW NOW"
+  },
+  "deckVerified": {
+    "message": "Verified"
+  },
+  "deckPlayable": {
+    "message": "Playable"
+  },
+  "deckUnsupported": {
+    "message": "Unsupported"
   }
 }

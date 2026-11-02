@@ -766,5 +766,128 @@
   },
   "obStep4Desc": {
     "message": "לחצו על התג הצף \"SE\" (בפינה הימנית התחתונה של כל עמוד Steam) כדי לפתוח את כל ההגדרות."
+  },
+  "wlPanelTitle": {
+    "message": "Steam Enhancer — רשימת משאלות"
+  },
+  "wlLoading": {
+    "message": "טוען את רשימת המשאלות…"
+  },
+  "wlLoadingDetails": {
+    "message": "טוען פרטי חנות {0}/{1}…"
+  },
+  "wlLoadingPrices": {
+    "message": "מחפש את השפל ההיסטורי…"
+  },
+  "wlPrivateOrEmpty": {
+    "message": "רשימת המשאלות הזו פרטית או ריקה."
+  },
+  "wlNoOwner": {
+    "message": "לא הצלחנו לזהות של מי רשימת המשאלות הזו."
+  },
+  "wlSummary": {
+    "message": "{0} משחקים · {1} עכשיו · {2} במחיר מלא"
+  },
+  "wlOnSale": {
+    "message": "{0} במבצע"
+  },
+  "wlAtLow": {
+    "message": "{0} בשפל היסטורי"
+  },
+  "wlAtTarget": {
+    "message": "{0} הגיעו ליעד שלך"
+  },
+  "wlSearch": {
+    "message": "חיפוש…"
+  },
+  "wlReverse": {
+    "message": "הפוך סדר"
+  },
+  "wlSortPriority": {
+    "message": "הסדר שלך"
+  },
+  "wlSortPrice": {
+    "message": "מחיר"
+  },
+  "wlSortDiscount": {
+    "message": "הנחה"
+  },
+  "wlSortVsLow": {
+    "message": "הכי קרוב לשפל ההיסטורי"
+  },
+  "wlSortReviews": {
+    "message": "ביקורות"
+  },
+  "wlSortAdded": {
+    "message": "נוספו לאחרונה"
+  },
+  "wlSortReleased": {
+    "message": "תאריך יציאה"
+  },
+  "wlSortName": {
+    "message": "שם"
+  },
+  "wlOnSaleOnly": {
+    "message": "במבצע"
+  },
+  "wlAtLowOnly": {
+    "message": "בשפל היסטורי"
+  },
+  "wlAtTargetOnly": {
+    "message": "הגיעו ליעד"
+  },
+  "wlMaxPrice": {
+    "message": "מחיר מקסימלי"
+  },
+  "wlColGame": {
+    "message": "משחק"
+  },
+  "wlColPrice": {
+    "message": "מחיר"
+  },
+  "wlColDiscount": {
+    "message": "הנחה"
+  },
+  "wlColLow": {
+    "message": "שפל היסטורי"
+  },
+  "wlColVsLow": {
+    "message": "מול השפל"
+  },
+  "wlColReviews": {
+    "message": "ביקורות"
+  },
+  "wlColDeck": {
+    "message": "Steam Deck"
+  },
+  "wlColTarget": {
+    "message": "התראה ב-"
+  },
+  "wlColAdded": {
+    "message": "נוסף"
+  },
+  "wlNoMatches": {
+    "message": "אין משחקים שמתאימים לסינון."
+  },
+  "wlShowing": {
+    "message": "מוצגים {0} מתוך {1}"
+  },
+  "wlShowMore": {
+    "message": "הצג עוד {0}"
+  },
+  "wlFree": {
+    "message": "חינם"
+  },
+  "wlLowNow": {
+    "message": "בשפל עכשיו"
+  },
+  "deckVerified": {
+    "message": "מאומת"
+  },
+  "deckPlayable": {
+    "message": "ניתן לשחק"
+  },
+  "deckUnsupported": {
+    "message": "לא נתמך"
   }
 }

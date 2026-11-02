@@ -108,7 +108,7 @@
     },
     {
       "matches": ["*://store.steampowered.com/wishlist/*", "*://store.steampowered.com/dynamicstore/*"],
-      "js": ["src/content/wishlist.js"],
+      "js": ["src/lib/wishlist.js", "src/content/wishlist.js"],
       "run_at": "document_idle"
     },
     {

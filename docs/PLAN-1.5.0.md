@@ -38,12 +38,12 @@
 - ✅ השלמת i18n (אונבורדינג, changelog, "net ≈", כלי inventory, market, library, trade). ה-popup וה-Options עוברים ב-4ו, ה-wishlist בשלב 3
 - ✅ זיהוי לפי classes/ערכים ולא regex באנגלית (ביקורות, Early Access)
 
-## שלב 3 — Wishlist חדש
-- ⬜ נתונים מ-`IWishlistService/GetWishlist` במקום ה-DOM של React
-- ⬜ פאנל: עלות כוללת, כמה במבצע, כמה במחיר הנמוך בהיסטוריה
-- ⬜ מיון/סינון לפי % מעל ה-low, הנחה, ProtonDB
-- ⬜ Export מהנתונים
-- ⬜ יעדי מחיר בטבלה אחת; ה-service worker בודק את כל ה-wishlist ב-batch
+## שלב 3 — Wishlist חדש ✅
+- ✅ נתונים מ-`IWishlistService/GetWishlist` במקום ה-DOM של React
+- ✅ פאנל: עלות כוללת, כמה במבצע, כמה במחיר הנמוך בהיסטוריה
+- ✅ מיון/סינון לפי % מעל ה-low, הנחה, ProtonDB
+- ✅ Export מהנתונים
+- ✅ יעדי מחיר בטבלה אחת; ה-service worker בודק את כל ה-wishlist ב-batch (עד 500), וכל מבצע מודיע פעם אחת
 
 ## שלב 4 — שדרוגים
 - ⬜ **4א היסטוריית מחירים מלאה** — גרף SVG אינטראקטיבי. `games/history/v2` של ITAD אם יאומת, אחרת היסטוריה מקומית

@@ -38,6 +38,24 @@ All notable changes to Steam Enhancer are documented here. Versions follow the
   entry now has its own storage key, pruned by an alarm.
 - Alarms are recreated on browser startup, not only on install.
 
+### Wishlist, rebuilt
+Steam's wishlist became a React app in late 2024 and none of 1.4.x's wishlist
+features found anything on it. The wishlist now gets a panel above Steam's list,
+built from Steam's own wishlist and store APIs (works on anyone's public
+wishlist, signed in or not):
+- One table: price, discount, Steam's historical low and how far above it you
+  are, review score, Steam Deck status, your alert price, date added.
+- Summary: total cost now vs at full price, how many are on sale, at their
+  historical low, or at your alert price.
+- Search, sort (your order, price, discount, closest to historical low,
+  reviews, recently added, release date, name), filters (on sale, at low, at
+  my target, max price), CSV/JSON export and copy of what's shown.
+- Alert prices set here, on a store page, or anywhere else are the same list,
+  and the background check now covers the whole wishlist (up to 500 games)
+  instead of the first 50.
+- Wishlist-deal notifications no longer repeat the same sale every hour; a deal
+  is announced once, and again only if it gets deeper.
+
 ### Added
 - `.github/workflows/ci.yml` and `scripts/check-manifest.js`: every PR runs the
   unit tests, checks manifest file references and i18n keys, and verifies the

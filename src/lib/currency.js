@@ -46,14 +46,19 @@
     return null;
   };
 
-  // The storefront country Steam is pricing this page for. Store pages carry it
-  // in #application_config's data-userinfo (verified live, logged in or not).
+  // The storefront country Steam is pricing this page for. Classic store pages
+  // carry it in #application_config's data-userinfo; the React pages (wishlist)
+  // in the server-rendered state script #valve-ssr-data. Verified live, logged
+  // in or not.
   SE.pageCountry = () => {
     try {
       const raw = document.getElementById('application_config')?.dataset?.userinfo;
       const cc = raw && JSON.parse(raw).country_code;
-      return cc ? String(cc).toLowerCase() : null;
-    } catch { return null; }
+      if (cc) return String(cc).toLowerCase();
+    } catch {}
+    const ssr = document.getElementById('valve-ssr-data')?.textContent || '';
+    const m = ssr.match(/\\?"country_code\\?"\s*:\s*\\?"([A-Za-z]{2})\\?"/);
+    return m ? m[1].toLowerCase() : null;
   };
 
   // The country to ask price APIs about: the Options override if set, else the

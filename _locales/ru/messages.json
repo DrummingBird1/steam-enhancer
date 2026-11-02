@@ -766,5 +766,128 @@
   },
   "obStep4Desc": {
     "message": "Нажмите плавающий значок «SE» (внизу справа на любой странице Steam), чтобы открыть все настройки."
+  },
+  "wlPanelTitle": {
+    "message": "Steam Enhancer — список желаемого"
+  },
+  "wlLoading": {
+    "message": "Загружаем список желаемого…"
+  },
+  "wlLoadingDetails": {
+    "message": "Загружаем данные магазина {0}/{1}…"
+  },
+  "wlLoadingPrices": {
+    "message": "Ищем исторические минимумы…"
+  },
+  "wlPrivateOrEmpty": {
+    "message": "Этот список желаемого скрыт или пуст."
+  },
+  "wlNoOwner": {
+    "message": "Не удалось определить, чей это список желаемого."
+  },
+  "wlSummary": {
+    "message": "Игр: {0} · сейчас {1} · без скидок {2}"
+  },
+  "wlOnSale": {
+    "message": "со скидкой: {0}"
+  },
+  "wlAtLow": {
+    "message": "на историческом минимуме: {0}"
+  },
+  "wlAtTarget": {
+    "message": "достигли вашей цели: {0}"
+  },
+  "wlSearch": {
+    "message": "Поиск…"
+  },
+  "wlReverse": {
+    "message": "Обратный порядок"
+  },
+  "wlSortPriority": {
+    "message": "Ваш порядок"
+  },
+  "wlSortPrice": {
+    "message": "Цена"
+  },
+  "wlSortDiscount": {
+    "message": "Скидка"
+  },
+  "wlSortVsLow": {
+    "message": "Ближе всего к минимуму"
+  },
+  "wlSortReviews": {
+    "message": "Обзоры"
+  },
+  "wlSortAdded": {
+    "message": "Недавно добавленные"
+  },
+  "wlSortReleased": {
+    "message": "Дата выхода"
+  },
+  "wlSortName": {
+    "message": "Название"
+  },
+  "wlOnSaleOnly": {
+    "message": "Со скидкой"
+  },
+  "wlAtLowOnly": {
+    "message": "На минимуме"
+  },
+  "wlAtTargetOnly": {
+    "message": "Достигли цели"
+  },
+  "wlMaxPrice": {
+    "message": "Макс. цена"
+  },
+  "wlColGame": {
+    "message": "Игра"
+  },
+  "wlColPrice": {
+    "message": "Цена"
+  },
+  "wlColDiscount": {
+    "message": "Скидка"
+  },
+  "wlColLow": {
+    "message": "Минимум"
+  },
+  "wlColVsLow": {
+    "message": "к минимуму"
+  },
+  "wlColReviews": {
+    "message": "Обзоры"
+  },
+  "wlColDeck": {
+    "message": "Steam Deck"
+  },
+  "wlColTarget": {
+    "message": "Уведомить при"
+  },
+  "wlColAdded": {
+    "message": "Добавлено"
+  },
+  "wlNoMatches": {
+    "message": "Нет игр, подходящих под фильтры."
+  },
+  "wlShowing": {
+    "message": "Показано {0} из {1}"
+  },
+  "wlShowMore": {
+    "message": "Показать ещё {0}"
+  },
+  "wlFree": {
+    "message": "Бесплатно"
+  },
+  "wlLowNow": {
+    "message": "МИНИМУМ"
+  },
+  "deckVerified": {
+    "message": "Проверено"
+  },
+  "deckPlayable": {
+    "message": "Играбельно"
+  },
+  "deckUnsupported": {
+    "message": "Не поддерживается"
   }
 }

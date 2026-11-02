@@ -766,5 +766,128 @@
   },
   "obStep4Desc": {
     "message": "Clique no selo flutuante \"SE\" (canto inferior direito de qualquer página da Steam) para abrir todas as configurações."
+  },
+  "wlPanelTitle": {
+    "message": "Steam Enhancer — lista de desejos"
+  },
+  "wlLoading": {
+    "message": "Carregando lista de desejos…"
+  },
+  "wlLoadingDetails": {
+    "message": "Carregando detalhes da loja {0}/{1}…"
+  },
+  "wlLoadingPrices": {
+    "message": "Buscando menores preços históricos…"
+  },
+  "wlPrivateOrEmpty": {
+    "message": "Esta lista de desejos é privada ou está vazia."
+  },
+  "wlNoOwner": {
+    "message": "Não foi possível identificar de quem é esta lista de desejos."
+  },
+  "wlSummary": {
+    "message": "{0} jogos · {1} agora · {2} a preço cheio"
+  },
+  "wlOnSale": {
+    "message": "{0} em promoção"
+  },
+  "wlAtLow": {
+    "message": "{0} no menor preço histórico"
+  },
+  "wlAtTarget": {
+    "message": "{0} no seu preço-alvo"
+  },
+  "wlSearch": {
+    "message": "Buscar…"
+  },
+  "wlReverse": {
+    "message": "Inverter ordem"
+  },
+  "wlSortPriority": {
+    "message": "Sua ordem"
+  },
+  "wlSortPrice": {
+    "message": "Preço"
+  },
+  "wlSortDiscount": {
+    "message": "Desconto"
+  },
+  "wlSortVsLow": {
+    "message": "Mais perto do menor preço"
+  },
+  "wlSortReviews": {
+    "message": "Avaliações"
+  },
+  "wlSortAdded": {
+    "message": "Adicionados recentemente"
+  },
+  "wlSortReleased": {
+    "message": "Data de lançamento"
+  },
+  "wlSortName": {
+    "message": "Nome"
+  },
+  "wlOnSaleOnly": {
+    "message": "Em promoção"
+  },
+  "wlAtLowOnly": {
+    "message": "No menor preço"
+  },
+  "wlAtTargetOnly": {
+    "message": "No meu preço-alvo"
+  },
+  "wlMaxPrice": {
+    "message": "Preço máx."
+  },
+  "wlColGame": {
+    "message": "Jogo"
+  },
+  "wlColPrice": {
+    "message": "Preço"
+  },
+  "wlColDiscount": {
+    "message": "Desconto"
+  },
+  "wlColLow": {
+    "message": "Menor preço"
+  },
+  "wlColVsLow": {
+    "message": "vs menor"
+  },
+  "wlColReviews": {
+    "message": "Avaliações"
+  },
+  "wlColDeck": {
+    "message": "Steam Deck"
+  },
+  "wlColTarget": {
+    "message": "Alertar em"
+  },
+  "wlColAdded": {
+    "message": "Adicionado"
+  },
+  "wlNoMatches": {
+    "message": "Nenhum jogo corresponde a esses filtros."
+  },
+  "wlShowing": {
+    "message": "Mostrando {0} de {1}"
+  },
+  "wlShowMore": {
+    "message": "Mostrar mais {0}"
+  },
+  "wlFree": {
+    "message": "Grátis"
+  },
+  "wlLowNow": {
+    "message": "MENOR AGORA"
+  },
+  "deckVerified": {
+    "message": "Verificado"
+  },
+  "deckPlayable": {
+    "message": "Jogável"
+  },
+  "deckUnsupported": {
+    "message": "Não suportado"
   }
 }

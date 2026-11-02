@@ -20,7 +20,7 @@ const vm = require('vm');
 const sandbox = { console };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
-for (const file of ['utils.js', 'currency.js', 'itad.js']) {
+for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js']) {
   const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
   vm.runInContext(src, sandbox, { filename: file });
 }
@@ -32,6 +32,9 @@ function t(name, fn) {
   try { fn(); passed++; console.log(`  OK  ${name}`); }
   catch (e) { failed++; console.log(`FAIL  ${name}`); console.log(`      ${e.message}`); }
 }
+
+// Real or doc-shaped API responses, see scripts/fixtures/.
+const fixture = (name) => JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', name), 'utf8'));
 
 console.log('SE.parsePrice');
 t('plain dollars', () => assert.strictEqual(SE.parsePrice('$19.99'), 19.99));
@@ -80,6 +83,71 @@ t('net is ~13% below the buyer price, not 15%', () => {
   assert.strictEqual(SE.marketFees.sellerReceives(1000), 870);
 });
 
+console.log('SE.wishlistModel');
+const W = SE.wishlistModel;
+t('owner steamid from /profiles/ URL', () =>
+  assert.strictEqual(W.ownerSteamId('/wishlist/profiles/76561197960287930/', ''), '76561197960287930'));
+t('owner steamid from SSR state on a vanity URL (escaped JSON, as served)', () => {
+  const ssr = String.raw`[\"wishlistcategories\"],{\"error\":\"WishlistLoadFailed\",\"steamid\":\"76561197960287930\",\"sort\":\"order\",\"filter\":{}}`;
+  assert.strictEqual(W.ownerSteamId('/wishlist/id/gabelogannewell/', ssr), '76561197960287930');
+  assert.strictEqual(W.ownerSteamId('/wishlist/id/x/', 'nothing here'), null);
+});
+t('private/empty wishlist → null', () => {
+  assert.strictEqual(W.items({ response: {} }), null);
+  assert.strictEqual(W.items(undefined), null);
+});
+const wlItems = W.items(fixture('steam-getwishlist.json'));
+const storeMap = W.storeItems(fixture('steam-getitems.json'));
+t('wishlist items parsed', () => {
+  assert.strictEqual(wlItems.length, 3);
+  assert.strictEqual(wlItems[0].appid, '1326470');
+});
+t('store items: discounted, full price, and failed lookups', () => {
+  const sale = storeMap.get('1326470');
+  assert.strictEqual(sale.priceCents, 839);
+  assert.strictEqual(sale.regularCents, 2999);
+  assert.strictEqual(sale.discount, 72);
+  const full = storeMap.get('620');
+  assert.strictEqual(full.priceCents, 999);
+  assert.strictEqual(full.regularCents, 999);
+  assert.strictEqual(full.discount, 0);
+  assert.strictEqual(storeMap.has('999999999'), false);
+});
+const itadMap = new Map([['620', { historicalLow: { price: 1.99 }, currentLow: null }], ['1326470', { historicalLow: { price: 8.39 } }]]);
+const wlRows = W.buildRows(wlItems, storeMap, itadMap, { 620: 5 });
+t('rows: vs-low, at-low, targets, unknown app', () => {
+  const byId = Object.fromEntries(wlRows.map((r) => [r.appid, r]));
+  assert.strictEqual(byId['620'].vsLow, 402);
+  assert.strictEqual(byId['620'].atTarget, false);
+  assert.strictEqual(byId['1326470'].atLow, true);
+  assert.strictEqual(byId['999999999'].price, null);
+  assert.strictEqual(byId['999999999'].name, 'App 999999999');
+});
+t('summary', () => {
+  const s = W.summary(wlRows);
+  assert.strictEqual(s.count, 3);
+  assert.strictEqual(s.priced, 2);
+  assert.strictEqual(Math.round(s.total * 100), 1838);
+  assert.strictEqual(Math.round(s.totalRegular * 100), 3998);
+  assert.strictEqual(s.onSale, 1);
+  assert.strictEqual(s.atLow, 1);
+});
+t('sort: unknowns last in both directions', () => {
+  assert.strictEqual(W.sortRows(wlRows, 'price').map((r) => r.appid).join(','), ['1326470', '620', '999999999'].join(','));
+  assert.strictEqual(W.sortRows(wlRows, 'price', -1).map((r) => r.appid).join(','), ['620', '1326470', '999999999'].join(','));
+  assert.strictEqual(W.sortRows(wlRows, 'priority').map((r) => r.appid).join(','), ['620', '1326470', '999999999'].join(','));
+});
+t('filter', () => {
+  assert.strictEqual(W.filterRows(wlRows, { onSale: true }).map((r) => r.appid).join(','), ['1326470'].join(','));
+  assert.strictEqual(W.filterRows(wlRows, { text: 'portal' }).map((r) => r.appid).join(','), ['620'].join(','));
+  assert.strictEqual(W.filterRows(wlRows, { maxPrice: 9 }).map((r) => r.appid).join(','), ['1326470'].join(','));
+});
+t('csv escapes quotes and commas', () => {
+  const csv = W.toCsv([{ ...wlRows[0], name: 'A "quoted", name' }]);
+  assert.ok(csv.split('\n')[1].includes('"A ""quoted"", name"'));
+  assert.ok(csv.startsWith('appid,name,price'));
+});
+
 console.log('SE.parseReviewSummary');
 t('english tooltip + meta count', () => {
   const r = SE.parseReviewSummary('98% of the 174,783 user reviews in your language are positive', '174783');
@@ -107,7 +175,6 @@ t('effectiveCountry: override > detected > us', () => {
 });
 
 console.log('SE.itad (response parsers)');
-const fixture = (name) => JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', name), 'utf8'));
 const GAME = '018d937f-1234-7000-9000-000000000001';
 t('lookup: found / not found', () => {
   const g = SE.itad.gameFromLookup(fixture('itad-lookup.json'));

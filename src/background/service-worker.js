@@ -275,19 +275,29 @@ async function bestDealsFor(appids, country, { nondeals }) {
   if (lookups.some((l) => l.needsKey)) return null;
   const resolved = lookups.filter((l) => l.id);
   const out = new Map();
-  if (!resolved.length) return out;
-  const prices = await doFetchJson({
-    url: `https://api.isthereanydeal.com/games/prices/v3?country=${encodeURIComponent(country)}&capacity=4&nondeals=${nondeals}`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(resolved.map((l) => l.id))
-  });
-  for (const { appid, id } of resolved) out.set(appid, SE.itad.bestDeal(prices?.data, id));
+  // ITAD's prices endpoint takes at most 200 ids per call.
+  for (let i = 0; i < resolved.length; i += 200) {
+    const chunk = resolved.slice(i, i + 200);
+    const prices = await doFetchJson({
+      url: `https://api.isthereanydeal.com/games/prices/v3?country=${encodeURIComponent(country)}&capacity=4&nondeals=${nondeals}`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(chunk.map((l) => l.id))
+    });
+    for (const { appid, id } of chunk) out.set(appid, SE.itad.bestDeal(prices?.data, id));
+  }
   return out;
 }
 
-// Best-effort: the wishlist appids come from the dynamic-store ids the content
-// script captured into se_collections. Sampled to the first 50 to stay polite to ITAD.
+// Upper bound on how many apps one alarm run checks. ITAD lookups are cached
+// for a day and the prices call is batched (200 per request), so after the
+// first run this is ~1 lookup-free request per 200 games.
+const MAX_POLLED_APPS = 500;
+
+// The whole wishlist (up to MAX_POLLED_APPS), from the dynamic-store ids the
+// content script captured into se_collections. Each deal is announced once:
+// again only if it gets deeper, and forgotten once it ends, so the hourly
+// alarm doesn't repeat the same sale every hour (as 1.4.x did).
 async function handleWishlistPoll() {
   const settings = await getSettings();
   if (!settings.notifyWishlistDeals) return;
@@ -296,14 +306,23 @@ async function handleWishlistPoll() {
     if (!coll?.wishlist?.length) return;
     const country = await getCountry(settings);
     const threshold = Number(settings.wishlistDealThreshold || 25);
-    const deals = await bestDealsFor(coll.wishlist.slice(0, 50).map(String), country, { nondeals: false });
+    const deals = await bestDealsFor(coll.wishlist.slice(0, MAX_POLLED_APPS).map(String), country, { nondeals: false });
     if (!deals) return;
-    let found = 0;
+
+    const SEEN_KEY = 'se_wishlist_deal_notified';
+    const seen = (await localGet([SEEN_KEY]))[SEEN_KEY] || {};
+    const fresh = [];
     for (const [appid, deal] of deals) {
-      if (!deal || !(deal.cut >= threshold)) continue;
-      if (++found > 3) break;
-      notify(appNotificationId(appid), `Wishlist deal: -${deal.cut}%`, `${deal.shop || 'Store'}: ${deal.price} ${deal.currency || ''}`);
+      if (!deal || !(deal.cut >= threshold)) { delete seen[appid]; continue; }
+      if (deal.cut > (seen[appid] || 0)) fresh.push([appid, deal]);
     }
+    // Deepest cuts first; at most 3 notifications per run, the rest wait for the next one.
+    fresh.sort((a, b) => b[1].cut - a[1].cut);
+    for (const [appid, deal] of fresh.slice(0, 3)) {
+      notify(appNotificationId(appid), `Wishlist deal: -${deal.cut}%`, `${deal.shop || 'Store'}: ${deal.price} ${deal.currency || ''}`);
+      seen[appid] = deal.cut;
+    }
+    chrome.storage.local.set({ [SEEN_KEY]: seen });
   } catch (e) {
     console.warn('[SE] wishlist poll failed', e);
   }
@@ -353,7 +372,7 @@ async function handlePriceAlertPoll() {
   if (!settings.notifyStorePriceAlerts) return;
   try {
     const targets = (await localGet(['se_wishlist_targets'])).se_wishlist_targets || {};
-    const appids = Object.keys(targets).filter((a) => Number(targets[a]) > 0).slice(0, 50);
+    const appids = Object.keys(targets).filter((a) => Number(targets[a]) > 0).slice(0, MAX_POLLED_APPS);
     if (!appids.length) return;
 
     const country = await getCountry(settings);

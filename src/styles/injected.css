@@ -175,3 +175,24 @@
 .se-onboard-steps { display: flex; flex-direction: column; gap: 10px; margin: 8px 0; }
 .se-onboard-step { display: flex; gap: 8px; align-items: flex-start; }
 .se-onboard-step .se-onboard-icon { font-size: 18px; }
+
+/* Wishlist panel (1.5.0) */
+.se-wl-panel { max-width: 1100px; margin: 12px auto; }
+.se-wl-panel .se-panel-h { display: flex; align-items: center; gap: 6px; }
+.se-wl-toggle { padding: 0 6px; font-size: 11px; }
+.se-wl-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 4px 0; }
+.se-wl-status:empty { display: none; }
+.se-wl-check { display: inline-flex; align-items: center; gap: 2px; cursor: pointer; }
+.se-wl-table-wrap { max-height: 70vh; overflow: auto; }
+.se-wl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.se-wl-table th {
+  position: sticky; top: 0; background: #1b2838; color: #8f98a0;
+  text-align: start; font-weight: 600; padding: 4px 6px; border-bottom: 1px solid #2a475e;
+}
+.se-wl-table td { padding: 3px 6px; border-top: 1px solid #22394d; white-space: nowrap; }
+/* Numbers like +19% / -72% keep their sign on the right side in RTL UIs. */
+.se-wl-table td, .se-wl-table .se-tag, .se-wl-summary .se-tag { unicode-bidi: plaintext; }
+.se-wl-table td:first-child { white-space: normal; }
+.se-wl-table tr.se-wl-hit td { background: rgba(92, 126, 16, 0.18); }
+.se-wl-more { margin-top: 6px; }
+.se-wl-more:empty { display: none; }

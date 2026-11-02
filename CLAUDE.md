@@ -20,13 +20,14 @@ src/
     currency.js                  Country/currency maps, Steam currency ids, SE.walletCurrency, SE.effectiveCountry.
     api.js                       Thin wrappers around ITAD / Steam storefront / ProtonDB calls.
     itad.js                      Pure parsers for ITAD responses. Shared with the service worker (attaches to globalThis).
+    wishlist.js                  Pure wishlist model (API parsing, rows, sort/filter, CSV). Loaded only on wishlist pages.
     prices.js                    Composite "priceSummary(appid)" used by store pages.
   content/                       Page-specific content scripts.
     page-bridge.js               Runs in the page's MAIN world; named ops reading Steam globals (see SE.pageCall).
     common.js                    Loads dynamicstore (owned/wishlist/ignored), dispatches `se-ready`, onboarding/changelog modals.
     app.js                       Store /app/, /sub/, /bundle/ pages — the biggest file; most store-page panels live here.
     search.js                    /search/, /specials/, /sale/ — row decoration + price tags.
-    wishlist.js                  Wishlist toolbar, export, per-row price targets.
+    wishlist.js                  Wishlist panel: table built from Steam's wishlist + store APIs (the page itself is React).
     market.js                    Steam Community market — net-fee, undercut, buy-order helper.
     inventory.js                 Community inventory tools (uses g_ActiveInventory via page injection).
     profile.js                   User-profile shortcuts, library/badge summaries, media links.
@@ -77,6 +78,8 @@ scripts/gen-locales.js           Regenerates every _locales/*/messages.json from
 | `api.steampowered.com` GetNumberOfCurrentPlayers / GetGlobalAchievementPercentagesForApp | Player count, achievement rarity | None |
 | `steamcommunity.com/market/priceoverview` | Market item value | Steam session cookie |
 | `protondb.com` summary API | Linux compat rating | None |
+| `api.steampowered.com` IWishlistService/GetWishlist | Wishlist panel: whose wishlist, priority, date added | None (public wishlists only) |
+| `api.steampowered.com` IStoreBrowseService/GetItems | Wishlist panel: names, prices, discounts, reviews, Steam Deck category (100 apps per call) | None |
 | `store.steampowered.com/dynamicstore/userdata/` | Owned / wishlist / ignored ids | Steam session cookie |
 | `store.steampowered.com/api/featuredcategories` | Free-promo detection (100%-off specials) | None |
 | `store.steampowered.com/appreviewhistogram/{appid}` | Review-bomb heuristic (recommendation counts over time) | None |
@@ -125,7 +128,8 @@ regression-detection story.
 
 - **`hideOwnedInSearch` / `hideIgnoredInSearch`** mutate `display: none` on Steam's lazy-loaded rows. If Steam restructures those classes, the filter silently does nothing — that's expected, not a bug to chase.
 - **Trade offer / inventory features** rely on Steam's page-context globals. Anything reading from there must go through `SE.pageCall`. The community pages also re-render constantly; use `setInterval` polling sparingly, prefer MutationObserver scoped to a small subtree.
-- **Wishlist deal notifications** are best-effort: we sample the first 50 wishlisted appids per hour to stay polite to ITAD. Don't raise that cap without coordinating.
+- **Wishlist deal / price-alert notifications** check up to 500 apps per hourly run (`MAX_POLLED_APPS` in the service worker): ITAD lookups are cached a day and prices are batched 200 per call. Each deal is announced once (again only if it deepens).
+- **The wishlist page is a React app.** Never insert into its tree (`#StoreTemplate`); the panel goes beside it, and data comes from the APIs, not the DOM.
 - **Don't ship API keys.** As of v1.4.0, ITAD v2 endpoints require a key (`itadApiKey` setting) and the opt-in friends-ownership feature requires a Steam Web API key (`steamWebApiKey`) — both are user-supplied via Options, never baked in. If you add another keyed endpoint, follow the same pattern.
 - Markdown docs (`README.md`, `store-assets/description.md`) reference the *unofficial* status — keep that disclaimer when editing.
 
