@@ -9,12 +9,12 @@ Everything needed to fill in the Chrome Web Store Developer Dashboard.
 | `store-icon-128x128.png` | 128×128 PNG, store icon (96×96 artwork with 16 px transparent padding, per Chrome's guidance); the in-extension icons stay in `../icons/` | ✅ |
 | `promo-small-440x280.png` | 440×280 PNG, small promo tile | ✅ |
 | `promo-marquee-1400x560.png` | 1400×560 PNG, marquee tile (optional) | ✅ |
-| `screenshot-1-store-page.png` | 1280×800 PNG, real capture: store page panel | ✅ |
-| `screenshot-2-search.png` | 1280×800 PNG, real capture: search / specials | ✅ |
-| `screenshot-3-options.png` | 1280×800 PNG, real capture: options page | ✅ |
-| `screenshot-4-popup.png` | 1280×800 PNG, real capture: toolbar popup (enlarged) | ✅ |
+| `screenshot-1-store-page.png` | 1280×800 PNG, real capture: store page panel with regional prices | ✅ |
+| `screenshot-2-store-panel.png` | 1280×800 PNG, real capture: ProtonDB, Steam Deck, achievements, price alert | ✅ |
+| `screenshot-3-options.png` | 1280×800 PNG, real capture: the new options page | ✅ |
+| `screenshot-4-popup.png` | 1280×800 PNG, real capture of the popup (2×) with recent alerts, on a captioned background | ✅ |
 
-The screenshots were captured from version 1.4.1 on live Steam pages while signed out and without an IsThereAnyDeal key, so the price panels show the "add a free key" notice, and the options page and popup show the old design. **For 1.5.0, retake them** signed in and with an ITAD key — the store page (price chart), the wishlist panel, the new options page and the popup with alerts are the best candidates. See `docs/TESTING-1.5.0.md`.
+Captured from 1.5.0 on live Steam pages (Hades II, US store via `?cc=us`), signed out and without an IsThereAnyDeal key, so the ITAD-only features (lowest price, historical low, price chart) were switched off rather than showing the "add a key" notice. The popup's alert list was filled with three real US deals from the day of capture (prices checked against the Steam API), in the format the background writes them. Signed-in features (market, inventory, trade offers, wishlist panel) and the ITAD price chart aren't shown; a 5th screenshot of the price chart can be added once it's captured with a key.
 
 At least 1 screenshot is required, up to 5 allowed.
 
