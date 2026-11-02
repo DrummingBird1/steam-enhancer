@@ -76,7 +76,48 @@ async function withItadKey(url) {
   return `${url}${sep}key=${encodeURIComponent(key)}`;
 }
 
-async function doFetchJson({ url, method = 'GET', headers, body, cacheKey, ttl }) {
+// Per-endpoint pacing. Requests matching a rule run one at a time, at least
+// `gapMs` apart, across every tab. The market endpoints are the strict ones —
+// Steam answers 429 after a couple dozen quick priceoverview calls and then
+// blocks them for a while — so a 429 pauses that lane for a minute instead of
+// letting every queued request fail too.
+const RATE_RULES = [
+  { lane: 'scm-market', gapMs: 2500, match: /^https:\/\/steamcommunity\.com\/market\/(priceoverview|pricehistory|itemordershistogram)/ },
+  { lane: 'store-appdetails', gapMs: 1500, match: /^https:\/\/store\.steampowered\.com\/api\/appdetails/ },
+  { lane: 'itad', gapMs: 200, match: /^https:\/\/api\.isthereanydeal\.com\// }
+];
+const RATE_LIMIT_PAUSE_MS = 60_000;
+const lanes = new Map();
+
+function paced(url, run) {
+  const rule = RATE_RULES.find((r) => r.match.test(url));
+  if (!rule) return run();
+  let lane = lanes.get(rule.lane);
+  if (!lane) lanes.set(rule.lane, (lane = { next: 0, tail: Promise.resolve() }));
+  const result = lane.tail.then(async () => {
+    const wait = lane.next - Date.now();
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    const resp = await run();
+    lane.next = Date.now() + (resp.status === 429 ? RATE_LIMIT_PAUSE_MS : rule.gapMs);
+    return resp;
+  });
+  lane.tail = result.catch(() => {});
+  return result;
+}
+
+// Identical cacheable requests already on their way share one fetch (e.g. two
+// tabs, or a list page that shows the same game twice).
+const inflight = new Map();
+
+function doFetchJson(req) {
+  if (!req.cacheKey) return fetchJsonUncached(req);
+  if (inflight.has(req.cacheKey)) return inflight.get(req.cacheKey);
+  const p = fetchJsonUncached(req).finally(() => inflight.delete(req.cacheKey));
+  inflight.set(req.cacheKey, p);
+  return p;
+}
+
+async function fetchJsonUncached({ url, method = 'GET', headers, body, cacheKey, ttl }) {
   if (cacheKey) {
     const cached = await cacheGet(cacheKey);
     if (cached !== null) return { ok: true, data: cached, cached: true };
@@ -86,18 +127,20 @@ async function doFetchJson({ url, method = 'GET', headers, body, cacheKey, ttl }
     if (!keyedUrl) return { ok: false, needsItadKey: true, error: 'No IsThereAnyDeal API key configured (Options → Region)' };
     url = keyedUrl;
   }
-  try {
-    const resp = await fetch(url, {
-      method, headers, body,
-      credentials: url.includes('steampowered.com') || url.includes('steamcommunity.com') ? 'include' : 'omit'
-    });
-    const ct = resp.headers.get('content-type') || '';
-    const data = ct.includes('application/json') ? await resp.json() : await resp.text();
-    if (resp.ok && cacheKey) await cachePut(cacheKey, data, ttl);
-    return { ok: resp.ok, status: resp.status, data };
-  } catch (e) {
-    return { ok: false, error: String(e) };
-  }
+  return paced(url, async () => {
+    try {
+      const resp = await fetch(url, {
+        method, headers, body,
+        credentials: url.includes('steampowered.com') || url.includes('steamcommunity.com') ? 'include' : 'omit'
+      });
+      const ct = resp.headers.get('content-type') || '';
+      const data = ct.includes('application/json') ? await resp.json() : await resp.text();
+      if (resp.ok && cacheKey) await cachePut(cacheKey, data, ttl);
+      return { ok: resp.ok, status: resp.status, data, rateLimited: resp.status === 429 };
+    } catch (e) {
+      return { ok: false, error: String(e) };
+    }
+  });
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

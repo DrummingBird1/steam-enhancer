@@ -1,24 +1,6 @@
-const STORAGE_KEY = 'se_settings_v1';
-
-const DEFAULTS = {
-  currency: 'USD', countryOverride: '', displayCurrency: '',
-  showLowestPrice: true, showPriceHistory: true, showSteamDBLink: true,
-  showProtonDB: true, showHowLongToBeat: true, showRegionalPricing: false,
-  showPlayersOnline: true, showAchievementStats: true, showDlcCheck: true,
-  showCardSetValue: true, showReviewBreakdown: true, autoExpandReviews: false,
-  highlightOwned: true, highlightWishlist: true, highlightIgnored: true,
-  hideOwnedInSearch: false, hideIgnoredInSearch: true,
-  enableMarketTools: true, enableInventoryTools: true, enableTradeOfferTools: true,
-  enableWishlistExport: true, enableQuickSell: true,
-  notifyWishlistDeals: false, wishlistDealThreshold: 25,
-  cacheTTLMinutes: 60, itadEnabled: true, customCss: '',
-  showBundleSavings: true, showLiveReviewFilters: true, showBestReview: true,
-  showReviewBombDetector: true, showBuyOrderHelper: true, showTradeHistory: true,
-  showTileSortGroup: true, showStorePriceAlerts: true, showFriendsOwnership: false,
-  showLibraryValue: true, showBadgeTracker: true, showMediaShortcuts: true,
-  notifyFreePromos: false, notifyStorePriceAlerts: false, steamWebApiKey: '',
-  onboardingSeen: false
-};
+// Defaults and the read/merge/write logic live in src/lib/storage.js (loaded
+// before this file by options.html), so there's one copy to keep up to date.
+const store = window.SteamEnhancer.storage;
 
 const GROUPS = {
   'grid-store': [
@@ -82,8 +64,7 @@ function renderGroups() {
 }
 
 async function load() {
-  const data = await new Promise((r) => chrome.storage.sync.get([STORAGE_KEY], r));
-  const cfg = { ...DEFAULTS, ...(data[STORAGE_KEY] || {}) };
+  const cfg = await store.getAll();
   document.querySelectorAll('input[data-setting]').forEach((el) => {
     el.checked = !!cfg[el.dataset.setting];
   });
@@ -111,10 +92,9 @@ async function save() {
   cur.steamWebApiKey = document.getElementById('steamWebApiKey').value.trim();
   cur.itadApiKey = document.getElementById('itadApiKey').value.trim();
   try {
-    await new Promise((r, rej) => chrome.storage.sync.set({ [STORAGE_KEY]: cur }, () => {
-      if (chrome.runtime.lastError) { rej(new Error(chrome.runtime.lastError.message)); return; }
-      r();
-    }));
+    // Merges into the stored settings, so values this page doesn't show
+    // (e.g. onboardingSeen) survive a save.
+    await store.set(cur);
     flash('Saved.');
   } catch (err) {
     // Most likely cause: chrome.storage.sync's ~8KB-per-item quota (we store
@@ -144,8 +124,10 @@ load();
 
 document.getElementById('save').addEventListener('click', save);
 document.getElementById('reset').addEventListener('click', async () => {
-  if (!confirm('Reset all settings to defaults?')) return;
-  await new Promise((r) => chrome.storage.sync.set({ [STORAGE_KEY]: DEFAULTS }, r));
+  if (!confirm('Reset all settings to defaults? Your API keys are kept.')) return;
+  const { itadApiKey, steamWebApiKey } = await store.getAll();
+  await store.reset();
+  await store.set({ itadApiKey, steamWebApiKey });
   load(); flash('Reset.');
 });
 document.getElementById('clear-cache').addEventListener('click', () => {

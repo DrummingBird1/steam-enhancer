@@ -1,23 +1,14 @@
-const STORAGE_KEY = 'se_settings_v1';
-// Defaults for the toggles shown in the popup — keep in sync with DEFAULTS in options.js / storage.js.
-const POPUP_DEFAULTS = {
-  showLowestPrice: true, highlightOwned: true, highlightWishlist: true,
-  hideIgnoredInSearch: true, showProtonDB: true, showRegionalPricing: false,
-  notifyWishlistDeals: false
-};
+// Defaults come from src/lib/storage.js (loaded first by popup.html).
+const store = window.SteamEnhancer.storage;
 
 async function load() {
-  const data = await new Promise((r) => chrome.storage.sync.get([STORAGE_KEY], r));
-  const cfg = { ...POPUP_DEFAULTS, ...(data[STORAGE_KEY] || {}) };
+  const cfg = await store.getAll();
   document.querySelectorAll('input[data-setting]').forEach((el) => {
     el.checked = !!cfg[el.dataset.setting];
   });
 }
 async function save(key, value) {
-  const data = await new Promise((r) => chrome.storage.sync.get([STORAGE_KEY], r));
-  const cur = data[STORAGE_KEY] || {};
-  cur[key] = value;
-  await new Promise((r) => chrome.storage.sync.set({ [STORAGE_KEY]: cur }, r));
+  await store.set({ [key]: value });
 }
 
 document.querySelectorAll('input[data-setting]').forEach((el) => {

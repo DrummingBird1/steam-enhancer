@@ -591,7 +591,7 @@
   // Web API key (Options). Samples the first 30 friends to stay rate-limit
   // friendly; friends with private profiles simply won't show as owning it.
   async function resolveOwnSteamId64(key) {
-    const r = await SE.injectPage(() => window.g_steamID || null);
+    const r = await SE.pageCall('steamId');
     if (r?.ok && r.result) return String(r.result);
     const navLinks = SE.$$('#global_actions a, .header_actions_ctn a, a[href*="steamcommunity.com/id/"], a[href*="steamcommunity.com/profiles/"]');
     for (const el of navLinks) {

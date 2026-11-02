@@ -98,35 +98,7 @@
   let lastSignature = null;
 
   async function refresh() {
-    const r = await SE.injectPage(() => {
-      try {
-        const collect = (id) => {
-          const items = [];
-          document.querySelectorAll(`#${id} .item`).forEach(node => {
-            // Resolve description via UserYou/UserThem item lookup.
-            const elemId = node.id; // item123_456_789
-            const m = elemId && elemId.match(/item(\d+)_(\d+)_(\d+)/);
-            if (!m) return;
-            // item<appid>_<contextid>_<assetid>. The context matters: Steam's
-            // own items (753) live in context 6, not 2.
-            const [, appid, contextid, inventoryid] = m;
-            const u = id === 'your_slots' ? window.UserYou : window.UserThem;
-            const inv = u && u.getInventory && u.getInventory(appid, contextid);
-            const desc = inv && inv.rgInventory && inv.rgInventory[inventoryid]
-              ? inv.rgDescriptions[inv.rgInventory[inventoryid].classid + '_' + inv.rgInventory[inventoryid].instanceid]
-              : null;
-            items.push({
-              appid,
-              name: desc?.name || '',
-              market_hash_name: desc?.market_hash_name || '',
-              marketable: !!desc?.marketable
-            });
-          });
-          return items;
-        };
-        return { your: collect('your_slots'), their: collect('their_slots') };
-      } catch { return null; }
-    });
+    const r = await SE.pageCall('tradeItems');
 
     if (!r?.ok || !r.result) return;
     const body = SE.$('#se-trade-body'); if (!body) return;

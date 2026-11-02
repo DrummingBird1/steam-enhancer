@@ -65,35 +65,9 @@
 
   async function getItems(force = false) {
     if (cachedItems && !force) return cachedItems;
-    // contextid matters: game items live in context 2, but Steam's own items
-    // (appid 753: cards, backgrounds, emoticons, gems) live in context 6 — 1.4.x
-    // assumed 2 everywhere, so selling or valuing Steam items silently failed.
-    const r = await SE.injectPage(() => {
-      try {
-        const inv = window.g_ActiveInventory;
-        if (!inv) return null;
-        const toItem = (asset, d, contextid) => ({
-          id: asset.assetid || asset.id, classid: asset.classid, instanceid: asset.instanceid,
-          amount: Number(asset.amount) || 1, appid: String(asset.appid || inv.appid),
-          contextid: String(asset.contextid || contextid || inv.contextid || ''),
-          market_hash_name: d.market_hash_name, name: d.name,
-          tradable: !!d.tradable, marketable: !!d.marketable,
-          tags: (d.tags || []).map(t => ({ category: t.category, name: t.localized_tag_name || t.name })),
-          actions: d.actions || []
-        });
-        let items = null;
-        if (inv.m_rgAssets && Object.keys(inv.m_rgAssets).length) {
-          // Current inventory code: CAsset objects carrying their own description.
-          items = Object.values(inv.m_rgAssets).map(a => toItem(a, a.description || {}, a.contextid));
-        } else if (inv.rgInventory) {
-          // Older/partial inventories: assets and descriptions in separate maps.
-          items = Object.values(inv.rgInventory).map(it =>
-            toItem(it, inv.rgDescriptions[it.classid + '_' + it.instanceid] || {}, inv.contextid));
-        }
-        if (!items) return null;
-        return { items, owner: inv.m_owner && inv.m_owner.strSteamId };
-      } catch { return null; }
-    });
+    // Each item carries its own contextid (Steam items are context 6, not 2) —
+    // see inventoryItems in page-bridge.js.
+    const r = await SE.pageCall('inventoryItems');
     if (r?.ok && r.result) {
       cachedItems = r.result.items;
       cachedOwnerId = r.result.owner || cachedOwnerId;
@@ -446,13 +420,9 @@
     for (const { it, buyerCents } of plan) {
       const receiveCents = SE.marketFees.sellerReceives(buyerCents);
       if (receiveCents < 1 || !it.contextid) continue;
-      const r = await SE.injectPage((appid, contextid, assetid, amount, price) => {
-        return fetch('/market/sellitem/', {
-          method: 'POST', credentials: 'include',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-          body: `sessionid=${encodeURIComponent(g_sessionID)}&appid=${appid}&contextid=${contextid}&assetid=${assetid}&amount=${amount}&price=${price}`
-        }).then(r => r.json()).catch(e => ({ error: String(e) }));
-      }, [it.appid, it.contextid, it.id, it.amount || 1, receiveCents]);
+      const r = await SE.pageCall('sellItem', {
+        appid: it.appid, contextid: it.contextid, assetid: it.id, amount: it.amount || 1, price: receiveCents
+      });
       if (r?.result?.success) listed++;
       await SE.sleep(1500); // rate-limit-friendly
     }

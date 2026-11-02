@@ -97,36 +97,6 @@
     DEFAULTS
   };
 
-  // Cache (local, not synced) — used for price/info lookups.
-  const CACHE_KEY = 'se_cache_v1';
-  SE.cache = {
-    async get(key) {
-      return new Promise((res) => chrome.storage.local.get([CACHE_KEY], (data) => {
-        const cache = data[CACHE_KEY] || {};
-        const entry = cache[key];
-        if (!entry) return res(null);
-        if (entry.expires && entry.expires < Date.now()) return res(null);
-        res(entry.value);
-      }));
-    },
-    async set(key, value, ttlMin = 60) {
-      return new Promise((res) => chrome.storage.local.get([CACHE_KEY], (data) => {
-        const cache = data[CACHE_KEY] || {};
-        cache[key] = { value, expires: Date.now() + ttlMin * 60_000 };
-        // Prune if too big.
-        const keys = Object.keys(cache);
-        if (keys.length > 2000) {
-          keys.sort((a, b) => (cache[a].expires || 0) - (cache[b].expires || 0));
-          for (let i = 0; i < 500; i++) delete cache[keys[i]];
-        }
-        chrome.storage.local.set({ [CACHE_KEY]: cache }, () => res(value));
-      }));
-    },
-    async clear() {
-      return new Promise((res) => chrome.storage.local.remove([CACHE_KEY], res));
-    }
-  };
-
   // User collections (owned/wishlist/ignored caches built from the dynamic store).
   SE.collections = {
     async set(data) {

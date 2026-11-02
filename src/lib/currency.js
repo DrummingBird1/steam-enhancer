@@ -74,7 +74,7 @@
     walletPromise = (async () => {
       let id = null;
       try {
-        const r = await SE.injectPage(() => (window.g_rgWalletInfo && window.g_rgWalletInfo.wallet_currency) || null);
+        const r = await SE.pageCall('walletCurrency');
         if (r?.ok && r.result) id = Number(r.result);
       } catch {}
       if (id && STEAM_CURRENCY[id]) {

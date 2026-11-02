@@ -140,30 +140,21 @@
     }
   });
 
-  // Inject a <script> into the page to run in the page context (for Steam globals like g_AccountID, g_sessionID).
-  SE.injectPage = (fnOrCode, argsArr = []) => new Promise((resolve) => {
-    const id = 'se-inject-' + Math.random().toString(36).slice(2);
-    const code = typeof fnOrCode === 'function'
-      ? `(${fnOrCode.toString()}).apply(null, ${JSON.stringify(argsArr)});`
-      : String(fnOrCode);
-    const script = document.createElement('script');
-    script.textContent = `
-      try {
-        const __se_result = (function(){ ${code} })();
-        Promise.resolve(__se_result).then(r => {
-          window.postMessage({ __se_id: ${JSON.stringify(id)}, ok: true, result: r }, '*');
-        }).catch(e => window.postMessage({ __se_id: ${JSON.stringify(id)}, ok: false, error: String(e) }, '*'));
-      } catch (e) { window.postMessage({ __se_id: ${JSON.stringify(id)}, ok: false, error: String(e) }, '*'); }
-    `;
+  // Call a named operation in src/content/page-bridge.js, which runs in the
+  // page's own JS world where Steam's globals (g_sessionID, g_ActiveInventory,
+  // …) live. Resolves { ok, result } or { ok: false, error }.
+  SE.pageCall = (op, args = {}) => new Promise((resolve) => {
+    const id = 'se-call-' + Math.random().toString(36).slice(2);
+    let timer = null;
     const onMsg = (ev) => {
       if (ev.source !== window || !ev.data || ev.data.__se_id !== id) return;
       window.removeEventListener('message', onMsg);
+      clearTimeout(timer);
       resolve(ev.data);
     };
     window.addEventListener('message', onMsg);
-    (document.head || document.documentElement).appendChild(script);
-    script.remove();
-    setTimeout(() => { window.removeEventListener('message', onMsg); resolve({ ok: false, error: 'timeout' }); }, 8000);
+    window.postMessage({ __se_req: id, op, args }, location.origin);
+    timer = setTimeout(() => { window.removeEventListener('message', onMsg); resolve({ ok: false, error: 'timeout' }); }, 8000);
   });
 
   SE.onUrlChange = (cb) => {
