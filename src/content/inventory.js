@@ -5,6 +5,7 @@
   SE.onReady(() => init());
 
   let cachedItems = null;
+  let cachedFor = null;
   let cachedOwnerId = null;
 
   async function init() {
@@ -64,12 +65,15 @@
   }
 
   async function getItems(force = false) {
-    if (cachedItems && !force) return cachedItems;
+    // Switching games (#730 → #753) is only a hash change: the items read
+    // before belong to the previous game's inventory.
+    if (cachedItems && !force && cachedFor === location.hash) return cachedItems;
     // Each item carries its own contextid (Steam items are context 6, not 2) —
     // see inventoryItems in page-bridge.js.
     const r = await SE.pageCall('inventoryItems');
     if (r?.ok && r.result) {
       cachedItems = r.result.items;
+      cachedFor = location.hash;
       cachedOwnerId = r.result.owner || cachedOwnerId;
     } else {
       cachedItems = null;
@@ -381,7 +385,7 @@
       const buyerCents = Math.max(3, Math.round(med * 100) - 1);
       plan.push({ it, buyerCents });
       out.appendChild(SE.el('div', null,
-        `• ${it.market_hash_name} (${SE.t('medianWord')} ${SE.formatMoney(med, wallet.iso)}) → ${receiveLabel(buyerCents, wallet.iso)}`
+        `• ${it.amount > 1 ? `${it.amount}× ` : ''}${it.market_hash_name} (${SE.t('medianWord')} ${SE.formatMoney(med, wallet.iso)}) → ${receiveLabel(buyerCents, wallet.iso)}${it.amount > 1 ? ` ${SE.t('perItemWord')}` : ''}`
       ));
     }
 
@@ -406,7 +410,7 @@
     if (!it?.marketable || !it.market_hash_name || !it.contextid) return;
     if (sel.querySelector('.se-qs')) return;
     const out = SE.el('div', { class: 'se-qs-out se-muted' });
-    const box = SE.el('div', { class: 'se-qs' },
+    const box = SE.el('div', { class: 'se-qs se-inv-added' },
       SE.el('button', { class: 'se-btn', onclick: () => prepare('quick') }, SE.t('quickSellBtn')),
       ' ',
       SE.el('button', { class: 'se-btn', onclick: () => prepare('instant') }, SE.t('instantSellBtn')),
@@ -431,8 +435,15 @@
       const confirm = SE.el('button', { class: 'se-btn se-btn-danger' }, SE.t('qsConfirm'));
       confirm.addEventListener('click', async () => {
         confirm.disabled = true;
+        // Sell what's selected now — another copy of the same item is fine (the
+        // price is per item), anything else means the selection moved on.
+        const cur = (await SE.pageCall('selectedItem'))?.result;
+        if (!cur || cur.market_hash_name !== it.market_hash_name || cur.appid !== it.appid || cur.contextid !== it.contextid) {
+          out.textContent = SE.t('qsSelectionChanged');
+          return;
+        }
         const res = await SE.pageCall('sellItem', {
-          appid: it.appid, contextid: it.contextid, assetid: it.id, amount: 1,
+          appid: cur.appid, contextid: cur.contextid, assetid: cur.id, amount: 1,
           price: SE.marketFees.sellerReceives(buyerCents)
         });
         out.textContent = res?.result?.success
@@ -487,10 +498,18 @@
     a.href = URL.createObjectURL(blob); a.download = 'steam-inventory.json'; a.click();
   }
 
+  let tilesBusy = false;
   async function decorateTiles() {
-    // Throttle: only do a few uncached lookups per pass.
-    const tiles = SE.$$('.itemHolder:not([data-se-priced])').slice(0, 6);
+    if (tilesBusy) return;
+    // Only tiles on the visible page, a few per pass. The market endpoint
+    // allows one request every 2.5 s (service worker), so pricing every tile
+    // of a big inventory would queue minutes of requests ahead of a quick sell.
+    const tiles = SE.$$('.itemHolder:not([data-se-priced])').filter((t) => t.offsetParent !== null).slice(0, 6);
     if (!tiles.length) return;
+    tilesBusy = true;
+    try { await priceTiles(tiles); } finally { tilesBusy = false; }
+  }
+  async function priceTiles(tiles) {
     const items = await getItems();
     if (!items) return;
     for (const tile of tiles) {
@@ -514,6 +533,10 @@
     const stamp = sel.id + (sel.querySelector('.hover_item_name')?.textContent || '');
     if (sel.dataset.seDone === stamp) return;
     sel.dataset.seDone = stamp;
+    // Steam alternates between two info panes and refills them in place, so
+    // the buttons added for the item shown here before are still in it — and
+    // the quick-sell box would sell THAT item. Start clean.
+    sel.querySelectorAll('.se-inv-added').forEach((n) => n.remove());
 
     const name = sel.querySelector('.hover_item_name')?.textContent?.trim();
     if (!name) return;
@@ -521,10 +544,8 @@
       || sel.querySelector('a[href*="/market/listings/"]')?.href.match(/listings\/(\d+)\//);
     const appid = appidMatch?.[1];
     if (!appid) return;
-    if (sel.querySelector('.se-quicksell')) return;
-
     sel.appendChild(SE.el('a', {
-      class: 'se-btn se-quicksell',
+      class: 'se-btn se-quicksell se-inv-added',
       href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(name)}`,
       target: '_blank', rel: 'noopener'
     }, SE.t('viewOnMarket')));
@@ -542,13 +563,13 @@
           .replace('%owner_steamid%', cachedOwnerId)
           .replace('%assetid%', it.id);
         sel.appendChild(SE.el('a', {
-          class: 'se-btn',
+          class: 'se-btn se-inv-added',
           href: `https://csfloat.com/checkout/inspect?url=${encodeURIComponent(inspectLink)}`,
           target: '_blank', rel: 'noopener'
         }, 'CSFloat (this exact item)'));
       } else {
         sel.appendChild(SE.el('a', {
-          class: 'se-btn',
+          class: 'se-btn se-inv-added',
           href: `https://csfloat.com/search?market_hash_name=${encodeURIComponent(name)}`,
           target: '_blank', rel: 'noopener'
         }, 'CSFloat'));
@@ -558,7 +579,7 @@
     // Backpack.tf for TF2.
     if (appid === '440') {
       sel.appendChild(SE.el('a', {
-        class: 'se-btn',
+        class: 'se-btn se-inv-added',
         href: `https://backpack.tf/stats/Unique/${encodeURIComponent(name)}/Tradable/Craftable`,
         target: '_blank', rel: 'noopener'
       }, 'Backpack.tf'));

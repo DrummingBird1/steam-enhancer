@@ -74,9 +74,15 @@
 
   // Steam is a single-page app on many routes; se-ready must re-fire on navigation
   // so per-page scripts re-decorate. Collections are cached, so this is cheap.
+  // A change of only the #fragment (store pages jump to #app_reviews_hash,
+  // the inventory switches games by hash) isn't a new page.
   function watchNavigation() {
     if (!SE.once('common:nav-watch')) return;
+    const page = () => location.href.split('#')[0];
+    let last = page();
     SE.onUrlChange(SE.debounce(() => {
+      if (page() === last) return;
+      last = page();
       SE.safe('re-ready', ready);
     }, 400));
   }
@@ -104,8 +110,10 @@
   async function maybeShowChangelog() {
     const d = await new Promise((r) => chrome.storage.local.get(['se_show_changelog'], r));
     if (!d.se_show_changelog) return;
-    chrome.storage.local.set({ se_show_changelog: false });
+    // Only the store front page shows it; until then the flag stays set (1.4.x
+    // cleared it on whatever Steam page came first, so most people never saw it).
     if (location.hostname !== 'store.steampowered.com' || location.pathname !== '/') return;
+    chrome.storage.local.set({ se_show_changelog: false });
     if (document.getElementById('se-changelog-modal')) return;
     const v = chrome.runtime.getManifest().version;
     const modal = SE.el('div', { id: 'se-changelog-modal', class: 'se-modal' },
@@ -134,8 +142,8 @@
   async function maybeShowOnboarding() {
     const d = await new Promise((r) => chrome.storage.local.get(['se_show_onboarding'], r));
     if (!d.se_show_onboarding) return;
-    chrome.storage.local.set({ se_show_onboarding: false });
     if (location.hostname !== 'store.steampowered.com' || location.pathname !== '/') return;
+    chrome.storage.local.set({ se_show_onboarding: false });
     if (document.getElementById('se-onboard-modal')) return;
 
     const steps = [

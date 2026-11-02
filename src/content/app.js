@@ -22,10 +22,13 @@
     const { insertEnhancerPanel } = SE.storePage;
     const { settings } = SE.ctx;
 
-    // If a panel from a previous SPA route is stale, drop it so we rebuild fresh.
-    const stale = SE.$('#se-panel');
-    if (stale && stale.dataset.seFor && stale.dataset.seFor !== String(appid || subid || bundleid)) {
-      stale.remove();
+    // se-ready can fire again on the same page: keep a panel already built
+    // for it (rebuilding appended every row a second time), drop one left from
+    // a previous SPA route.
+    const existing = SE.$('#se-panel');
+    if (existing) {
+      if (existing.dataset.seFor === String(appid || subid || bundleid)) return;
+      existing.remove();
     }
 
     SE.safe('panel', () => insertEnhancerPanel(appid || subid || bundleid));
@@ -50,7 +53,7 @@
       SE.safe('communityLinks', () => addCommunityLinks(appid));
       SE.safe('itadWaitlist', () => addItadWaitlistLink(appid));
       SE.safe('notes', () => addNotesBox(appid));
-      SE.safe('priceChart', () => addPriceChart(appid));
+      if (settings.showPriceHistory) SE.safe('priceChart', () => addPriceChart(appid));
       SE.safe('boosterCreator', () => addBoosterCreatorLink(appid));
       SE.safe('wishBtn', () => enhanceWishlistButton());
       SE.safe('priceDrop', () => trackPriceDrop(appid));

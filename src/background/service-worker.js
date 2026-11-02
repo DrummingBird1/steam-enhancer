@@ -136,7 +136,7 @@ async function fetchJsonUncached({ url, method = 'GET', headers, body, cacheKey,
   }
   if (url.startsWith('https://api.isthereanydeal.com/')) {
     const keyedUrl = await withItadKey(url);
-    if (!keyedUrl) return { ok: false, needsItadKey: true, error: 'No IsThereAnyDeal API key configured (Options → Region)' };
+    if (!keyedUrl) return { ok: false, needsItadKey: true, error: 'No IsThereAnyDeal API key configured (Options → Prices & keys)' };
     url = keyedUrl;
   }
   return paced(url, async () => {
@@ -254,17 +254,17 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: 'se-search-itad',
-      title: 'Find lowest price on IsThereAnyDeal',
+      title: t('ctxSearchItad'),
       contexts: ['selection', 'link']
     });
     chrome.contextMenus.create({
       id: 'se-search-steamdb',
-      title: 'Search on SteamDB',
+      title: t('ctxSearchSteamDb'),
       contexts: ['selection', 'link']
     });
     chrome.contextMenus.create({
       id: 'se-search-protondb',
-      title: 'Check ProtonDB rating',
+      title: t('ctxSearchProtonDb'),
       contexts: ['selection', 'link']
     });
   });
@@ -339,6 +339,10 @@ async function bestDealsFor(appids, country, { nondeals }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(chunk.map((l) => l.id))
     });
+    // A failed call leaves these apps out: "no answer" isn't "no deal", and
+    // reading it as one made the wishlist poll forget which deals it had
+    // already announced, then announce them all again on the next run.
+    if (!prices?.ok) continue;
     for (const { appid, id, title } of chunk) {
       const deal = SE.itad.bestDeal(prices?.data, id);
       out.set(appid, deal && { ...deal, title });

@@ -46,6 +46,11 @@
         overlay.classList.add('se-holding');
         holdT = setTimeout(() => {
           overlay.remove();
+          escape.remove();
+          // Back to normal: if Steam's own dialog is cancelled, the button
+          // must still work (it stayed greyed out and unclickable before).
+          btn.style.opacity = '';
+          btn.style.pointerEvents = '';
           btn.click();
         }, 2000);
       };

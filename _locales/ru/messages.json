@@ -860,6 +860,21 @@
   "qsNoBuyOrders": {
     "message": "На этот предмет нет запросов на покупку (или для книги заказов нужно войти)."
   },
+  "qsSelectionChanged": {
+    "message": "Выбранный предмет изменился. Ничего не выставлено; выберите предмет и попробуйте снова."
+  },
+  "perItemWord": {
+    "message": "за штуку"
+  },
+  "ctxSearchItad": {
+    "message": "Найти лучшую цену на IsThereAnyDeal"
+  },
+  "ctxSearchSteamDb": {
+    "message": "Искать на SteamDB"
+  },
+  "ctxSearchProtonDb": {
+    "message": "Проверить рейтинг ProtonDB"
+  },
   "qsConfirm": {
     "message": "⚠ Подтвердить: выставить"
   },

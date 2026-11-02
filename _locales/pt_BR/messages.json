@@ -860,6 +860,21 @@
   "qsNoBuyOrders": {
     "message": "Não há ordens de compra para este item (ou o livro de ofertas exige login)."
   },
+  "qsSelectionChanged": {
+    "message": "O item selecionado mudou. Nada foi anunciado; selecione o item e tente de novo."
+  },
+  "perItemWord": {
+    "message": "cada"
+  },
+  "ctxSearchItad": {
+    "message": "Procurar menor preço no IsThereAnyDeal"
+  },
+  "ctxSearchSteamDb": {
+    "message": "Pesquisar no SteamDB"
+  },
+  "ctxSearchProtonDb": {
+    "message": "Ver avaliação no ProtonDB"
+  },
   "qsConfirm": {
     "message": "⚠ Confirmar: anunciar"
   },

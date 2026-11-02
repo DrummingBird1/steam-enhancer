@@ -860,6 +860,21 @@
   "qsNoBuyOrders": {
     "message": "No buy orders for this item (or the order book needs you to be signed in)."
   },
+  "qsSelectionChanged": {
+    "message": "The selected item changed. Nothing was listed; pick the item and try again."
+  },
+  "perItemWord": {
+    "message": "each"
+  },
+  "ctxSearchItad": {
+    "message": "Find lowest price on IsThereAnyDeal"
+  },
+  "ctxSearchSteamDb": {
+    "message": "Search on SteamDB"
+  },
+  "ctxSearchProtonDb": {
+    "message": "Check ProtonDB rating"
+  },
   "qsConfirm": {
     "message": "⚠ Confirm: list it"
   },

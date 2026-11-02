@@ -53,10 +53,16 @@
           const m = node.id && node.id.match(/item(\d+)_(\d+)_(\d+)/);
           if (!m) return;
           const [, appid, contextid, assetid] = m;
-          const user = slotsId === 'your_slots' ? window.UserYou : window.UserThem;
-          const inv = user && user.getInventory && user.getInventory(appid, contextid);
-          const asset = inv && inv.rgInventory && inv.rgInventory[assetid];
-          const desc = asset ? inv.rgDescriptions[asset.classid + '_' + asset.instanceid] : null;
+          // Steam's item elements carry their item (rgItem) — the only source
+          // for an offer you received, where the partner's inventory isn't
+          // loaded. Otherwise look it up in the loaded inventory.
+          let desc = node.rgItem && node.rgItem.description ? node.rgItem.description : node.rgItem || null;
+          if (!desc || !desc.market_hash_name) {
+            const user = slotsId === 'your_slots' ? window.UserYou : window.UserThem;
+            const inv = user && user.getInventory && user.getInventory(appid, contextid);
+            const asset = inv && inv.rgInventory && inv.rgInventory[assetid];
+            desc = (asset && inv.rgDescriptions[asset.classid + '_' + asset.instanceid]) || desc;
+          }
           items.push({
             appid, contextid,
             name: (desc && desc.name) || '',

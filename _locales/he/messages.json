@@ -860,6 +860,21 @@
   "qsNoBuyOrders": {
     "message": "אין הזמנות קנייה לפריט הזה (או שספר ההזמנות דורש התחברות)."
   },
+  "qsSelectionChanged": {
+    "message": "הפריט שנבחר השתנה. שום דבר לא הוצע למכירה; בחר את הפריט ונסה שוב."
+  },
+  "perItemWord": {
+    "message": "ליחידה"
+  },
+  "ctxSearchItad": {
+    "message": "חפש את המחיר הנמוך ב-IsThereAnyDeal"
+  },
+  "ctxSearchSteamDb": {
+    "message": "חפש ב-SteamDB"
+  },
+  "ctxSearchProtonDb": {
+    "message": "בדוק דירוג ב-ProtonDB"
+  },
   "qsConfirm": {
     "message": "⚠ אישור: להציע למכירה"
   },

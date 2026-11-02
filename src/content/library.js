@@ -10,10 +10,12 @@
     // se-ready already re-fires on SPA navigation (common.js), so no extra watcher needed.
   }
 
-  function insertToolbar() {
+  function insertToolbar(tries = 0) {
     if (SE.$('#se-library-toolbar')) return;
     const games = readGames();
-    if (!games.length) { setTimeout(insertToolbar, 500); return; }
+    // The list renders after load; give up after ~10 s (private or empty
+    // library, or markup we don't recognize) instead of polling forever.
+    if (!games.length) { if (tries < 20) setTimeout(() => insertToolbar(tries + 1), 500); return; }
     const anchor = SE.$('.profile_small_header_text') || SE.$('#mainContents') || document.body;
     const showValue = SE.ctx?.settings.showLibraryValue;
     const bar = SE.el('div', { id: 'se-library-toolbar', class: 'se-toolbar' },

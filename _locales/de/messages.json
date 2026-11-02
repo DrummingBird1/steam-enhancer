@@ -860,6 +860,21 @@
   "qsNoBuyOrders": {
     "message": "Keine Kaufaufträge für diesen Gegenstand (oder das Orderbuch erfordert eine Anmeldung)."
   },
+  "qsSelectionChanged": {
+    "message": "Die Auswahl hat sich geändert. Nichts wurde eingestellt; wähle den Gegenstand und versuche es erneut."
+  },
+  "perItemWord": {
+    "message": "pro Stück"
+  },
+  "ctxSearchItad": {
+    "message": "Bestpreis auf IsThereAnyDeal suchen"
+  },
+  "ctxSearchSteamDb": {
+    "message": "Auf SteamDB suchen"
+  },
+  "ctxSearchProtonDb": {
+    "message": "ProtonDB-Bewertung prüfen"
+  },
   "qsConfirm": {
     "message": "⚠ Bestätigen: einstellen"
   },

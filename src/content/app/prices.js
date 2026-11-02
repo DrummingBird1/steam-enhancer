@@ -14,7 +14,8 @@
     row.innerHTML = '';
     if (sum === 'needsItadKey') { row.appendChild(itadKeyNotice()); return; }
     if (!sum) { row.appendChild(SE.el('span', { class: 'se-muted' }, SE.t('noDealData'))); return; }
-    const cur = sum.currentLow;
+    // "Lowest current price" and "Historical low" are separate settings.
+    const cur = settings?.showLowestPrice ? sum.currentLow : null;
     if (cur) {
       const dispRow = SE.el('div', null,
         SE.el('span', { class: 'se-label' }, SE.t('lowestNow')),
@@ -26,7 +27,7 @@
         if (conv) dispRow.appendChild(SE.el('span', { class: 'se-muted' }, ` (≈ ${SE.formatMoney(conv.amount, conv.currency)})`));
       });
     }
-    if (sum.historicalLow) {
+    if (settings?.showPriceHistory && sum.historicalLow) {
       const h = sum.historicalLow;
       const date = h.timestamp ? new Date(h.timestamp).toISOString().slice(0, 10) : '';
       const histRow = SE.el('div', null,

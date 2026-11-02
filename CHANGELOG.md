@@ -48,6 +48,30 @@ new tools. How it was planned: `docs/PLAN-1.5.0.md`.
 - **Wishlist-deal and price-alert notifications didn't say which game** they
   were about; they now start with the game's name ("Hades II · Steam: $14.99").
 - The notes box on store pages was wider than the panel.
+- **The quick-sell box could stay attached to the previous item.** Steam
+  reuses the inventory's item-detail panes, so buttons added for one item were
+  still there after selecting another. They're now rebuilt per item, and the
+  confirm click checks the selected item is still the one priced.
+- **Switching games in the inventory kept the previous game's items** for
+  duplicates, sorting and tile prices.
+- **Tile prices queued the whole inventory** behind the market's one request
+  per 2.5 s, so a quick sell could wait minutes. Only the visible page is
+  priced now.
+- **Mass-list didn't say a stack is listed whole** (at the per-item price);
+  the preview now shows "N× … each".
+- **Received trade offers showed the partner's items as unmarketable** (value
+  0, false "value mismatch"); item details now come from the item elements.
+- **The hold-to-confirm trade button stayed disabled** if Steam's own dialog
+  was cancelled.
+- **Any `#` change on a store page added every panel row a second time.**
+- **The "what's new" window was almost never shown**: the first Steam page
+  after an update cleared it unless that page was the store front page.
+- **"Historical low and price-history chart" off still showed the chart**, and
+  "Lowest current price" off still showed the historical low.
+- **A failed ITAD call made the wishlist alert forget what it had announced**,
+  so every current deal was announced again on the next run.
+- The library page polled forever when it found no games; it stops after 10 s.
+- The right-click menu items are translated.
 - **Background cache lost most writes** when requests ran in parallel. Each
   entry now has its own storage key, pruned by an alarm.
 - Alarms are recreated on browser startup, not only on install.
