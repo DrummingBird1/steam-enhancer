@@ -994,5 +994,275 @@
   },
   "notifPriceAlertMsg": {
     "message": "{0} в {1} (ваша цель: {2})"
+  },
+  "optSearch": {
+    "message": "Поиск по настройкам…"
+  },
+  "optFooterUnofficial": {
+    "message": "Steam Enhancer — неофициальное дополнение. Не связано с Valve или Steam."
+  },
+  "optSourceLink": {
+    "message": "Исходный код на GitHub"
+  },
+  "optSecPrices": {
+    "message": "Цены и ключи"
+  },
+  "optSecStore": {
+    "message": "Страницы магазина"
+  },
+  "optSecLists": {
+    "message": "Поиск, списки и желаемое"
+  },
+  "optSecMarket": {
+    "message": "Рынок, инвентарь и обмены"
+  },
+  "optSecCommunity": {
+    "message": "Профили и библиотека"
+  },
+  "optSecNotify": {
+    "message": "Уведомления"
+  },
+  "optSecAdvanced": {
+    "message": "Дополнительно"
+  },
+  "optSecPresets": {
+    "message": "Наборы настроек"
+  },
+  "optSecBackup": {
+    "message": "Резервная копия и сброс"
+  },
+  "optItadKey": {
+    "message": "API-ключ IsThereAnyDeal (нужен для цен)"
+  },
+  "optItadKeyHint": {
+    "message": "С тех пор как IsThereAnyDeal изменил API, для любых цен (минимальная цена, исторический минимум, история цен, метки в списках и поиске, уведомления о скидках) нужен бесплатный ключ. Зарегистрируйте бесплатное приложение на [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) и вставьте ключ сюда. Он остаётся в вашем браузере и отправляется только на api.isthereanydeal.com."
+  },
+  "optItadKeyPlaceholder": {
+    "message": "вставьте бесплатный ключ ITAD"
+  },
+  "optCountry": {
+    "message": "Страна для цен"
+  },
+  "optCountryHint": {
+    "message": "Две буквы, например IL или DE. Оставьте пустым, чтобы использовать страну, которую показывает Steam."
+  },
+  "optAuto": {
+    "message": "авто"
+  },
+  "optDisplayCurrency": {
+    "message": "Валюта отображения (необязательно)"
+  },
+  "optDisplayCurrencyHint": {
+    "message": "Три буквы, например ILS или EUR. Цены будут также показаны в этой валюте, и в ней же сравниваются региональные цены."
+  },
+  "optSteamKey": {
+    "message": "Ваш ключ Steam Web API (необязательно)"
+  },
+  "optSteamKeyHint": {
+    "message": "Только для «сколько друзей владеют игрой». Получите бесплатный ключ на [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey). Он остаётся в браузере и отправляется только на api.steampowered.com."
+  },
+  "optDealThreshold": {
+    "message": "Минимальная скидка для уведомлений (%)"
+  },
+  "optQuietFrom": {
+    "message": "Тихие часы с"
+  },
+  "optQuietTo": {
+    "message": "Тихие часы до"
+  },
+  "optQuietHint": {
+    "message": "В эти часы уведомления только собираются во всплывающем окне значка, без системных уведомлений. Оставьте пустым, чтобы отключить."
+  },
+  "optCustomCss": {
+    "message": "Свой CSS для страниц Steam"
+  },
+  "optCustomCssHint": {
+    "message": "Добавляется на все страницы магазина и сообщества Steam. Хранится только в этом браузере (не синхронизируется)."
+  },
+  "optPresetsHint": {
+    "message": "Набор сразу включает и выключает переключатели. Ключи, страна и другие значения не меняются."
+  },
+  "presetMinimal": {
+    "message": "Минимум"
+  },
+  "presetDeals": {
+    "message": "Охотник за скидками"
+  },
+  "presetTrader": {
+    "message": "Трейдер"
+  },
+  "presetEverything": {
+    "message": "Всё"
+  },
+  "optPresetConfirm": {
+    "message": "Переключиться на набор «{0}»? Это изменит, какие функции включены."
+  },
+  "optBackupHint": {
+    "message": "Резервная копия содержит настройки, заметки, целевые цены, скрытые игры и истории, которые ведёт расширение. Импорт в другом браузере восстановит всё это."
+  },
+  "optExport": {
+    "message": "Экспорт копии"
+  },
+  "optImport": {
+    "message": "Импорт копии"
+  },
+  "optClearCache": {
+    "message": "Очистить кэш"
+  },
+  "optClearBlocklist": {
+    "message": "Снова показать скрытые игры"
+  },
+  "optReset": {
+    "message": "Сбросить настройки"
+  },
+  "optShow": {
+    "message": "Показать"
+  },
+  "optHide": {
+    "message": "Скрыть"
+  },
+  "optSaved": {
+    "message": "Сохранено"
+  },
+  "optSaveFailed": {
+    "message": "Не удалось сохранить: {0}"
+  },
+  "optResetConfirm": {
+    "message": "Сбросить все настройки по умолчанию? API-ключи сохранятся."
+  },
+  "optResetDone": {
+    "message": "Настройки сброшены"
+  },
+  "optCacheCleared": {
+    "message": "Кэш очищен"
+  },
+  "optClearBlocklistConfirm": {
+    "message": "Снова показывать все игры, скрытые кнопкой ✕ в поиске?"
+  },
+  "optBlocklistCleared": {
+    "message": "Скрытые игры снова видны"
+  },
+  "optExported": {
+    "message": "Копия загружена"
+  },
+  "optNotABackup": {
+    "message": "Это не резервная копия Steam Enhancer."
+  },
+  "optImportConfirm": {
+    "message": "Импортировать копию? Она заменит текущие настройки и сохранённые данные."
+  },
+  "optImported": {
+    "message": "Импортировано. Перезагрузите вкладки Steam."
+  },
+  "optImportFailed": {
+    "message": "Ошибка импорта: {0}"
+  },
+  "opt_showLowestPrice": {
+    "message": "Самая низкая цена по магазинам"
+  },
+  "opt_showPriceHistory": {
+    "message": "Исторический минимум и график цен"
+  },
+  "opt_showRegionalPricing": {
+    "message": "Региональные цены с пересчётом (медленнее)"
+  },
+  "opt_showStorePriceAlerts": {
+    "message": "Поле «уведомить при цене» на страницах игр"
+  },
+  "opt_showBundleSavings": {
+    "message": "Набор или по отдельности"
+  },
+  "opt_showSteamDBLink": {
+    "message": "Ссылки на SteamDB, Barter.vg, SteamCharts"
+  },
+  "opt_showProtonDB": {
+    "message": "Оценка ProtonDB (Linux / Steam Deck)"
+  },
+  "opt_showHowLongToBeat": {
+    "message": "Ссылка на HowLongToBeat"
+  },
+  "opt_showPlayersOnline": {
+    "message": "Игроков сейчас"
+  },
+  "opt_showAchievementStats": {
+    "message": "Статистика достижений"
+  },
+  "opt_showDlcCheck": {
+    "message": "Отмечать купленные DLC"
+  },
+  "opt_showCardSetValue": {
+    "message": "Ссылки на карточки"
+  },
+  "opt_showReviewBreakdown": {
+    "message": "Разбивка обзоров (положительные / отрицательные)"
+  },
+  "opt_showLiveReviewFilters": {
+    "message": "Фильтр обзоров (часы в игре, длина)"
+  },
+  "opt_showBestReview": {
+    "message": "Фрагмент самого полезного обзора"
+  },
+  "opt_showReviewBombDetector": {
+    "message": "Отмечать возможный ревью-бомбинг"
+  },
+  "opt_highlightOwned": {
+    "message": "Подсвечивать купленные игры"
+  },
+  "opt_highlightWishlist": {
+    "message": "Подсвечивать желаемые игры"
+  },
+  "opt_highlightIgnored": {
+    "message": "Подсвечивать игнорируемые игры"
+  },
+  "opt_hideOwnedInSearch": {
+    "message": "Скрывать купленные игры в поиске"
+  },
+  "opt_hideIgnoredInSearch": {
+    "message": "Скрывать игнорируемые игры в поиске"
+  },
+  "opt_enableWishlistExport": {
+    "message": "Панель списка желаемого (таблица, фильтры, экспорт)"
+  },
+  "opt_enableMarketTools": {
+    "message": "Инструменты рынка (цена после комиссии, перебить, мои лоты)"
+  },
+  "opt_showBuyOrderHelper": {
+    "message": "Помощник запросов на покупку"
+  },
+  "opt_enableInventoryTools": {
+    "message": "Инструменты инвентаря"
+  },
+  "opt_enableQuickSell": {
+    "message": "Кнопки быстрой / мгновенной продажи"
+  },
+  "opt_showTileSortGroup": {
+    "message": "Сортировка и группировка предметов"
+  },
+  "opt_enableTradeOfferTools": {
+    "message": "Сводка стоимости в обменах"
+  },
+  "opt_showTradeHistory": {
+    "message": "Запоминать обмены с партнёрами (в этом браузере)"
+  },
+  "opt_showLibraryValue": {
+    "message": "Оценка стоимости библиотеки (страница /games)"
+  },
+  "opt_showBadgeTracker": {
+    "message": "Сводка по значкам (страница /badges)"
+  },
+  "opt_showMediaShortcuts": {
+    "message": "Ссылки на скриншоты и иллюстрации в профилях"
+  },
+  "opt_showFriendsOwnership": {
+    "message": "Сколько друзей владеют игрой (нужен ваш ключ Steam)"
+  },
+  "opt_notifyWishlistDeals": {
+    "message": "Уведомлять о скидках из желаемого (ежечасно)"
+  },
+  "opt_notifyStorePriceAlerts": {
+    "message": "Уведомлять, когда цена достигла цели"
+  },
+  "opt_notifyFreePromos": {
+    "message": "Уведомлять о временно бесплатных играх"
   }
 }

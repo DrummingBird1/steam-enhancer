@@ -994,5 +994,275 @@
   },
   "notifPriceAlertMsg": {
     "message": "{0} ב-{1} (היעד שלך: {2})"
+  },
+  "optSearch": {
+    "message": "חיפוש בהגדרות…"
+  },
+  "optFooterUnofficial": {
+    "message": "Steam Enhancer הוא כלי לא רשמי. אין לו קשר ל-Valve או ל-Steam."
+  },
+  "optSourceLink": {
+    "message": "קוד המקור ב-GitHub"
+  },
+  "optSecPrices": {
+    "message": "מחירים ומפתחות"
+  },
+  "optSecStore": {
+    "message": "עמודי חנות"
+  },
+  "optSecLists": {
+    "message": "חיפוש, רשימות ורשימת משאלות"
+  },
+  "optSecMarket": {
+    "message": "Market, מלאי וטריידים"
+  },
+  "optSecCommunity": {
+    "message": "פרופילים וספרייה"
+  },
+  "optSecNotify": {
+    "message": "התראות"
+  },
+  "optSecAdvanced": {
+    "message": "מתקדם"
+  },
+  "optSecPresets": {
+    "message": "פרופילים מוכנים"
+  },
+  "optSecBackup": {
+    "message": "גיבוי ואיפוס"
+  },
+  "optItadKey": {
+    "message": "מפתח API של IsThereAnyDeal (נדרש למחירים)"
+  },
+  "optItadKeyHint": {
+    "message": "כל בדיקת מחיר (המחיר הנמוך, השפל ההיסטורי, היסטוריית המחירים, תגיות ברשימות ובחיפוש, התראות על מבצעים) דורשת מפתח חינמי מאז ש-IsThereAnyDeal שינו את ה-API שלהם. רשמו אפליקציה חינמית ב-[isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) והדביקו כאן את המפתח. הוא נשאר בדפדפן שלכם ונשלח רק ל-api.isthereanydeal.com."
+  },
+  "optItadKeyPlaceholder": {
+    "message": "הדביקו את מפתח ה-ITAD החינמי"
+  },
+  "optCountry": {
+    "message": "מדינה למחירים"
+  },
+  "optCountryHint": {
+    "message": "שתי אותיות, למשל IL או DE. השאירו ריק כדי להשתמש במדינה ש-Steam מציג לכם."
+  },
+  "optAuto": {
+    "message": "אוטומטי"
+  },
+  "optDisplayCurrency": {
+    "message": "מטבע תצוגה (לא חובה)"
+  },
+  "optDisplayCurrencyHint": {
+    "message": "שלוש אותיות, למשל ILS או EUR. המחירים יוצגו גם במטבע הזה, ומחירים אזוריים יושוו בו."
+  },
+  "optSteamKey": {
+    "message": "מפתח Steam Web API שלך (לא חובה)"
+  },
+  "optSteamKeyHint": {
+    "message": "רק בשביל \"כמה חברים שלך מחזיקים במשחק\". קבלו מפתח חינמי משלכם ב-[steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey). הוא נשאר בדפדפן ונשלח רק ל-api.steampowered.com."
+  },
+  "optDealThreshold": {
+    "message": "הנחה מינימלית להתראות על מבצעים (%)"
+  },
+  "optQuietFrom": {
+    "message": "שעות שקטות מ-"
+  },
+  "optQuietTo": {
+    "message": "שעות שקטות עד"
+  },
+  "optQuietHint": {
+    "message": "בשעות האלה ההתראות רק נאספות בחלון של הכפתור בסרגל, בלי התראת מערכת. השאירו ריק כדי לבטל."
+  },
+  "optCustomCss": {
+    "message": "CSS מותאם לעמודי Steam"
+  },
+  "optCustomCssHint": {
+    "message": "מתווסף לכל עמוד בחנות ובקהילה של Steam. נשמר רק בדפדפן הזה (לא מסונכרן)."
+  },
+  "optPresetsHint": {
+    "message": "פרופיל מוכן מדליק ומכבה את כל האפשרויות בבת אחת. מפתחות, מדינה וערכים אחרים לא משתנים."
+  },
+  "presetMinimal": {
+    "message": "מינימלי"
+  },
+  "presetDeals": {
+    "message": "צייד מבצעים"
+  },
+  "presetTrader": {
+    "message": "סוחר"
+  },
+  "presetEverything": {
+    "message": "הכול"
+  },
+  "optPresetConfirm": {
+    "message": "לעבור לפרופיל \"{0}\"? זה משנה אילו פיצ'רים פעילים."
+  },
+  "optBackupHint": {
+    "message": "קובץ הגיבוי כולל את ההגדרות, ההערות, מחירי ההתראות, המשחקים המוסתרים וההיסטוריות שהתוסף שומר. ייבוא שלו בדפדפן אחר משחזר את כולם."
+  },
+  "optExport": {
+    "message": "ייצוא גיבוי"
+  },
+  "optImport": {
+    "message": "ייבוא גיבוי"
+  },
+  "optClearCache": {
+    "message": "ניקוי מטמון"
+  },
+  "optClearBlocklist": {
+    "message": "הצג שוב משחקים מוסתרים"
+  },
+  "optReset": {
+    "message": "איפוס הגדרות"
+  },
+  "optShow": {
+    "message": "הצג"
+  },
+  "optHide": {
+    "message": "הסתר"
+  },
+  "optSaved": {
+    "message": "נשמר"
+  },
+  "optSaveFailed": {
+    "message": "השמירה נכשלה: {0}"
+  },
+  "optResetConfirm": {
+    "message": "לאפס את כל ההגדרות לברירת המחדל? מפתחות ה-API נשמרים."
+  },
+  "optResetDone": {
+    "message": "ההגדרות אופסו"
+  },
+  "optCacheCleared": {
+    "message": "המטמון נוקה"
+  },
+  "optClearBlocklistConfirm": {
+    "message": "להציג שוב את כל המשחקים שהסתרתם עם ✕ בחיפוש?"
+  },
+  "optBlocklistCleared": {
+    "message": "המשחקים המוסתרים מוצגים שוב"
+  },
+  "optExported": {
+    "message": "הגיבוי הורד"
+  },
+  "optNotABackup": {
+    "message": "זה לא קובץ גיבוי של Steam Enhancer."
+  },
+  "optImportConfirm": {
+    "message": "לייבא את הגיבוי? הוא מחליף את ההגדרות והנתונים השמורים הנוכחיים."
+  },
+  "optImported": {
+    "message": "יובא. טענו מחדש את לשוניות Steam כדי להחיל."
+  },
+  "optImportFailed": {
+    "message": "הייבוא נכשל: {0}"
+  },
+  "opt_showLowestPrice": {
+    "message": "המחיר הנמוך הנוכחי בכל החנויות"
+  },
+  "opt_showPriceHistory": {
+    "message": "שפל היסטורי וגרף היסטוריית מחירים"
+  },
+  "opt_showRegionalPricing": {
+    "message": "מחירים אזוריים, מומרים (איטי יותר)"
+  },
+  "opt_showStorePriceAlerts": {
+    "message": "שדה \"התרע לי ב-\" בעמודי חנות"
+  },
+  "opt_showBundleSavings": {
+    "message": "חבילה מול קנייה בנפרד"
+  },
+  "opt_showSteamDBLink": {
+    "message": "קישורים ל-SteamDB, Barter.vg, SteamCharts"
+  },
+  "opt_showProtonDB": {
+    "message": "דירוג ProtonDB (לינוקס / Steam Deck)"
+  },
+  "opt_showHowLongToBeat": {
+    "message": "קישור ל-HowLongToBeat"
+  },
+  "opt_showPlayersOnline": {
+    "message": "שחקנים מחוברים עכשיו"
+  },
+  "opt_showAchievementStats": {
+    "message": "סטטיסטיקות הישגים"
+  },
+  "opt_showDlcCheck": {
+    "message": "סימון DLC שבבעלותך"
+  },
+  "opt_showCardSetValue": {
+    "message": "קישורים לקלפי מסחר"
+  },
+  "opt_showReviewBreakdown": {
+    "message": "פירוט ביקורות (חיוביות / שליליות)"
+  },
+  "opt_showLiveReviewFilters": {
+    "message": "סרגל סינון ביקורות (שעות משחק, אורך)"
+  },
+  "opt_showBestReview": {
+    "message": "קטע מהביקורת המועילה ביותר"
+  },
+  "opt_showReviewBombDetector": {
+    "message": "סימון חשד להפצצת ביקורות"
+  },
+  "opt_highlightOwned": {
+    "message": "הדגשת משחקים שבבעלותך"
+  },
+  "opt_highlightWishlist": {
+    "message": "הדגשת משחקים ברשימת המשאלות"
+  },
+  "opt_highlightIgnored": {
+    "message": "הדגשת משחקים שהתעלמת מהם"
+  },
+  "opt_hideOwnedInSearch": {
+    "message": "הסתרת משחקים שבבעלותך בחיפוש"
+  },
+  "opt_hideIgnoredInSearch": {
+    "message": "הסתרת משחקים שהתעלמת מהם בחיפוש"
+  },
+  "opt_enableWishlistExport": {
+    "message": "פאנל רשימת המשאלות (טבלה, סינון, ייצוא)"
+  },
+  "opt_enableMarketTools": {
+    "message": "כלי Market (מחיר נטו, עקיפה, ההצעות שלי)"
+  },
+  "opt_showBuyOrderHelper": {
+    "message": "עזרה בהזמנות קנייה"
+  },
+  "opt_enableInventoryTools": {
+    "message": "כלי מלאי"
+  },
+  "opt_enableQuickSell": {
+    "message": "כפתורי מכירה מהירה / מיידית"
+  },
+  "opt_showTileSortGroup": {
+    "message": "מיון וקיבוץ פריטים במלאי"
+  },
+  "opt_enableTradeOfferTools": {
+    "message": "סיכום שווי בהצעות טרייד"
+  },
+  "opt_showTradeHistory": {
+    "message": "זכירת טריידים לפי שותף (בדפדפן הזה)"
+  },
+  "opt_showLibraryValue": {
+    "message": "הערכת שווי הספרייה (עמוד /games)"
+  },
+  "opt_showBadgeTracker": {
+    "message": "סיכום התקדמות תגים (עמוד /badges)"
+  },
+  "opt_showMediaShortcuts": {
+    "message": "קיצורי דרך לצילומי מסך ויצירות בפרופילים"
+  },
+  "opt_showFriendsOwnership": {
+    "message": "כמה חברים מחזיקים במשחק (דורש מפתח Steam שלך)"
+  },
+  "opt_notifyWishlistDeals": {
+    "message": "התראה על מבצעים ברשימת המשאלות (כל שעה)"
+  },
+  "opt_notifyStorePriceAlerts": {
+    "message": "התראה כשמחיר מגיע ליעד"
+  },
+  "opt_notifyFreePromos": {
+    "message": "התראה כשמשחק בחינם לזמן מוגבל"
   }
 }

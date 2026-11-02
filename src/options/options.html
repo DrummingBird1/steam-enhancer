@@ -6,102 +6,27 @@
   <link rel="stylesheet" href="options.css" />
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <img src="../../icons/icon128.png" alt="" width="64" height="64" />
-      <div>
-        <h1>Steam Enhancer</h1>
-        <p data-i18n="optSubtitle">All settings. Changes apply on next page load.</p>
-      </div>
-    </header>
+  <header class="top">
+    <img src="../../icons/icon128.png" alt="" width="40" height="40" />
+    <div class="title">
+      <h1>Steam Enhancer</h1>
+      <p id="version"></p>
+    </div>
+    <input type="search" id="search" data-i18n-placeholder="optSearch" placeholder="Search settings…" />
+    <span id="status" class="status" role="status" aria-live="polite"></span>
+  </header>
 
-    <section class="section-highlight">
-      <h2>IsThereAnyDeal API key <span class="req-badge">required for prices</span></h2>
-      <label>API key
-        <input type="text" id="itadApiKey" placeholder="paste your free ITAD app key here" />
-      </label>
-      <p class="hint">As of v1.4.0, IsThereAnyDeal requires a free API key for every price lookup this extension does
-        (lowest price, historical low, price-history chart, wishlist/search price tags, deal notifications).
-        This changed on ITAD's end, not something we chose — without a key, all of those simply show nothing.
-        Register a free app key (registers the extension, not you personally) at
-        <a href="https://isthereanydeal.com/apps/my/" target="_blank" rel="noopener">isthereanydeal.com/apps/my/</a>
-        and paste it above. Stored only in your browser's synced settings; requests go straight from your browser to
-        <code>api.isthereanydeal.com</code> — this extension's developers never see it.</p>
-    </section>
-
-    <section>
-      <h2 data-i18n="secRegion">Region</h2>
-      <label>Country (for prices — leave empty to use the one Steam shows you)
-        <input type="text" id="country" maxlength="2" placeholder="auto" />
-      </label>
-      <label>Currency hint
-        <input type="text" id="currency" maxlength="3" placeholder="USD" />
-      </label>
-      <label>Display currency (optional)
-        <input type="text" id="displayCurrency" maxlength="3" placeholder="e.g. EUR — leave blank to disable" />
-      </label>
-      <p class="hint">When set, price panels also show the amount converted into this currency, in addition to the store's own currency.</p>
-    </section>
-
-    <section>
-      <h2 data-i18n="secStore">Store pages</h2>
-      <div class="grid" id="grid-store"></div>
-    </section>
-
-    <section>
-      <h2 data-i18n="secSearch">Search & lists</h2>
-      <div class="grid" id="grid-search"></div>
-    </section>
-
-    <section>
-      <h2 data-i18n="secMarket">Market, Inventory, Trade</h2>
-      <div class="grid" id="grid-mkt"></div>
-    </section>
-
-    <section>
-      <h2 data-i18n="secNotify">Notifications</h2>
-      <div class="grid" id="grid-notify"></div>
-      <label>Deal % threshold for notifications
-        <input type="number" id="wishlistDealThreshold" min="1" max="99" step="1" />
-      </label>
-    </section>
-
-    <section>
-      <h2>Your Steam Web API key (optional)</h2>
-      <label>API key
-        <input type="text" id="steamWebApiKey" placeholder="leave blank to disable friends-ownership lookup" />
-      </label>
-      <p class="hint">Only used for the opt-in "how many friends own this game" feature. Get your own free key at
-        <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener">steamcommunity.com/dev/apikey</a>.
-        Stored only in your browser's synced settings; requests go straight from your browser to
-        <code>api.steampowered.com</code> — this extension's developers never see it.</p>
-    </section>
-
-    <section>
-      <h2 data-i18n="secAdvanced">Advanced</h2>
-      <label>Cache TTL (minutes)
-        <input type="number" id="cacheTTLMinutes" min="5" max="1440" step="5" />
-      </label>
-      <label>Custom CSS injected on Steam pages
-        <textarea id="customCss" rows="6" placeholder="/* your CSS */"></textarea>
-      </label>
-      <div class="row">
-        <button id="save">Save</button>
-        <button id="reset" class="danger">Reset to defaults</button>
-        <button id="clear-cache">Clear cache</button>
-        <button id="export-settings">Export settings</button>
-        <button id="import-settings">Import settings</button>
-        <button id="clear-blocklist">Clear blocklist</button>
-        <input id="import-file" type="file" accept="application/json" style="display:none" />
-      </div>
-      <p id="status" class="status"></p>
-    </section>
-
-    <footer>
-      <p>Steam Enhancer is an unofficial enhancement tool. Not affiliated with Valve or Steam.</p>
-      <p><a href="https://github.com/DrummingBird1/steam-enhancer" target="_blank" rel="noopener">Source on GitHub</a></p>
-    </footer>
+  <div class="layout">
+    <nav id="nav" aria-label="Sections"></nav>
+    <main id="sections"></main>
   </div>
+
+  <footer>
+    <p data-i18n="optFooterUnofficial">Steam Enhancer is an unofficial enhancement tool. Not affiliated with Valve or Steam.</p>
+    <p><a href="https://github.com/DrummingBird1/steam-enhancer" target="_blank" rel="noopener" data-i18n="optSourceLink">Source on GitHub</a></p>
+  </footer>
+
+  <input id="import-file" type="file" accept="application/json" hidden />
   <script src="../lib/storage.js"></script>
   <script src="options.js"></script>
 </body>

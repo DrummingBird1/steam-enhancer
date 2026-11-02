@@ -994,5 +994,275 @@
   },
   "notifPriceAlertMsg": {
     "message": "{0} at {1} (your target: {2})"
+  },
+  "optSearch": {
+    "message": "Search settings…"
+  },
+  "optFooterUnofficial": {
+    "message": "Steam Enhancer is an unofficial enhancement tool. Not affiliated with Valve or Steam."
+  },
+  "optSourceLink": {
+    "message": "Source on GitHub"
+  },
+  "optSecPrices": {
+    "message": "Prices & keys"
+  },
+  "optSecStore": {
+    "message": "Store pages"
+  },
+  "optSecLists": {
+    "message": "Search, lists & wishlist"
+  },
+  "optSecMarket": {
+    "message": "Market, inventory & trades"
+  },
+  "optSecCommunity": {
+    "message": "Profiles & library"
+  },
+  "optSecNotify": {
+    "message": "Notifications"
+  },
+  "optSecAdvanced": {
+    "message": "Advanced"
+  },
+  "optSecPresets": {
+    "message": "Presets"
+  },
+  "optSecBackup": {
+    "message": "Backup & reset"
+  },
+  "optItadKey": {
+    "message": "IsThereAnyDeal API key (needed for prices)"
+  },
+  "optItadKeyHint": {
+    "message": "Every price lookup (lowest price, historical low, price history, wishlist and search tags, deal alerts) needs a free key since IsThereAnyDeal changed their API. Register a free app at [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) and paste its key here. It stays in your browser and goes only to api.isthereanydeal.com."
+  },
+  "optItadKeyPlaceholder": {
+    "message": "paste your free ITAD app key"
+  },
+  "optCountry": {
+    "message": "Country for prices"
+  },
+  "optCountryHint": {
+    "message": "Two letters, e.g. IL or DE. Leave empty to use the country Steam shows you."
+  },
+  "optAuto": {
+    "message": "auto"
+  },
+  "optDisplayCurrency": {
+    "message": "Display currency (optional)"
+  },
+  "optDisplayCurrencyHint": {
+    "message": "Three letters, e.g. ILS or EUR. Prices also show converted into this currency, and regional prices are compared in it."
+  },
+  "optSteamKey": {
+    "message": "Your Steam Web API key (optional)"
+  },
+  "optSteamKeyHint": {
+    "message": "Only for \"how many friends own this game\". Get your own free key at [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey). It stays in your browser and goes only to api.steampowered.com."
+  },
+  "optDealThreshold": {
+    "message": "Minimum discount for wishlist deal alerts (%)"
+  },
+  "optQuietFrom": {
+    "message": "Quiet hours from"
+  },
+  "optQuietTo": {
+    "message": "Quiet hours until"
+  },
+  "optQuietHint": {
+    "message": "During these hours alerts only collect in the toolbar popup, without a system notification. Leave empty to turn off."
+  },
+  "optCustomCss": {
+    "message": "Custom CSS for Steam pages"
+  },
+  "optCustomCssHint": {
+    "message": "Added to every Steam store and community page. Kept in this browser only (not synced)."
+  },
+  "optPresetsHint": {
+    "message": "A preset switches the on/off options below in one go. Keys, country and other values aren't touched."
+  },
+  "presetMinimal": {
+    "message": "Minimal"
+  },
+  "presetDeals": {
+    "message": "Deal hunter"
+  },
+  "presetTrader": {
+    "message": "Trader"
+  },
+  "presetEverything": {
+    "message": "Everything"
+  },
+  "optPresetConfirm": {
+    "message": "Switch to the \"{0}\" preset? This changes which features are on."
+  },
+  "optBackupHint": {
+    "message": "The backup file holds your settings, notes, alert prices, hidden games and the histories this extension keeps. Importing it on another browser restores all of them."
+  },
+  "optExport": {
+    "message": "Export backup"
+  },
+  "optImport": {
+    "message": "Import backup"
+  },
+  "optClearCache": {
+    "message": "Clear cache"
+  },
+  "optClearBlocklist": {
+    "message": "Show hidden games again"
+  },
+  "optReset": {
+    "message": "Reset settings"
+  },
+  "optShow": {
+    "message": "Show"
+  },
+  "optHide": {
+    "message": "Hide"
+  },
+  "optSaved": {
+    "message": "Saved"
+  },
+  "optSaveFailed": {
+    "message": "Couldn't save: {0}"
+  },
+  "optResetConfirm": {
+    "message": "Reset all settings to their defaults? Your API keys are kept."
+  },
+  "optResetDone": {
+    "message": "Settings reset"
+  },
+  "optCacheCleared": {
+    "message": "Cache cleared"
+  },
+  "optClearBlocklistConfirm": {
+    "message": "Show all the games you hid with ✕ in search again?"
+  },
+  "optBlocklistCleared": {
+    "message": "Hidden games are visible again"
+  },
+  "optExported": {
+    "message": "Backup downloaded"
+  },
+  "optNotABackup": {
+    "message": "This isn't a Steam Enhancer backup file."
+  },
+  "optImportConfirm": {
+    "message": "Import this backup? It replaces your current settings and saved data."
+  },
+  "optImported": {
+    "message": "Imported. Reload Steam tabs to apply."
+  },
+  "optImportFailed": {
+    "message": "Import failed: {0}"
+  },
+  "opt_showLowestPrice": {
+    "message": "Lowest current price across stores"
+  },
+  "opt_showPriceHistory": {
+    "message": "Historical low and price-history chart"
+  },
+  "opt_showRegionalPricing": {
+    "message": "Regional prices, converted (slower)"
+  },
+  "opt_showStorePriceAlerts": {
+    "message": "\"Alert me at\" price field on store pages"
+  },
+  "opt_showBundleSavings": {
+    "message": "Bundle vs. buying separately"
+  },
+  "opt_showSteamDBLink": {
+    "message": "Links to SteamDB, Barter.vg, SteamCharts"
+  },
+  "opt_showProtonDB": {
+    "message": "ProtonDB rating (Linux / Steam Deck)"
+  },
+  "opt_showHowLongToBeat": {
+    "message": "HowLongToBeat link"
+  },
+  "opt_showPlayersOnline": {
+    "message": "Players online now"
+  },
+  "opt_showAchievementStats": {
+    "message": "Achievement stats"
+  },
+  "opt_showDlcCheck": {
+    "message": "Mark DLC you own"
+  },
+  "opt_showCardSetValue": {
+    "message": "Trading card links"
+  },
+  "opt_showReviewBreakdown": {
+    "message": "Review breakdown (positive / negative)"
+  },
+  "opt_showLiveReviewFilters": {
+    "message": "Review filter bar (hours played, length)"
+  },
+  "opt_showBestReview": {
+    "message": "Most helpful review snippet"
+  },
+  "opt_showReviewBombDetector": {
+    "message": "Flag possible review-bombing"
+  },
+  "opt_highlightOwned": {
+    "message": "Highlight games you own"
+  },
+  "opt_highlightWishlist": {
+    "message": "Highlight wishlisted games"
+  },
+  "opt_highlightIgnored": {
+    "message": "Highlight ignored games"
+  },
+  "opt_hideOwnedInSearch": {
+    "message": "Hide owned games in search"
+  },
+  "opt_hideIgnoredInSearch": {
+    "message": "Hide ignored games in search"
+  },
+  "opt_enableWishlistExport": {
+    "message": "Wishlist panel (table, filters, export)"
+  },
+  "opt_enableMarketTools": {
+    "message": "Market tools (net price, undercut, my listings)"
+  },
+  "opt_showBuyOrderHelper": {
+    "message": "Buy-order helper"
+  },
+  "opt_enableInventoryTools": {
+    "message": "Inventory tools"
+  },
+  "opt_enableQuickSell": {
+    "message": "Quick sell / instant sell buttons"
+  },
+  "opt_showTileSortGroup": {
+    "message": "Sort and group inventory items"
+  },
+  "opt_enableTradeOfferTools": {
+    "message": "Trade offer value summary"
+  },
+  "opt_showTradeHistory": {
+    "message": "Remember trades per partner (this browser)"
+  },
+  "opt_showLibraryValue": {
+    "message": "Library value estimate (/games page)"
+  },
+  "opt_showBadgeTracker": {
+    "message": "Badge progress summary (/badges page)"
+  },
+  "opt_showMediaShortcuts": {
+    "message": "Screenshots / artwork shortcuts on profiles"
+  },
+  "opt_showFriendsOwnership": {
+    "message": "How many friends own a game (needs your Steam key)"
+  },
+  "opt_notifyWishlistDeals": {
+    "message": "Notify about wishlist deals (hourly)"
+  },
+  "opt_notifyStorePriceAlerts": {
+    "message": "Notify when an alert price is reached"
+  },
+  "opt_notifyFreePromos": {
+    "message": "Notify when a game is free for a limited time"
   }
 }

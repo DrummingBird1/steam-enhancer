@@ -53,9 +53,23 @@
     const country = SE.effectiveCountry(settings, await detectCountry());
 
     SE.ctx = { settings, colls, country };
+    applyCustomCss(settings.customCss);
     SE.log('ready', { url: location.href, hasColls: !!colls });
 
     document.dispatchEvent(new CustomEvent('se-ready', { detail: SE.ctx }));
+  }
+
+  // Options → Advanced → custom CSS, applied to every Steam page. Updated in
+  // place on SPA navigation; removed when cleared.
+  function applyCustomCss(css) {
+    let el = document.getElementById('se-custom-css');
+    if (!css) { el?.remove(); return; }
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'se-custom-css';
+      (document.head || document.documentElement).appendChild(el);
+    }
+    if (el.textContent !== css) el.textContent = css;
   }
 
   // Steam is a single-page app on many routes; se-ready must re-fire on navigation

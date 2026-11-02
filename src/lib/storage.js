@@ -3,11 +3,9 @@
   const SE = global.SteamEnhancer || (global.SteamEnhancer = {});
 
   const DEFAULTS = {
-    currency: 'USD',
     // Storefront country for price lookups. Empty = use the country Steam
     // itself reports (see SE.effectiveCountry); set to override.
     countryOverride: '',
-    locale: undefined,
     // When set, price panels additionally show the amount converted into this
     // currency (via SE.fx), independent of the Steam storefront's own currency.
     displayCurrency: '',
@@ -28,7 +26,6 @@
     hideOwnedInSearch: false,
     hideIgnoredInSearch: true,
     showReviewBreakdown: true,
-    autoExpandReviews: false,
     enableMarketTools: true,
     enableInventoryTools: true,
     enableTradeOfferTools: true,
@@ -41,9 +38,6 @@
     showRegionalPricing: false,
     notifyWishlistDeals: false,
     wishlistDealThreshold: 25,
-    cacheTTLMinutes: 60,
-    itadEnabled: true,
-    customCss: '',
 
     // v1.3.0 additions — granular per-feature toggles for things that used to be
     // always-on whenever their parent area (enableMarketTools etc.) was enabled.
@@ -69,36 +63,54 @@
     // only to the popup's history, without a system notification.
     quietHoursStart: '',
     quietHoursEnd: '',
-    onboardingSeen: false
+    // Applied to every Steam page (common.js). Kept in chrome.storage.local,
+    // not sync — see LOCAL_KEYS.
+    customCss: ''
   };
 
   const STORAGE_KEY = 'se_settings_v1';
 
+  // Settings too big for chrome.storage.sync's 8KB-per-item quota live in
+  // local storage instead (not synced between browsers). Everything else
+  // is one synced object under STORAGE_KEY.
+  const LOCAL_KEY = 'se_settings_local_v1';
+  const LOCAL_KEYS = ['customCss'];
+  const split = (obj) => {
+    const synced = { ...obj }, local = {};
+    for (const k of LOCAL_KEYS) if (k in synced) { local[k] = synced[k]; delete synced[k]; }
+    return { synced, local };
+  };
+  const syncGet = () => new Promise((res) => chrome.storage.sync.get([STORAGE_KEY], (d) => res(d[STORAGE_KEY] || {})));
+  const localGet = () => new Promise((res) => chrome.storage.local.get([LOCAL_KEY], (d) => res(d[LOCAL_KEY] || {})));
+  const write = (synced, local) => new Promise((res, rej) => chrome.storage.sync.set({ [STORAGE_KEY]: synced }, () => {
+    // Surface quota errors instead of failing silently.
+    if (chrome.runtime.lastError) { rej(new Error(chrome.runtime.lastError.message)); return; }
+    chrome.storage.local.set({ [LOCAL_KEY]: local }, () => res());
+  }));
+
   SE.storage = {
     async getAll() {
-      return new Promise((res) => chrome.storage.sync.get([STORAGE_KEY], (data) => {
-        res({ ...DEFAULTS, ...(data[STORAGE_KEY] || {}) });
-      }));
+      // 1.4.x kept customCss in sync; a value still there counts until the next save moves it.
+      const [synced, local] = await Promise.all([syncGet(), localGet()]);
+      return { ...DEFAULTS, ...synced, ...local };
     },
     async get(key) {
       const all = await SE.storage.getAll();
       return key ? all[key] : all;
     },
     async set(patch) {
-      const cur = await SE.storage.getAll();
-      const next = { ...cur, ...patch };
-      // chrome.storage.sync has an 8KB-per-item quota (QUOTA_BYTES_PER_ITEM) and
-      // we store all settings under one key, so a large customCss/steamWebApiKey
-      // could in principle overflow it. Surface that instead of failing silently.
-      return new Promise((res, rej) => chrome.storage.sync.set({ [STORAGE_KEY]: next }, () => {
-        if (chrome.runtime.lastError) { rej(new Error(chrome.runtime.lastError.message)); return; }
-        res(next);
-      }));
+      const next = { ...(await SE.storage.getAll()), ...patch };
+      const { synced, local } = split(next);
+      await write(synced, local);
+      return next;
     },
     async reset() {
-      return new Promise((res) => chrome.storage.sync.set({ [STORAGE_KEY]: DEFAULTS }, () => res(DEFAULTS)));
+      const { synced, local } = split(DEFAULTS);
+      await write(synced, local);
+      return { ...DEFAULTS };
     },
-    DEFAULTS
+    DEFAULTS,
+    LOCAL_KEYS
   };
 
   // User collections (owned/wishlist/ignored caches built from the dynamic store).

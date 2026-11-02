@@ -994,5 +994,275 @@
   },
   "notifPriceAlertMsg": {
     "message": "{0} bei {1} (dein Ziel: {2})"
+  },
+  "optSearch": {
+    "message": "Einstellungen durchsuchen…"
+  },
+  "optFooterUnofficial": {
+    "message": "Steam Enhancer ist ein inoffizielles Erweiterungstool. Nicht mit Valve oder Steam verbunden."
+  },
+  "optSourceLink": {
+    "message": "Quellcode auf GitHub"
+  },
+  "optSecPrices": {
+    "message": "Preise & Schlüssel"
+  },
+  "optSecStore": {
+    "message": "Shop-Seiten"
+  },
+  "optSecLists": {
+    "message": "Suche, Listen & Wunschliste"
+  },
+  "optSecMarket": {
+    "message": "Markt, Inventar & Tauschangebote"
+  },
+  "optSecCommunity": {
+    "message": "Profile & Bibliothek"
+  },
+  "optSecNotify": {
+    "message": "Benachrichtigungen"
+  },
+  "optSecAdvanced": {
+    "message": "Erweitert"
+  },
+  "optSecPresets": {
+    "message": "Voreinstellungen"
+  },
+  "optSecBackup": {
+    "message": "Sicherung & Zurücksetzen"
+  },
+  "optItadKey": {
+    "message": "IsThereAnyDeal-API-Schlüssel (für Preise nötig)"
+  },
+  "optItadKeyHint": {
+    "message": "Seit IsThereAnyDeal seine API geändert hat, braucht jede Preisabfrage (Tiefstpreis, historischer Tiefstpreis, Preisverlauf, Markierungen in Listen und Suche, Angebotsalarme) einen kostenlosen Schlüssel. Registriere eine kostenlose App unter [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) und füge den Schlüssel hier ein. Er bleibt in deinem Browser und geht nur an api.isthereanydeal.com."
+  },
+  "optItadKeyPlaceholder": {
+    "message": "kostenlosen ITAD-Schlüssel einfügen"
+  },
+  "optCountry": {
+    "message": "Land für Preise"
+  },
+  "optCountryHint": {
+    "message": "Zwei Buchstaben, z. B. IL oder DE. Leer lassen, um das Land zu verwenden, das Steam dir anzeigt."
+  },
+  "optAuto": {
+    "message": "automatisch"
+  },
+  "optDisplayCurrency": {
+    "message": "Anzeigewährung (optional)"
+  },
+  "optDisplayCurrencyHint": {
+    "message": "Drei Buchstaben, z. B. ILS oder EUR. Preise werden zusätzlich in diese Währung umgerechnet, und regionale Preise werden darin verglichen."
+  },
+  "optSteamKey": {
+    "message": "Dein Steam-Web-API-Schlüssel (optional)"
+  },
+  "optSteamKeyHint": {
+    "message": "Nur für „wie viele Freunde das Spiel besitzen“. Hol dir einen kostenlosen Schlüssel unter [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey). Er bleibt in deinem Browser und geht nur an api.steampowered.com."
+  },
+  "optDealThreshold": {
+    "message": "Mindestrabatt für Wunschlisten-Alarme (%)"
+  },
+  "optQuietFrom": {
+    "message": "Ruhezeit von"
+  },
+  "optQuietTo": {
+    "message": "Ruhezeit bis"
+  },
+  "optQuietHint": {
+    "message": "In diesen Stunden landen Alarme nur im Popup der Symbolleiste, ohne Systembenachrichtigung. Leer lassen zum Ausschalten."
+  },
+  "optCustomCss": {
+    "message": "Eigenes CSS für Steam-Seiten"
+  },
+  "optCustomCssHint": {
+    "message": "Wird jeder Steam-Shop- und Community-Seite hinzugefügt. Nur in diesem Browser gespeichert (nicht synchronisiert)."
+  },
+  "optPresetsHint": {
+    "message": "Eine Voreinstellung schaltet alle Ein/Aus-Optionen auf einmal. Schlüssel, Land und andere Werte bleiben unverändert."
+  },
+  "presetMinimal": {
+    "message": "Minimal"
+  },
+  "presetDeals": {
+    "message": "Schnäppchenjäger"
+  },
+  "presetTrader": {
+    "message": "Händler"
+  },
+  "presetEverything": {
+    "message": "Alles"
+  },
+  "optPresetConfirm": {
+    "message": "Zur Voreinstellung „{0}“ wechseln? Das ändert, welche Funktionen aktiv sind."
+  },
+  "optBackupHint": {
+    "message": "Die Sicherung enthält Einstellungen, Notizen, Alarmpreise, ausgeblendete Spiele und die Verläufe der Erweiterung. Der Import in einem anderen Browser stellt alles wieder her."
+  },
+  "optExport": {
+    "message": "Sicherung exportieren"
+  },
+  "optImport": {
+    "message": "Sicherung importieren"
+  },
+  "optClearCache": {
+    "message": "Cache leeren"
+  },
+  "optClearBlocklist": {
+    "message": "Ausgeblendete Spiele wieder zeigen"
+  },
+  "optReset": {
+    "message": "Einstellungen zurücksetzen"
+  },
+  "optShow": {
+    "message": "Zeigen"
+  },
+  "optHide": {
+    "message": "Verbergen"
+  },
+  "optSaved": {
+    "message": "Gespeichert"
+  },
+  "optSaveFailed": {
+    "message": "Speichern fehlgeschlagen: {0}"
+  },
+  "optResetConfirm": {
+    "message": "Alle Einstellungen auf Standard zurücksetzen? Deine API-Schlüssel bleiben erhalten."
+  },
+  "optResetDone": {
+    "message": "Einstellungen zurückgesetzt"
+  },
+  "optCacheCleared": {
+    "message": "Cache geleert"
+  },
+  "optClearBlocklistConfirm": {
+    "message": "Alle in der Suche mit ✕ ausgeblendeten Spiele wieder anzeigen?"
+  },
+  "optBlocklistCleared": {
+    "message": "Ausgeblendete Spiele sind wieder sichtbar"
+  },
+  "optExported": {
+    "message": "Sicherung heruntergeladen"
+  },
+  "optNotABackup": {
+    "message": "Das ist keine Steam-Enhancer-Sicherung."
+  },
+  "optImportConfirm": {
+    "message": "Diese Sicherung importieren? Sie ersetzt deine aktuellen Einstellungen und gespeicherten Daten."
+  },
+  "optImported": {
+    "message": "Importiert. Lade Steam-Tabs neu, um es anzuwenden."
+  },
+  "optImportFailed": {
+    "message": "Import fehlgeschlagen: {0}"
+  },
+  "opt_showLowestPrice": {
+    "message": "Aktuell niedrigster Preis über alle Shops"
+  },
+  "opt_showPriceHistory": {
+    "message": "Historischer Tiefstpreis und Preisverlauf"
+  },
+  "opt_showRegionalPricing": {
+    "message": "Regionale Preise, umgerechnet (langsamer)"
+  },
+  "opt_showStorePriceAlerts": {
+    "message": "Feld „Alarm bei“ auf Shop-Seiten"
+  },
+  "opt_showBundleSavings": {
+    "message": "Bundle vs. Einzelkauf"
+  },
+  "opt_showSteamDBLink": {
+    "message": "Links zu SteamDB, Barter.vg, SteamCharts"
+  },
+  "opt_showProtonDB": {
+    "message": "ProtonDB-Bewertung (Linux / Steam Deck)"
+  },
+  "opt_showHowLongToBeat": {
+    "message": "HowLongToBeat-Link"
+  },
+  "opt_showPlayersOnline": {
+    "message": "Aktuelle Spielerzahl"
+  },
+  "opt_showAchievementStats": {
+    "message": "Erfolgsstatistik"
+  },
+  "opt_showDlcCheck": {
+    "message": "Besessene DLCs markieren"
+  },
+  "opt_showCardSetValue": {
+    "message": "Sammelkarten-Links"
+  },
+  "opt_showReviewBreakdown": {
+    "message": "Rezensionsaufteilung (positiv / negativ)"
+  },
+  "opt_showLiveReviewFilters": {
+    "message": "Rezensionsfilter (Spielzeit, Länge)"
+  },
+  "opt_showBestReview": {
+    "message": "Ausschnitt der hilfreichsten Rezension"
+  },
+  "opt_showReviewBombDetector": {
+    "message": "Mögliches Review-Bombing markieren"
+  },
+  "opt_highlightOwned": {
+    "message": "Besessene Spiele hervorheben"
+  },
+  "opt_highlightWishlist": {
+    "message": "Gewünschte Spiele hervorheben"
+  },
+  "opt_highlightIgnored": {
+    "message": "Ignorierte Spiele hervorheben"
+  },
+  "opt_hideOwnedInSearch": {
+    "message": "Besessene Spiele in der Suche ausblenden"
+  },
+  "opt_hideIgnoredInSearch": {
+    "message": "Ignorierte Spiele in der Suche ausblenden"
+  },
+  "opt_enableWishlistExport": {
+    "message": "Wunschlisten-Panel (Tabelle, Filter, Export)"
+  },
+  "opt_enableMarketTools": {
+    "message": "Markt-Tools (Nettopreis, Unterbieten, meine Angebote)"
+  },
+  "opt_showBuyOrderHelper": {
+    "message": "Kaufauftrag-Helfer"
+  },
+  "opt_enableInventoryTools": {
+    "message": "Inventar-Tools"
+  },
+  "opt_enableQuickSell": {
+    "message": "Schnell- / Sofortverkauf-Buttons"
+  },
+  "opt_showTileSortGroup": {
+    "message": "Inventar sortieren und gruppieren"
+  },
+  "opt_enableTradeOfferTools": {
+    "message": "Wertübersicht in Tauschangeboten"
+  },
+  "opt_showTradeHistory": {
+    "message": "Tauschgeschäfte pro Partner merken (dieser Browser)"
+  },
+  "opt_showLibraryValue": {
+    "message": "Wert der Bibliothek schätzen (/games-Seite)"
+  },
+  "opt_showBadgeTracker": {
+    "message": "Abzeichen-Fortschritt (/badges-Seite)"
+  },
+  "opt_showMediaShortcuts": {
+    "message": "Screenshot-/Artwork-Links auf Profilen"
+  },
+  "opt_showFriendsOwnership": {
+    "message": "Wie viele Freunde ein Spiel besitzen (braucht deinen Steam-Schlüssel)"
+  },
+  "opt_notifyWishlistDeals": {
+    "message": "Bei Wunschlisten-Angeboten benachrichtigen (stündlich)"
+  },
+  "opt_notifyStorePriceAlerts": {
+    "message": "Benachrichtigen, wenn ein Alarmpreis erreicht ist"
+  },
+  "opt_notifyFreePromos": {
+    "message": "Benachrichtigen, wenn ein Spiel kurz kostenlos ist"
   }
 }
