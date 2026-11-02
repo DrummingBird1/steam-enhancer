@@ -397,6 +397,56 @@
     out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('invCancelHint')));
   }
 
+  // Quick sell (one cent under the cheapest listing) and instant sell (at the
+  // highest buy order, which fills right away) for the item open in the detail
+  // pane. Each shows "buyer pays / you receive" and needs a second click.
+  async function addQuickSell(sel) {
+    const r = await SE.pageCall('selectedItem');
+    const it = r?.ok ? r.result : null;
+    if (!it?.marketable || !it.market_hash_name || !it.contextid) return;
+    if (sel.querySelector('.se-qs')) return;
+    const out = SE.el('div', { class: 'se-qs-out se-muted' });
+    const box = SE.el('div', { class: 'se-qs' },
+      SE.el('button', { class: 'se-btn', onclick: () => prepare('quick') }, SE.t('quickSellBtn')),
+      ' ',
+      SE.el('button', { class: 'se-btn', onclick: () => prepare('instant') }, SE.t('instantSellBtn')),
+      out);
+    sel.appendChild(box);
+
+    async function prepare(kind) {
+      out.textContent = SE.t('mktFetching');
+      const wallet = await requireWallet(out);
+      if (!wallet) return;
+      let buyerCents = null;
+      if (kind === 'quick') {
+        const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name, 'US', wallet.id);
+        buyerCents = SE.marketMath.quickSellBuyerCents(SE.marketMath.cents(SE.parsePrice(p?.data?.lowest_price)));
+      } else {
+        const nameId = await SE.api.itemNameId(it.appid, it.market_hash_name);
+        const h = nameId ? await SE.api.itemOrdersHistogram(nameId, 'US', wallet.id) : null;
+        buyerCents = SE.marketMath.instantSellBuyerCents(h?.data?.highest_buy_order);
+      }
+      if (buyerCents == null) { out.textContent = SE.t(kind === 'quick' ? 'qsNoListings' : 'qsNoBuyOrders'); return; }
+      out.textContent = '';
+      const confirm = SE.el('button', { class: 'se-btn se-btn-danger' }, SE.t('qsConfirm'));
+      confirm.addEventListener('click', async () => {
+        confirm.disabled = true;
+        const res = await SE.pageCall('sellItem', {
+          appid: it.appid, contextid: it.contextid, assetid: it.id, amount: 1,
+          price: SE.marketFees.sellerReceives(buyerCents)
+        });
+        out.textContent = res?.result?.success
+          ? SE.t(res.result.requires_confirmation ? 'qsListedConfirm' : 'qsListed')
+          : SE.t('qsFailed', res?.result?.message || res?.error || '?');
+      });
+      out.append(
+        SE.el('div', null, `${it.name || it.market_hash_name}: ${receiveLabel(buyerCents, wallet.iso)}`),
+        confirm, ' ',
+        SE.el('button', { class: 'se-btn', onclick: () => { out.textContent = ''; } }, SE.t('cancelWord'))
+      );
+    }
+  }
+
   // Selling moves real money, so refuse outright unless we've actually seen the
   // wallet currency (g_rgWalletInfo) — never list using a guessed currency.
   async function requireWallet(out) {
@@ -478,6 +528,7 @@
       href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(name)}`,
       target: '_blank', rel: 'noopener'
     }, SE.t('viewOnMarket')));
+    if (SE.ctx?.settings.enableQuickSell) SE.safe('inv:quickSell', () => addQuickSell(sel));
 
     // CSGO-specific inspect link / float lookup helper. Prefer the exact
     // per-item inspect link (Steam embeds one per asset) so CSFloat opens the

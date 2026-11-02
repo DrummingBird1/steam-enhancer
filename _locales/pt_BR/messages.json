@@ -907,5 +907,74 @@
   },
   "regionNote": {
     "message": "Convertido para {0} pelo câmbio de hoje. Comprar na loja de outra região geralmente não é permitido pela Steam."
+  },
+  "quickSellBtn": {
+    "message": "Venda rápida"
+  },
+  "instantSellBtn": {
+    "message": "Venda instantânea"
+  },
+  "qsNoListings": {
+    "message": "Ninguém está vendendo este item agora, então não há o que superar."
+  },
+  "qsNoBuyOrders": {
+    "message": "Não há ordens de compra para este item (ou o livro de ofertas exige login)."
+  },
+  "qsConfirm": {
+    "message": "⚠ Confirmar: anunciar"
+  },
+  "qsListed": {
+    "message": "Anunciado."
+  },
+  "qsListedConfirm": {
+    "message": "Anunciado — confirme no app da Steam."
+  },
+  "qsFailed": {
+    "message": "A Steam recusou o anúncio: {0}"
+  },
+  "cancelWord": {
+    "message": "Cancelar"
+  },
+  "myListingsTitle": {
+    "message": "Meus anúncios:"
+  },
+  "checkListingsBtn": {
+    "message": "Verificar preços"
+  },
+  "selectUndercutBtn": {
+    "message": "Selecionar superados"
+  },
+  "selectNoneBtn": {
+    "message": "Desmarcar"
+  },
+  "removeSelectedBtn": {
+    "message": "Remover selecionados"
+  },
+  "myListingsSummary": {
+    "message": "{0} anúncios · você receberia {1}"
+  },
+  "checkingListings": {
+    "message": "Verificando {0}/{1}…"
+  },
+  "listingsChecked": {
+    "message": "{0} anúncios verificados · {1} superados"
+  },
+  "listingLowest": {
+    "message": "MAIS BARATO"
+  },
+  "listingUndercut": {
+    "message": "SUPERADO por {0}"
+  },
+  "noneSelectedListings": {
+    "message": "Marque primeiro os anúncios a remover."
+  },
+  "confirmRemoveListings": {
+    "message": "Remover {0} anúncio(s) do mercado?"
+  },
+  "removingListings": {
+    "message": "{0}/{1} removidos…"
+  },
+  "removedListings": {
+    "message": "{0} de {1} removidos. Recarregue a página para atualizar a lista da Steam."
   }
 }

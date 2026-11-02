@@ -907,5 +907,74 @@
   },
   "regionNote": {
     "message": "הומר ל-{0} לפי שער היום. Steam בדרך כלל לא מאפשר לקנות מחנות של אזור אחר."
+  },
+  "quickSellBtn": {
+    "message": "מכירה מהירה"
+  },
+  "instantSellBtn": {
+    "message": "מכירה מיידית"
+  },
+  "qsNoListings": {
+    "message": "אף אחד לא מוכר את הפריט הזה כרגע, אז אין מה לעקוף."
+  },
+  "qsNoBuyOrders": {
+    "message": "אין הזמנות קנייה לפריט הזה (או שספר ההזמנות דורש התחברות)."
+  },
+  "qsConfirm": {
+    "message": "⚠ אישור: להציע למכירה"
+  },
+  "qsListed": {
+    "message": "הוצע למכירה."
+  },
+  "qsListedConfirm": {
+    "message": "הוצע — אשר באפליקציית Steam בנייד."
+  },
+  "qsFailed": {
+    "message": "Steam דחה את ההצעה: {0}"
+  },
+  "cancelWord": {
+    "message": "ביטול"
+  },
+  "myListingsTitle": {
+    "message": "ההצעות שלי:"
+  },
+  "checkListingsBtn": {
+    "message": "בדוק מחירים"
+  },
+  "selectUndercutBtn": {
+    "message": "סמן את מי שעקפו"
+  },
+  "selectNoneBtn": {
+    "message": "בטל סימון"
+  },
+  "removeSelectedBtn": {
+    "message": "הסר מסומנים"
+  },
+  "myListingsSummary": {
+    "message": "{0} הצעות · תקבל {1}"
+  },
+  "checkingListings": {
+    "message": "בודק {0}/{1}…"
+  },
+  "listingsChecked": {
+    "message": "נבדקו {0} הצעות · {1} נעקפו"
+  },
+  "listingLowest": {
+    "message": "הזול ביותר"
+  },
+  "listingUndercut": {
+    "message": "נעקף ב-{0}"
+  },
+  "noneSelectedListings": {
+    "message": "סמן קודם את ההצעות להסרה."
+  },
+  "confirmRemoveListings": {
+    "message": "להסיר {0} הצעות מה-Market?"
+  },
+  "removingListings": {
+    "message": "הוסרו {0}/{1}…"
+  },
+  "removedListings": {
+    "message": "הוסרו {0} מתוך {1}. טען מחדש את העמוד כדי לרענן את הרשימה של Steam."
   }
 }

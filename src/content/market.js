@@ -12,6 +12,7 @@
         .observe(document.body, { childList: true, subtree: true });
     }
     if (/\/market\/listings\//.test(location.pathname)) SE.safe('mkt:itemTools', insertItemTools);
+    if (/^\/market\/?$/.test(location.pathname)) SE.safe('mkt:myListings', insertMyListingsTools);
     SE.safe('mkt:fx', insertCurrencyConverter);
   }
 
@@ -27,6 +28,96 @@
       if (net <= 0) continue;
       priceEl.appendChild(SE.el('div', { class: 'se-market-net' }, `${SE.t('netWord')} ≈ ${net.toFixed(2)}`));
     }
+  }
+
+  // ---- My listings (market home page) -------------------------------------
+  // Checks each of your active sell listings against the cheapest listing of
+  // the same item, tags it LOWEST or UNDERCUT, and lets you remove a
+  // selection in one go. Rows are Steam's own "My listings" table
+  // (#tabContentsMyListings .market_listing_row[id^="mylisting_"]).
+  const myListingRows = () => SE.$$('#tabContentsMyListings .market_listing_row[id^="mylisting_"]');
+
+  function insertMyListingsTools() {
+    const anchor = SE.$('#tabContentsMyListings');
+    if (!anchor || SE.$('#se-mylistings') || !myListingRows().length) return;
+    const out = SE.el('span', { class: 'se-muted' });
+    const bar = SE.el('div', { id: 'se-mylistings', class: 'se-toolbar' },
+      SE.el('span', { class: 'se-label' }, SE.t('myListingsTitle')),
+      SE.el('button', { class: 'se-btn', onclick: checkListings }, SE.t('checkListingsBtn')),
+      SE.el('button', { class: 'se-btn', onclick: () => selectRows((row) => row.dataset.seStatus === 'undercut') }, SE.t('selectUndercutBtn')),
+      SE.el('button', { class: 'se-btn', onclick: () => selectRows(() => false) }, SE.t('selectNoneBtn')),
+      SE.el('button', { class: 'se-btn se-btn-danger', onclick: removeSelected }, SE.t('removeSelectedBtn')),
+      out);
+    anchor.prepend(bar);
+    summarize(out);
+  }
+
+  function rowInfo(row) {
+    const link = row.querySelector('.market_listing_item_name_link, a[href*="/market/listings/"]');
+    const item = SE.marketMath.listingFromUrl(link?.href);
+    const price = SE.marketMath.parseMyListingPrice(row.querySelector('.market_listing_price')?.textContent);
+    return { listingid: row.id.replace('mylisting_', ''), item, ...price };
+  }
+
+  function rowCheckbox(row) {
+    let cb = row.querySelector('.se-ml-check');
+    if (!cb) {
+      cb = SE.el('input', { type: 'checkbox', class: 'se-ml-check' });
+      row.prepend(cb);
+    }
+    return cb;
+  }
+  function selectRows(pred) { myListingRows().forEach((row) => { rowCheckbox(row).checked = pred(row); }); }
+
+  async function summarize(out) {
+    const rows = myListingRows();
+    const wallet = await SE.walletCurrency();
+    const receive = rows.reduce((a, row) => a + (rowInfo(row).receiveCents || 0), 0);
+    out.textContent = SE.t('myListingsSummary', rows.length, SE.formatMoney(receive / 100, wallet.iso));
+  }
+
+  async function checkListings() {
+    const out = SE.$('#se-mylistings .se-muted');
+    const wallet = await SE.walletCurrency();
+    const rows = myListingRows().slice(0, 100);
+    let undercut = 0;
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      rowCheckbox(row);
+      out.textContent = SE.t('checkingListings', i + 1, rows.length);
+      const info = rowInfo(row);
+      if (!info.item) continue;
+      const p = await SE.api.marketPriceOverview(info.item.appid, info.item.name, 'US', wallet.id);
+      const lowest = SE.marketMath.cents(SE.parsePrice(p?.data?.lowest_price));
+      const st = SE.marketMath.listingStatus(info.buyerCents, lowest);
+      row.dataset.seStatus = st.status;
+      row.querySelector('.se-ml-tag')?.remove();
+      const tag = st.status === 'lowest' ? SE.tag(SE.t('listingLowest'), 'good')
+        : st.status === 'undercut' ? SE.tag(SE.t('listingUndercut', SE.formatMoney(st.byCents / 100, wallet.iso)), 'ignored')
+        : null;
+      if (tag) {
+        tag.classList.add('se-ml-tag');
+        row.querySelector('.market_listing_price')?.appendChild(tag);
+      }
+      if (st.status === 'undercut') undercut++;
+    }
+    out.textContent = SE.t('listingsChecked', rows.length, undercut);
+  }
+
+  async function removeSelected() {
+    const out = SE.$('#se-mylistings .se-muted');
+    const rows = myListingRows().filter((row) => row.querySelector('.se-ml-check')?.checked);
+    if (!rows.length) { out.textContent = SE.t('noneSelectedListings'); return; }
+    if (!window.confirm(SE.t('confirmRemoveListings', rows.length))) return;
+    let removed = 0;
+    for (const row of rows) {
+      const { listingid } = rowInfo(row);
+      const r = await SE.pageCall('removeListing', { listingid });
+      if (r?.ok && r.result?.ok) { removed++; row.style.opacity = '0.35'; row.querySelector('.se-ml-check')?.remove(); }
+      out.textContent = SE.t('removingListings', removed, rows.length);
+      await SE.sleep(800);
+    }
+    out.textContent = SE.t('removedListings', removed, rows.length);
   }
 
   async function insertItemTools() {

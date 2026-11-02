@@ -20,7 +20,7 @@ const vm = require('vm');
 const sandbox = { console };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
-for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js']) {
+for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js', 'market.js']) {
   const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
   vm.runInContext(src, sandbox, { filename: file });
 }
@@ -160,6 +160,40 @@ t('german tooltip, no meta: total from the tooltip', () => {
   assert.strictEqual(r.total, 8757);
 });
 t('no percentage → null', () => assert.strictEqual(SE.parseReviewSummary('No user reviews', null), null));
+
+console.log('SE.marketMath');
+const MM = SE.marketMath;
+t('quick sell: one cent under the lowest, 3-cent floor', () => {
+  assert.strictEqual(MM.quickSellBuyerCents(125), 124);
+  assert.strictEqual(MM.quickSellBuyerCents(3), 3);
+  assert.strictEqual(MM.quickSellBuyerCents(null), null);
+});
+t('instant sell: exactly the highest buy order', () => {
+  assert.strictEqual(MM.instantSellBuyerCents('87'), 87);
+  assert.strictEqual(MM.instantSellBuyerCents(null), null);
+  assert.strictEqual(MM.instantSellBuyerCents('2'), null);
+});
+t('listing status', () => {
+  assert.deepStrictEqual({ ...MM.listingStatus(120, 120) }, { status: 'lowest', byCents: 0 });
+  assert.deepStrictEqual({ ...MM.listingStatus(120, 110) }, { status: 'undercut', byCents: 10 });
+  assert.strictEqual(MM.listingStatus(120, null).status, 'unknown');
+});
+t('my-listing price cell: buyer pays / you receive, US and EU formats', () => {
+  const us = MM.parseMyListingPrice('$1.15\n($1.00)');
+  assert.strictEqual(us.buyerCents, 115);
+  assert.strictEqual(us.receiveCents, 100);
+  const eu = MM.parseMyListingPrice('1,15€ (1,00€)');
+  assert.strictEqual(eu.buyerCents, 115);
+  assert.strictEqual(eu.receiveCents, 100);
+  assert.strictEqual(MM.parseMyListingPrice('₪3.40').receiveCents, null);
+});
+t('order-book id and listing URL parsing', () => {
+  assert.strictEqual(MM.itemNameIdFromHtml('<script>Market_LoadOrderSpread( 176096390 );</script>'), '176096390');
+  assert.strictEqual(MM.itemNameIdFromHtml('nothing'), null);
+  const l = MM.listingFromUrl('https://steamcommunity.com/market/listings/730/AK-47%20%7C%20Redline%20(Field-Tested)?filter=x');
+  assert.strictEqual(l.appid, '730');
+  assert.strictEqual(l.name, 'AK-47 | Redline (Field-Tested)');
+});
 
 console.log('SE.currency');
 t('steam currency ids', () => {

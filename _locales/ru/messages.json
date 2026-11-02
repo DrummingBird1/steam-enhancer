@@ -907,5 +907,74 @@
   },
   "regionNote": {
     "message": "Пересчитано в {0} по сегодняшнему курсу. Покупать в магазине другого региона Steam обычно не разрешает."
+  },
+  "quickSellBtn": {
+    "message": "Быстрая продажа"
+  },
+  "instantSellBtn": {
+    "message": "Мгновенная продажа"
+  },
+  "qsNoListings": {
+    "message": "Сейчас этот предмет никто не продаёт — некого опережать."
+  },
+  "qsNoBuyOrders": {
+    "message": "На этот предмет нет запросов на покупку (или для книги заказов нужно войти)."
+  },
+  "qsConfirm": {
+    "message": "⚠ Подтвердить: выставить"
+  },
+  "qsListed": {
+    "message": "Выставлено."
+  },
+  "qsListedConfirm": {
+    "message": "Выставлено — подтвердите в мобильном приложении Steam."
+  },
+  "qsFailed": {
+    "message": "Steam отклонил лот: {0}"
+  },
+  "cancelWord": {
+    "message": "Отмена"
+  },
+  "myListingsTitle": {
+    "message": "Мои лоты:"
+  },
+  "checkListingsBtn": {
+    "message": "Проверить цены"
+  },
+  "selectUndercutBtn": {
+    "message": "Выбрать перебитые"
+  },
+  "selectNoneBtn": {
+    "message": "Снять выбор"
+  },
+  "removeSelectedBtn": {
+    "message": "Снять выбранные"
+  },
+  "myListingsSummary": {
+    "message": "Лотов: {0} · вы получите {1}"
+  },
+  "checkingListings": {
+    "message": "Проверка {0}/{1}…"
+  },
+  "listingsChecked": {
+    "message": "Проверено лотов: {0} · перебито: {1}"
+  },
+  "listingLowest": {
+    "message": "САМЫЙ ДЕШЁВЫЙ"
+  },
+  "listingUndercut": {
+    "message": "ПЕРЕБИТ на {0}"
+  },
+  "noneSelectedListings": {
+    "message": "Сначала отметьте лоты, которые нужно снять."
+  },
+  "confirmRemoveListings": {
+    "message": "Снять с продажи лотов: {0}?"
+  },
+  "removingListings": {
+    "message": "Снято {0}/{1}…"
+  },
+  "removedListings": {
+    "message": "Снято {0} из {1}. Перезагрузите страницу, чтобы обновить список Steam."
   }
 }

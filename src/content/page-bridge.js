@@ -69,6 +69,29 @@
       return { your: collect('your_slots'), their: collect('their_slots') };
     },
 
+    // The item currently open in the inventory's detail pane.
+    selectedItem: () => {
+      const a = window.g_ActiveInventory && window.g_ActiveInventory.selectedItem;
+      if (!a) return null;
+      const d = a.description || {};
+      return {
+        id: String(a.assetid || a.id), appid: String(a.appid), contextid: String(a.contextid),
+        amount: Number(a.amount) || 1, name: d.name, market_hash_name: d.market_hash_name,
+        marketable: !!d.marketable
+      };
+    },
+
+    // Take one of the user's own listings off the market.
+    removeListing: async ({ listingid }) => {
+      if (!/^\d+$/.test(String(listingid))) throw new Error('bad listing id');
+      const resp = await fetch(`/market/removelisting/${listingid}`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        body: new URLSearchParams({ sessionid: window.g_sessionID })
+      });
+      return { ok: resp.ok, status: resp.status };
+    },
+
     // `price` is what the seller receives, in wallet-currency cents.
     sellItem: async ({ appid, contextid, assetid, amount, price }) => {
       const body = new URLSearchParams({

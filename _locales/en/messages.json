@@ -907,5 +907,74 @@
   },
   "regionNote": {
     "message": "Converted to {0} at today's exchange rate. Buying from another region's store usually isn't allowed by Steam."
+  },
+  "quickSellBtn": {
+    "message": "Quick sell"
+  },
+  "instantSellBtn": {
+    "message": "Instant sell"
+  },
+  "qsNoListings": {
+    "message": "Nobody is selling this item right now, so there's nothing to undercut."
+  },
+  "qsNoBuyOrders": {
+    "message": "No buy orders for this item (or the order book needs you to be signed in)."
+  },
+  "qsConfirm": {
+    "message": "⚠ Confirm: list it"
+  },
+  "qsListed": {
+    "message": "Listed."
+  },
+  "qsListedConfirm": {
+    "message": "Listed — confirm it in the Steam mobile app."
+  },
+  "qsFailed": {
+    "message": "Steam refused the listing: {0}"
+  },
+  "cancelWord": {
+    "message": "Cancel"
+  },
+  "myListingsTitle": {
+    "message": "My listings:"
+  },
+  "checkListingsBtn": {
+    "message": "Check prices"
+  },
+  "selectUndercutBtn": {
+    "message": "Select undercut"
+  },
+  "selectNoneBtn": {
+    "message": "Select none"
+  },
+  "removeSelectedBtn": {
+    "message": "Remove selected"
+  },
+  "myListingsSummary": {
+    "message": "{0} listings · you'd receive {1}"
+  },
+  "checkingListings": {
+    "message": "Checking {0}/{1}…"
+  },
+  "listingsChecked": {
+    "message": "Checked {0} listings · {1} undercut"
+  },
+  "listingLowest": {
+    "message": "LOWEST"
+  },
+  "listingUndercut": {
+    "message": "UNDERCUT by {0}"
+  },
+  "noneSelectedListings": {
+    "message": "Tick the listings to remove first."
+  },
+  "confirmRemoveListings": {
+    "message": "Remove {0} listing(s) from the market?"
+  },
+  "removingListings": {
+    "message": "Removed {0}/{1}…"
+  },
+  "removedListings": {
+    "message": "Removed {0} of {1}. Reload the page to refresh Steam's list."
   }
 }

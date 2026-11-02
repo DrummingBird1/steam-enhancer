@@ -121,6 +121,28 @@
       return SE.bg({ type: 'fetchJson', url, cacheKey: `histogram:${itemNameId}:${currency}`, ttl: 2 });
     },
 
+    // The order-book id a market item needs for itemOrdersHistogram. It's only
+    // on the item's listing page (and only when signed in), never changes, and
+    // the page is large — so the id itself is remembered, not the page.
+    async itemNameId(appid, market_hash_name) {
+      const KEY = 'se_item_nameids';
+      const k = `${appid}/${market_hash_name}`;
+      const known = (await new Promise((r) => chrome.storage.local.get([KEY], (d) => r(d[KEY] || {}))));
+      if (known[k]) return known[k];
+      const r = await SE.bg({
+        type: 'fetchJson',
+        url: `https://steamcommunity.com/market/listings/${encodeURIComponent(appid)}/${encodeURIComponent(market_hash_name)}`
+      });
+      const id = SE.marketMath.itemNameIdFromHtml(r?.data);
+      if (id) {
+        known[k] = id;
+        const keys = Object.keys(known);
+        if (keys.length > 2000) keys.slice(0, keys.length - 2000).forEach((x) => delete known[x]);
+        chrome.storage.local.set({ [KEY]: known });
+      }
+      return id;
+    },
+
     // Full price-history graph for a market item. Verified live: returns 400
     // with an empty body for anonymous requests — this endpoint only returns
     // real data with a logged-in Steam session (your normal browser cookies,

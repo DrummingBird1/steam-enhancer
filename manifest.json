@@ -80,6 +80,7 @@
         "src/lib/storage.js",
         "src/lib/currency.js",
         "src/lib/api.js",
+        "src/lib/market.js",
         "src/lib/itad.js",
         "src/lib/prices.js",
         "src/lib/chart.js",

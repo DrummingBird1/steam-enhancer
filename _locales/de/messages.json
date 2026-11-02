@@ -907,5 +907,74 @@
   },
   "regionNote": {
     "message": "Umgerechnet in {0} zum heutigen Kurs. Käufe im Shop einer anderen Region erlaubt Steam meist nicht."
+  },
+  "quickSellBtn": {
+    "message": "Schnellverkauf"
+  },
+  "instantSellBtn": {
+    "message": "Sofortverkauf"
+  },
+  "qsNoListings": {
+    "message": "Gerade verkauft niemand diesen Gegenstand, es gibt nichts zu unterbieten."
+  },
+  "qsNoBuyOrders": {
+    "message": "Keine Kaufaufträge für diesen Gegenstand (oder das Orderbuch erfordert eine Anmeldung)."
+  },
+  "qsConfirm": {
+    "message": "⚠ Bestätigen: einstellen"
+  },
+  "qsListed": {
+    "message": "Eingestellt."
+  },
+  "qsListedConfirm": {
+    "message": "Eingestellt — bestätige es in der Steam-App."
+  },
+  "qsFailed": {
+    "message": "Steam hat das Angebot abgelehnt: {0}"
+  },
+  "cancelWord": {
+    "message": "Abbrechen"
+  },
+  "myListingsTitle": {
+    "message": "Meine Angebote:"
+  },
+  "checkListingsBtn": {
+    "message": "Preise prüfen"
+  },
+  "selectUndercutBtn": {
+    "message": "Unterbotene auswählen"
+  },
+  "selectNoneBtn": {
+    "message": "Auswahl aufheben"
+  },
+  "removeSelectedBtn": {
+    "message": "Ausgewählte entfernen"
+  },
+  "myListingsSummary": {
+    "message": "{0} Angebote · du erhältst {1}"
+  },
+  "checkingListings": {
+    "message": "Prüfe {0}/{1}…"
+  },
+  "listingsChecked": {
+    "message": "{0} Angebote geprüft · {1} unterboten"
+  },
+  "listingLowest": {
+    "message": "GÜNSTIGSTES"
+  },
+  "listingUndercut": {
+    "message": "UNTERBOTEN um {0}"
+  },
+  "noneSelectedListings": {
+    "message": "Hake zuerst die zu entfernenden Angebote an."
+  },
+  "confirmRemoveListings": {
+    "message": "{0} Angebot(e) vom Markt nehmen?"
+  },
+  "removingListings": {
+    "message": "{0}/{1} entfernt…"
+  },
+  "removedListings": {
+    "message": "{0} von {1} entfernt. Lade die Seite neu, um Steams Liste zu aktualisieren."
   }
 }

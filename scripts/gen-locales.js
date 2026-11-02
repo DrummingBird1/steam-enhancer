@@ -751,7 +751,32 @@ const T = {
 
   // v1.5.0 — regional prices.
   regionYou: { en: 'you', he: 'אתה', ru: 'вы', de: 'du', ptBR: 'você' },
-  regionNote: { en: 'Converted to {0} at today\'s exchange rate. Buying from another region\'s store usually isn\'t allowed by Steam.', he: 'הומר ל-{0} לפי שער היום. Steam בדרך כלל לא מאפשר לקנות מחנות של אזור אחר.', ru: 'Пересчитано в {0} по сегодняшнему курсу. Покупать в магазине другого региона Steam обычно не разрешает.', de: 'Umgerechnet in {0} zum heutigen Kurs. Käufe im Shop einer anderen Region erlaubt Steam meist nicht.', ptBR: 'Convertido para {0} pelo câmbio de hoje. Comprar na loja de outra região geralmente não é permitido pela Steam.' }
+  regionNote: { en: 'Converted to {0} at today\'s exchange rate. Buying from another region\'s store usually isn\'t allowed by Steam.', he: 'הומר ל-{0} לפי שער היום. Steam בדרך כלל לא מאפשר לקנות מחנות של אזור אחר.', ru: 'Пересчитано в {0} по сегодняшнему курсу. Покупать в магазине другого региона Steam обычно не разрешает.', de: 'Umgerechnet in {0} zum heutigen Kurs. Käufe im Shop einer anderen Region erlaubt Steam meist nicht.', ptBR: 'Convertido para {0} pelo câmbio de hoje. Comprar na loja de outra região geralmente não é permitido pela Steam.' },
+
+  // v1.5.0 — Market Pro.
+  quickSellBtn: { en: 'Quick sell', he: 'מכירה מהירה', ru: 'Быстрая продажа', de: 'Schnellverkauf', ptBR: 'Venda rápida' },
+  instantSellBtn: { en: 'Instant sell', he: 'מכירה מיידית', ru: 'Мгновенная продажа', de: 'Sofortverkauf', ptBR: 'Venda instantânea' },
+  qsNoListings: { en: 'Nobody is selling this item right now, so there\'s nothing to undercut.', he: 'אף אחד לא מוכר את הפריט הזה כרגע, אז אין מה לעקוף.', ru: 'Сейчас этот предмет никто не продаёт — некого опережать.', de: 'Gerade verkauft niemand diesen Gegenstand, es gibt nichts zu unterbieten.', ptBR: 'Ninguém está vendendo este item agora, então não há o que superar.' },
+  qsNoBuyOrders: { en: 'No buy orders for this item (or the order book needs you to be signed in).', he: 'אין הזמנות קנייה לפריט הזה (או שספר ההזמנות דורש התחברות).', ru: 'На этот предмет нет запросов на покупку (или для книги заказов нужно войти).', de: 'Keine Kaufaufträge für diesen Gegenstand (oder das Orderbuch erfordert eine Anmeldung).', ptBR: 'Não há ordens de compra para este item (ou o livro de ofertas exige login).' },
+  qsConfirm: { en: '⚠ Confirm: list it', he: '⚠ אישור: להציע למכירה', ru: '⚠ Подтвердить: выставить', de: '⚠ Bestätigen: einstellen', ptBR: '⚠ Confirmar: anunciar' },
+  qsListed: { en: 'Listed.', he: 'הוצע למכירה.', ru: 'Выставлено.', de: 'Eingestellt.', ptBR: 'Anunciado.' },
+  qsListedConfirm: { en: 'Listed — confirm it in the Steam mobile app.', he: 'הוצע — אשר באפליקציית Steam בנייד.', ru: 'Выставлено — подтвердите в мобильном приложении Steam.', de: 'Eingestellt — bestätige es in der Steam-App.', ptBR: 'Anunciado — confirme no app da Steam.' },
+  qsFailed: { en: 'Steam refused the listing: {0}', he: 'Steam דחה את ההצעה: {0}', ru: 'Steam отклонил лот: {0}', de: 'Steam hat das Angebot abgelehnt: {0}', ptBR: 'A Steam recusou o anúncio: {0}' },
+  cancelWord: { en: 'Cancel', he: 'ביטול', ru: 'Отмена', de: 'Abbrechen', ptBR: 'Cancelar' },
+  myListingsTitle: { en: 'My listings:', he: 'ההצעות שלי:', ru: 'Мои лоты:', de: 'Meine Angebote:', ptBR: 'Meus anúncios:' },
+  checkListingsBtn: { en: 'Check prices', he: 'בדוק מחירים', ru: 'Проверить цены', de: 'Preise prüfen', ptBR: 'Verificar preços' },
+  selectUndercutBtn: { en: 'Select undercut', he: 'סמן את מי שעקפו', ru: 'Выбрать перебитые', de: 'Unterbotene auswählen', ptBR: 'Selecionar superados' },
+  selectNoneBtn: { en: 'Select none', he: 'בטל סימון', ru: 'Снять выбор', de: 'Auswahl aufheben', ptBR: 'Desmarcar' },
+  removeSelectedBtn: { en: 'Remove selected', he: 'הסר מסומנים', ru: 'Снять выбранные', de: 'Ausgewählte entfernen', ptBR: 'Remover selecionados' },
+  myListingsSummary: { en: '{0} listings · you\'d receive {1}', he: '{0} הצעות · תקבל {1}', ru: 'Лотов: {0} · вы получите {1}', de: '{0} Angebote · du erhältst {1}', ptBR: '{0} anúncios · você receberia {1}' },
+  checkingListings: { en: 'Checking {0}/{1}…', he: 'בודק {0}/{1}…', ru: 'Проверка {0}/{1}…', de: 'Prüfe {0}/{1}…', ptBR: 'Verificando {0}/{1}…' },
+  listingsChecked: { en: 'Checked {0} listings · {1} undercut', he: 'נבדקו {0} הצעות · {1} נעקפו', ru: 'Проверено лотов: {0} · перебито: {1}', de: '{0} Angebote geprüft · {1} unterboten', ptBR: '{0} anúncios verificados · {1} superados' },
+  listingLowest: { en: 'LOWEST', he: 'הזול ביותר', ru: 'САМЫЙ ДЕШЁВЫЙ', de: 'GÜNSTIGSTES', ptBR: 'MAIS BARATO' },
+  listingUndercut: { en: 'UNDERCUT by {0}', he: 'נעקף ב-{0}', ru: 'ПЕРЕБИТ на {0}', de: 'UNTERBOTEN um {0}', ptBR: 'SUPERADO por {0}' },
+  noneSelectedListings: { en: 'Tick the listings to remove first.', he: 'סמן קודם את ההצעות להסרה.', ru: 'Сначала отметьте лоты, которые нужно снять.', de: 'Hake zuerst die zu entfernenden Angebote an.', ptBR: 'Marque primeiro os anúncios a remover.' },
+  confirmRemoveListings: { en: 'Remove {0} listing(s) from the market?', he: 'להסיר {0} הצעות מה-Market?', ru: 'Снять с продажи лотов: {0}?', de: '{0} Angebot(e) vom Markt nehmen?', ptBR: 'Remover {0} anúncio(s) do mercado?' },
+  removingListings: { en: 'Removed {0}/{1}…', he: 'הוסרו {0}/{1}…', ru: 'Снято {0}/{1}…', de: '{0}/{1} entfernt…', ptBR: '{0}/{1} removidos…' },
+  removedListings: { en: 'Removed {0} of {1}. Reload the page to refresh Steam\'s list.', he: 'הוסרו {0} מתוך {1}. טען מחדש את העמוד כדי לרענן את הרשימה של Steam.', ru: 'Снято {0} из {1}. Перезагрузите страницу, чтобы обновить список Steam.', de: '{0} von {1} entfernt. Lade die Seite neu, um Steams Liste zu aktualisieren.', ptBR: '{0} de {1} removidos. Recarregue a página para atualizar a lista da Steam.' }
 };
 
 function build(lang) {

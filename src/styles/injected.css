@@ -216,3 +216,11 @@
 .se-region-table td { padding: 1px 8px 1px 0; white-space: nowrap; unicode-bidi: plaintext; }
 .se-region-table .se-tag { unicode-bidi: plaintext; }
 .se-region-mine td { color: #66c0f4; font-weight: 600; }
+
+/* Market Pro (1.5.0) */
+.se-btn-danger { background: linear-gradient(to bottom, #c25555 5%, #7a3434 95%); }
+.se-btn-danger:hover { background: linear-gradient(to bottom, #d46666 5%, #8c4040 95%); }
+.se-qs { margin-top: 6px; }
+.se-qs-out > div { margin: 4px 0; }
+.se-ml-check { margin: 0 6px 0 4px; vertical-align: middle; }
+.se-ml-tag { margin-inline-start: 6px; }
