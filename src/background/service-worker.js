@@ -106,6 +106,17 @@ function paced(url, run) {
   return result;
 }
 
+// The user's Steam cookies go only to Steam's own hosts, decided by the
+// parsed hostname over https — not a substring of the URL, which another
+// host could carry in its path or query.
+const STEAM_COOKIE_HOSTS = ['steampowered.com', 'steamcommunity.com'];
+function sendsSteamCookies(url) {
+  let u;
+  try { u = new URL(url); } catch { return false; }
+  return u.protocol === 'https:' &&
+    STEAM_COOKIE_HOSTS.some((h) => u.hostname === h || u.hostname.endsWith(`.${h}`));
+}
+
 // Identical cacheable requests already on their way share one fetch (e.g. two
 // tabs, or a list page that shows the same game twice).
 const inflight = new Map();
@@ -132,7 +143,7 @@ async function fetchJsonUncached({ url, method = 'GET', headers, body, cacheKey,
     try {
       const resp = await fetch(url, {
         method, headers, body,
-        credentials: url.includes('steampowered.com') || url.includes('steamcommunity.com') ? 'include' : 'omit'
+        credentials: sendsSteamCookies(url) ? 'include' : 'omit'
       });
       const ct = resp.headers.get('content-type') || '';
       const data = ct.includes('application/json') ? await resp.json() : await resp.text();
