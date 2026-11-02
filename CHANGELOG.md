@@ -56,6 +56,35 @@ wishlist, signed in or not):
 - Wishlist-deal notifications no longer repeat the same sale every hour; a deal
   is announced once, and again only if it gets deeper.
 
+### New
+- **Price history chart** on store pages: Steam's price over three years
+  (ITAD history), hover for date/price/store, 3M / 1Y / All ranges, a line at
+  the lowest price. Without an ITAD key it charts the prices you've seen on
+  your own visits. The market price history and inventory value history use
+  the same chart.
+- **Regional prices in your currency**: every region converted to one
+  currency, cheapest first, with each region's difference from your price.
+- **Market Pro**: Quick sell (one cent under the cheapest listing) and
+  Instant sell (at the highest buy order) for the selected inventory item,
+  each with a buyer-pays / you-receive preview and a confirm click; on the
+  market home, check your listings (LOWEST / UNDERCUT by X), select the
+  undercut ones and remove a selection.
+- **Notification center**: every alert is kept in the toolbar popup with an
+  unread badge; clicking one opens the game; quiet hours keep alerts in the
+  popup without a system notification.
+- **New Options page**: search, side navigation, sections, saves as you go,
+  presets (Minimal / Deal hunter / Trader / Everything), full backup and
+  restore of everything you've made, masked API keys, fully translated.
+- **Steam Deck status** on store pages, and **your achievement progress**
+  for games you own (with your Steam Web API key).
+- **Custom CSS** from Options now actually applies (it never did).
+
+### Fixed (found while building the above)
+- Amounts formatted in a Hebrew/Arabic/Persian browser carried invisible
+  direction marks that scrambled the text around them.
+- The live review filter re-ran every 300 ms forever.
+- Options listed settings nothing used (cache TTL, currency hint); removed.
+
 ### Added
 - `.github/workflows/ci.yml` and `scripts/check-manifest.js`: every PR runs the
   unit tests, checks manifest file references and i18n keys, and verifies the

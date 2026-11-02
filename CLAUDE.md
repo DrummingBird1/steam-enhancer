@@ -22,10 +22,14 @@ src/
     itad.js                      Pure parsers for ITAD responses. Shared with the service worker (attaches to globalThis).
     wishlist.js                  Pure wishlist model (API parsing, rows, sort/filter, CSV). Loaded only on wishlist pages.
     prices.js                    Composite "priceSummary(appid)" used by store pages.
+    chart.js                     Interactive price chart (SE.priceChart); pure geometry in SE.chartModel.
+    market.js                    Pure market helpers (quick/instant sell prices, listing status, parsing).
+    alerts.js                    Pure alert history + quiet hours. Shared with the service worker and popup.
   content/                       Page-specific content scripts.
     page-bridge.js               Runs in the page's MAIN world; named ops reading Steam globals (see SE.pageCall).
     common.js                    Loads dynamicstore (owned/wishlist/ignored), dispatches `se-ready`, onboarding/changelog modals.
-    app.js                       Store /app/, /sub/, /bundle/ pages — the biggest file; most store-page panels live here.
+    app.js                       Store /app/, /sub/, /bundle/ pages: decides which panels run.
+    app/                         The store-page panels (core, prices, info, reviews, friends).
     search.js                    /search/, /specials/, /sale/ — row decoration + price tags.
     wishlist.js                  Wishlist panel: table built from Steam's wishlist + store APIs (the page itself is React).
     market.js                    Steam Community market — net-fee, undercut, buy-order helper.
@@ -46,7 +50,7 @@ scripts/smoke-test.js            Standalone Node script (no deps) that hits live
                                   with `node scripts/smoke-test.js` before a release or when
                                   something seems broken after a Steam redesign.
 scripts/unit-test.js             Standalone Node script (no deps) testing the pure, non-DOM logic
-                                  in src/lib/utils.js (parsePrice, sparklineSvg, etc.) by loading
+                                  in src/lib/ (parsePrice, market fees, API parsers, chart geometry, etc.) by loading
                                   it into a vm sandbox. No network, runs instantly. Run with
                                   `node scripts/unit-test.js`.
 scripts/gen-locales.js           Regenerates every _locales/*/messages.json from one source table.
@@ -61,7 +65,7 @@ scripts/gen-locales.js           Regenerates every _locales/*/messages.json from
 - **All network calls go through the background SW** via `SE.bg({ type: 'fetchJson', url, cacheKey, ttl })`. This centralizes caching and keeps CORS-sensitive endpoints working. Do not `fetch()` from a content script.
 - **Page-context access** (Steam's `g_ActiveInventory`, `g_sessionID`, etc.) uses `SE.pageCall('op', args)`, which round-trips via `postMessage` to `src/content/page-bridge.js` (a `"world": "MAIN"` content script). To read something new, add a named op there — nothing is eval'd or injected as inline `<script>`. Don't try to read those globals directly from the isolated world.
 - **DOM decoration**: every injected node gets a class prefixed `se-` and most receive a `dataset.seDone = '1'` flag so MutationObservers don't re-decorate the same row.
-- **Settings** live under `chrome.storage.sync` key `se_settings_v1` and are read once on `se-ready`. Defaults live only in `src/lib/storage.js`; the popup and options pages load that file too.
+- **Settings** live under `chrome.storage.sync` key `se_settings_v1` and are read once on `se-ready`, except the few too big for sync's 8KB item quota (`LOCAL_KEYS` in `storage.js`, currently `customCss`), which live in `chrome.storage.local` under `se_settings_local_v1`. Always go through `SE.storage`. Defaults live only in `src/lib/storage.js`; the popup and options pages load that file too. The Options page is generated from `SECTIONS` in `options.js` — add a setting there and an `opt_<key>` label in `gen-locales.js`.
 - **Cache** lives in the background only, one `chrome.storage.local` key per entry (`c:<cacheKey>`), pruned by the `se-cache-prune` alarm. TTL is per-entry in minutes. Identical in-flight requests share one fetch.
 - **Money**: market prices are in the user's wallet currency (`SE.walletCurrency()`), and anything that lists items for sale must refuse when `known` is false. Use `SE.marketFees` for buyer-pays/seller-receives — `sellitem` takes the after-fee amount.
 - **Price country** is `SE.ctx.country`: the Options override, else the country Steam reports on the page (`#application_config`), else `us`.
@@ -84,7 +88,9 @@ scripts/gen-locales.js           Regenerates every _locales/*/messages.json from
 | `store.steampowered.com/api/featuredcategories` | Free-promo detection (100%-off specials) | None |
 | `store.steampowered.com/appreviewhistogram/{appid}` | Review-bomb heuristic (recommendation counts over time) | None |
 | `steamcommunity.com/market/itemordershistogram` | Buy-order helper (order-book depth) | Steam session cookie; `item_nameid` is scraped from a `Market_LoadOrderSpread(...)` inline script on the listing page — **verified anonymous requests don't render this script at all** (see `scripts/smoke-test.js`), so it's untested against a real logged-in session |
-| `api.steampowered.com` GetFriendList / GetOwnedGames / ResolveVanityURL | Opt-in "owned by friends" | User-supplied Steam Web API key (Options page), never baked in |
+| `api.steampowered.com` GetFriendList / GetOwnedGames / ResolveVanityURL / GetPlayerAchievements | Opt-in "owned by friends", your achievement progress | User-supplied Steam Web API key (Options page), never baked in |
+| `steamcommunity.com/market/listings/{appid}/{name}` (page) | Order-book id for instant sell (`SE.api.itemNameId`, remembered per item) | Steam session cookie |
+| `steamcommunity.com/market/sellitem`, `/market/removelisting/{id}` | Quick/instant sell, mass-list, my-listings removal — only via `page-bridge.js`, only after an explicit confirm click | Steam session (page context) |
 | `steamcommunity.com/market/pricehistory` | Market item price-history chart | Steam session cookie — **verified anonymous requests get `400` with an empty body**; only works logged in (see `smoke-test.js`) |
 
 If an endpoint breaks, the relevant feature should degrade to a search link rather than throw. HowLongToBeat's API blocks extensions (403), so it's a search link only and has no host permission.
