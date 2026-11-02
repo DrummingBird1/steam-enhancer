@@ -20,8 +20,10 @@
       if (k === 'class') node.className = v;
       else if (k === 'style' && typeof v === 'object') Object.assign(node.style, v);
       else if (k === 'dataset' && typeof v === 'object') Object.assign(node.dataset, v);
-      else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2).toLowerCase(), v);
-      else if (k === 'html') node.innerHTML = v;
+      // Handlers only as functions: a string "on…" attribute would be inline
+      // script. There is deliberately no way to set innerHTML here — text
+      // (Steam names, API data) always goes in as text nodes below.
+      else if (k.startsWith('on')) { if (typeof v === 'function') node.addEventListener(k.slice(2).toLowerCase(), v); }
       else if (v === true) node.setAttribute(k, '');
       else if (v !== false && v != null) node.setAttribute(k, v);
     }

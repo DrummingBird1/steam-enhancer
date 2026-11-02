@@ -350,6 +350,22 @@ t('SE.el(tag, null, ...) does not throw', () => {
   };
   assert.doesNotThrow(() => SE.el('div', null, 'hello'));
 });
+t('SE.el never writes HTML: no html prop, no string on* handlers, text stays text', () => {
+  const made = [];
+  sandbox.document.createElement = (tag) => {
+    const n = { tagName: tag, style: {}, dataset: {}, children: [], attrs: {}, listeners: [],
+      setAttribute(k, v) { this.attrs[k] = v; }, appendChild(c) { this.children.push(c); },
+      addEventListener(k) { this.listeners.push(k); } };
+    Object.defineProperty(n, 'innerHTML', { set() { throw new Error('innerHTML was set'); } });
+    made.push(n);
+    return n;
+  };
+  const n = SE.el('a', { html: '<img src=x onerror=alert(1)>', onclick: 'alert(1)', onmouseover: () => {} }, '<b>name</b>');
+  assert.strictEqual(n.attrs.html, '<img src=x onerror=alert(1)>', 'html is just an inert attribute now');
+  assert.ok(!('onclick' in n.attrs), 'string handler must not become an attribute');
+  assert.deepStrictEqual([...n.listeners], ['mouseover']);
+  assert.strictEqual(n.children[0].textContent, '<b>name</b>');
+});
 
 console.log(`\n${passed}/${passed + failed} tests passed.`);
 process.exit(failed ? 1 : 0);
