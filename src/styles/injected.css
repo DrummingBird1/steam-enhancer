@@ -83,7 +83,7 @@
 .se-quicksell { margin-top: 8px; display: inline-block; }
 
 .se-notes {
-  width: 100%; background: #0d1620; color: #c7d5e0;
+  width: 100%; box-sizing: border-box; background: #0d1620; color: #c7d5e0;
   border: 1px solid #2a475e; border-radius: 2px; padding: 6px 8px;
   font: 12px/1.4 'Motiva Sans', Arial, sans-serif; resize: vertical; margin-top: 4px;
 }

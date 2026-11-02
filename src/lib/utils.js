@@ -212,6 +212,19 @@
     return m ? m[1] : null;
   };
 
+  // Steam's API language name for the page's language ("german", "brazilian"…),
+  // used for localized store/achievement names. English for anything Steam
+  // doesn't have.
+  const STEAM_LANG = {
+    de: 'german', fr: 'french', es: 'spanish', it: 'italian', ru: 'russian', pl: 'polish',
+    'pt-br': 'brazilian', pt: 'portuguese', tr: 'turkish', ja: 'japanese', ko: 'koreana',
+    'zh-cn': 'schinese', 'zh-tw': 'tchinese', uk: 'ukrainian', nl: 'dutch', sv: 'swedish'
+  };
+  SE.steamLanguage = (lang = document.documentElement.lang) => {
+    const l = String(lang || 'en').toLowerCase();
+    return STEAM_LANG[l] || STEAM_LANG[l.split('-')[0]] || 'english';
+  };
+
   SE.fmtPercent = (a, b) => {
     if (!a || !b || a <= 0) return null;
     return Math.round((1 - b / a) * 100);

@@ -77,9 +77,12 @@
 
   async function addAchievementStats(appid) {
     const body = panelBody(); if (!body) return;
-    const r = await SE.api.achievementPercentages(appid);
-    const list = r?.data?.achievementpercentages?.achievements;
-    if (!Array.isArray(list) || !list.length) return;
+    const r = await SE.api.achievementPercentages(appid, SE.steamLanguage());
+    const list = (r?.data?.response?.achievements || [])
+      .map((a) => ({ name: a.localized_name || a.internal_name, percent: Number(a.player_percent_unlocked) }))
+      .filter((a) => a.name && Number.isFinite(a.percent))
+      .sort((a, b) => b.percent - a.percent);
+    if (!list.length) return;
     const easiest = list[0], rarest = list[list.length - 1];
     const row = SE.el('div', { class: 'se-row' },
       SE.el('span', { class: 'se-label' }, SE.t('achievements')),

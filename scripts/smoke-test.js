@@ -74,6 +74,13 @@ check('Steam Web API: GetNumberOfCurrentPlayers', async () => {
   assertTruthy(typeof j?.response?.player_count === 'number', 'response.player_count missing/not a number');
 });
 
+check('Steam Web API: GetGameAchievements names + percentages (info.js)', async () => {
+  const j = await (await fetch('https://api.steampowered.com/IPlayerService/GetGameAchievements/v1/?appid=620&language=english')).json();
+  const a = j?.response?.achievements?.[0];
+  assertTruthy(a && typeof a.localized_name === 'string' && a.localized_name, 'achievements[].localized_name missing');
+  assertTruthy(Number.isFinite(Number(a.player_percent_unlocked)), 'achievements[].player_percent_unlocked missing');
+});
+
 check('Storefront API: appdetails price_overview shape', async () => {
   const j = await (await fetch('https://store.steampowered.com/api/appdetails/?appids=620&cc=us&filters=price_overview,basic')).json();
   assertTruthy(j?.['620']?.success === true, 'appdetails success flag missing');

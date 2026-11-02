@@ -204,6 +204,10 @@ const money = (amount, currency) => {
   } catch { return `${amount} ${currency || ''}`.trim(); }
 };
 
+// "Hades II · Steam: $14.99" — the notification (and the popup's history)
+// has to say which game it's about.
+const withGameName = (name, text) => (name ? `${name} · ${text}` : text);
+
 let historyWrite = Promise.resolve();
 function notify(id, title, message) {
   const appid = id.match(/^se-app-(\d+)-/)?.[1] || null;
@@ -320,7 +324,8 @@ async function bestDealsFor(appids, country, { nondeals }) {
       cacheKey: `itadlookup:${appid}`, ttl: 60 * 24
     });
     if (r?.needsItadKey) return { appid, needsKey: true };
-    return { appid, id: r?.ok ? SE.itad.gameFromLookup(r.data)?.id : null };
+    const game = r?.ok ? SE.itad.gameFromLookup(r.data) : null;
+    return { appid, id: game?.id || null, title: game?.title || null };
   }));
   if (lookups.some((l) => l.needsKey)) return null;
   const resolved = lookups.filter((l) => l.id);
@@ -334,7 +339,10 @@ async function bestDealsFor(appids, country, { nondeals }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(chunk.map((l) => l.id))
     });
-    for (const { appid, id } of chunk) out.set(appid, SE.itad.bestDeal(prices?.data, id));
+    for (const { appid, id, title } of chunk) {
+      const deal = SE.itad.bestDeal(prices?.data, id);
+      out.set(appid, deal && { ...deal, title });
+    }
   }
   return out;
 }
@@ -369,7 +377,8 @@ async function handleWishlistPoll() {
     // Deepest cuts first; at most 3 notifications per run, the rest wait for the next one.
     fresh.sort((a, b) => b[1].cut - a[1].cut);
     for (const [appid, deal] of fresh.slice(0, 3)) {
-      notify(appNotificationId(appid), t('notifWishlistDeal', deal.cut), `${deal.shop || 'Steam'}: ${money(deal.price, deal.currency)}`);
+      notify(appNotificationId(appid), t('notifWishlistDeal', deal.cut),
+        withGameName(deal.title, `${deal.shop || 'Steam'}: ${money(deal.price, deal.currency)}`));
       seen[appid] = deal.cut;
     }
     chrome.storage.local.set({ [SEEN_KEY]: seen });
@@ -440,7 +449,7 @@ async function handlePriceAlertPoll() {
           // Over this run's cap: leave it un-flagged so the next run reports it.
           if (sent >= 3) continue;
           notify(appNotificationId(appid), t('notifPriceAlert'),
-            t('notifPriceAlertMsg', money(deal.price, deal.currency), deal.shop || 'Steam', target));
+            withGameName(deal.title, t('notifPriceAlertMsg', money(deal.price, deal.currency), deal.shop || 'Steam', target)));
           sent++;
         }
         notifiedState[appid] = true;

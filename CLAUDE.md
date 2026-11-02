@@ -79,7 +79,7 @@ scripts/gen-locales.js           Regenerates every _locales/*/messages.json from
 |---|---|---|
 | `api.isthereanydeal.com` v2 (lookup/prices/storelow/history) | Current lowest, Steam historical low, price-history chart | **User-supplied ITAD API key (Options → IsThereAnyDeal API key), required since v1.4.0** |
 | `store.steampowered.com/api/appdetails` | Regional pricing | Cookie-based (we include credentials) |
-| `api.steampowered.com` GetNumberOfCurrentPlayers / GetGlobalAchievementPercentagesForApp | Player count, achievement rarity | None |
+| `api.steampowered.com` GetNumberOfCurrentPlayers / IPlayerService/GetGameAchievements | Player count, achievement names + rarity | None |
 | `steamcommunity.com/market/priceoverview` | Market item value | Steam session cookie |
 | `protondb.com` summary API | Linux compat rating | None |
 | `api.steampowered.com` IWishlistService/GetWishlist | Wishlist panel: whose wishlist, priority, date added | None (public wishlists only) |

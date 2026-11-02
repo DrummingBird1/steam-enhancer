@@ -96,9 +96,9 @@
       currency = points[0]?.currency || null;
     }
     if (points.length < 2) {
-      const seen = await SE.priceHistory.get(appid);
-      points = (seen?.series || []).map(([t, v]) => ({ t, v }));
       currency = SE.detectSteamCurrency();
+      const seen = await SE.priceHistory.get(appid, currency);
+      points = (seen?.series || []).map(([t, v]) => ({ t, v }));
       note = SE.t('chartFromVisits');
     }
     // One remembered visit is a dot, not a history.
@@ -177,7 +177,7 @@
     const priceEl = SE.$('.game_purchase_price, .discount_final_price');
     const cur = priceEl ? SE.parsePrice(priceEl.textContent) : null;
     if (cur == null) return;
-    const prev = await SE.priceHistory.record(appid, cur);
+    const prev = await SE.priceHistory.record(appid, cur, SE.detectSteamCurrency());
     if (prev && prev.price > cur) {
       const drop = SE.fmtPercent(prev.price, cur);
       panelBody()?.appendChild(SE.el('div', { class: 'se-row' },

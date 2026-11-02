@@ -253,6 +253,7 @@ t('lookup: found / not found', () => {
   const g = SE.itad.gameFromLookup(fixture('itad-lookup.json'));
   assert.strictEqual(g.id, GAME);
   assert.strictEqual(g.slug, 'portal-2');
+  assert.strictEqual(g.title, 'Portal 2');
   assert.strictEqual(SE.itad.gameFromLookup({ found: false }), null);
   assert.strictEqual(SE.itad.gameFromLookup(undefined), null);
 });
@@ -325,6 +326,15 @@ t('chartSince carries in the price already in effect', () => {
   assert.strictEqual(r.length, 2);
   assert.strictEqual(r[0].t, 2000);
   assert.strictEqual(r[0].v, 5);
+});
+
+console.log('SE.steamLanguage');
+t('page language → Steam API language', () => {
+  assert.strictEqual(SE.steamLanguage('de'), 'german');
+  assert.strictEqual(SE.steamLanguage('pt-BR'), 'brazilian');
+  assert.strictEqual(SE.steamLanguage('zh-TW'), 'tchinese');
+  assert.strictEqual(SE.steamLanguage('he'), 'english');
+  assert.strictEqual(SE.steamLanguage(''), 'english');
 });
 
 console.log('SE.profileKeyFromPath');

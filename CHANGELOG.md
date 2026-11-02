@@ -38,6 +38,16 @@ new tools. How it was planned: `docs/PLAN-1.5.0.md`.
 - **Prices were compared across currencies** — e.g. an Israeli store price
   against a US historical low. The price country now follows the one Steam
   reports on the page; Options → Country is an optional override.
+- **"Price drop since your last visit" compared prices across currencies.**
+  Visiting a game in another store currency showed e.g. "-73% (110.95 →
+  29.99)" for shekels → dollars. The remembered prices now carry their
+  currency, and a currency change starts the history over.
+- **Achievement stats showed internal names** ("AchClearErebus") instead of the
+  achievement's name. They now come from `IPlayerService/GetGameAchievements`,
+  which has the display names in the page's language (no key needed).
+- **Wishlist-deal and price-alert notifications didn't say which game** they
+  were about; they now start with the game's name ("Hades II · Steam: $14.99").
+- The notes box on store pages was wider than the panel.
 - **Background cache lost most writes** when requests ran in parallel. Each
   entry now has its own storage key, pruned by an alarm.
 - Alarms are recreated on browser startup, not only on install.

@@ -18,7 +18,7 @@
     // `body` is the ITAD JSON itself, i.e. the `.data` of an SE.bg fetchJson reply.
     gameFromLookup(body) {
       if (!body || body.found === false || !body.game?.id) return null;
-      return { id: body.game.id, slug: body.game.slug || null };
+      return { id: body.game.id, slug: body.game.slug || null, title: body.game.title || null };
     },
 
     // Cheapest current deal for one game. Doesn't rely on ITAD's ordering of

@@ -95,11 +95,13 @@
       });
     },
 
-    async achievementPercentages(appid) {
+    // Every achievement with its display name and global unlock percentage.
+    // (GetGlobalAchievementPercentagesForApp only has the internal names.)
+    async achievementPercentages(appid, language = 'english') {
       return SE.bg({
         type: 'fetchJson',
-        url: `https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/?gameid=${encodeURIComponent(appid)}`,
-        cacheKey: `achv:${appid}`,
+        url: `https://api.steampowered.com/IPlayerService/GetGameAchievements/v1/?appid=${encodeURIComponent(appid)}&language=${encodeURIComponent(language)}`,
+        cacheKey: `achv:${appid}:${language}`,
         ttl: 60 * 24
       });
     },

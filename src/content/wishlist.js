@@ -12,16 +12,6 @@
   const COLLAPSED_KEY = 'se_wl_collapsed';
 
   // Steam's language names for the store API, from the page's <html lang>.
-  const STEAM_LANG = {
-    de: 'german', fr: 'french', es: 'spanish', it: 'italian', ru: 'russian', pl: 'polish',
-    'pt-br': 'brazilian', pt: 'portuguese', tr: 'turkish', ja: 'japanese', ko: 'koreana',
-    'zh-cn': 'schinese', 'zh-tw': 'tchinese', uk: 'ukrainian', nl: 'dutch', sv: 'swedish'
-  };
-  const steamLanguage = () => {
-    const l = (document.documentElement.lang || 'en').toLowerCase();
-    return STEAM_LANG[l] || STEAM_LANG[l.split('-')[0]] || 'english';
-  };
-
   const state = {
     steamid: null, items: null, store: new Map(), itad: new Map(), targets: {},
     rows: [], sort: 'priority', dir: 1, shown: PAGE_SIZE,
@@ -50,7 +40,7 @@
     const appids = state.items.map((i) => i.appid);
     for (let i = 0; i < appids.length; i += 100) {
       setStatus(SE.t('wlLoadingDetails', Math.min(i + 100, appids.length), appids.length));
-      const r = await SE.api.storeItems(appids.slice(i, i + 100), SE.ctx.country, steamLanguage());
+      const r = await SE.api.storeItems(appids.slice(i, i + 100), SE.ctx.country, SE.steamLanguage());
       W.storeItems(r?.ok ? r.data : null).forEach((v, k) => state.store.set(k, v));
     }
     state.targets = await getTargets();
