@@ -741,7 +741,13 @@ const T = {
   wlLowNow: { en: 'LOW NOW', he: 'בשפל עכשיו', ru: 'МИНИМУМ', de: 'TIEFSTPREIS', ptBR: 'MENOR AGORA' },
   deckVerified: { en: 'Verified', he: 'מאומת', ru: 'Проверено', de: 'Verifiziert', ptBR: 'Verificado' },
   deckPlayable: { en: 'Playable', he: 'ניתן לשחק', ru: 'Играбельно', de: 'Spielbar', ptBR: 'Jogável' },
-  deckUnsupported: { en: 'Unsupported', he: 'לא נתמך', ru: 'Не поддерживается', de: 'Nicht unterstützt', ptBR: 'Não suportado' }
+  deckUnsupported: { en: 'Unsupported', he: 'לא נתמך', ru: 'Не поддерживается', de: 'Nicht unterstützt', ptBR: 'Não suportado' },
+
+  // v1.5.0 — price chart.
+  range3M: { en: '3M', he: '3 ח׳', ru: '3 мес.', de: '3 Mon.', ptBR: '3M' },
+  range1Y: { en: '1Y', he: 'שנה', ru: '1 год', de: '1 J.', ptBR: '1A' },
+  rangeALL: { en: 'All', he: 'הכול', ru: 'Всё', de: 'Alles', ptBR: 'Tudo' },
+  chartFromVisits: { en: 'From your own visits to this page (add an IsThereAnyDeal key in Options for full history).', he: 'מהביקורים שלך בעמוד הזה (הוסף מפתח IsThereAnyDeal באפשרויות להיסטוריה מלאה).', ru: 'По вашим посещениям этой страницы (добавьте ключ IsThereAnyDeal в настройках для полной истории).', de: 'Aus deinen eigenen Besuchen dieser Seite (für den vollen Verlauf einen IsThereAnyDeal-Schlüssel in den Optionen eintragen).', ptBR: 'Das suas próprias visitas a esta página (adicione uma chave do IsThereAnyDeal nas Opções para o histórico completo).' }
 };
 
 function build(lang) {

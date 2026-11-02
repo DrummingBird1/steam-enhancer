@@ -7,7 +7,7 @@
 //   lookup/v1    { found, game: { id, slug, title } }
 //   prices/v3    [ { id, historyLow: { all, y1, m3 }, deals: [ { shop, price, regular, cut, url } ] } ]
 //   storelow/v2  [ { id, lows: [ { shop, price, regular, cut, timestamp } ] } ]
-//   history/v2   [ { timestamp, shop, deal: { price, regular, cut } } ]
+//   history/v2   [ { timestamp, shop, deal: { price, regular, cut } } ] → [{ t, v, shop, currency }]
 (function (global) {
   'use strict';
   const SE = global.SteamEnhancer || (global.SteamEnhancer = {});
@@ -55,11 +55,11 @@
       };
     },
 
-    // history/v2 → [{ t, v, shop }] sorted oldest first.
+    // history/v2 → [{ t, v, shop, currency }] sorted oldest first.
     historyPoints(historyBody) {
       if (!Array.isArray(historyBody)) return [];
       return historyBody
-        .map((e) => ({ t: Date.parse(e?.timestamp), v: e?.deal?.price?.amount, shop: e?.shop?.name }))
+        .map((e) => ({ t: Date.parse(e?.timestamp), v: e?.deal?.price?.amount, shop: e?.shop?.name, currency: e?.deal?.price?.currency }))
         .filter((p) => Number.isFinite(p.t) && typeof p.v === 'number')
         .sort((a, b) => a.t - b.t);
     }

@@ -136,7 +136,12 @@
   SE.formatMoney = (amount, currency = 'USD', locale = undefined) => {
     if (amount == null || !Number.isFinite(amount)) return '—';
     try {
-      return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount);
+      // RTL locales (he, ar, fa) wrap the parts in direction marks (U+200F…),
+      // which scramble the order once the amount sits inside LTR text
+      // ("Low: $29.99 · date" rendered as "Low: date · $29.99"). Drop them;
+      // CSS unicode-bidi isolation handles RTL panels.
+      return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount)
+        .replace(/[\u200e\u200f\u061c]/g, '');
     } catch {
       return `${currency} ${amount.toFixed(2)}`;
     }
@@ -207,27 +212,6 @@
 
   SE.tag = (text, kind = 'info') =>
     SE.el('span', { class: `se-tag se-tag-${kind}` }, text);
-
-  // Small inline SVG sparkline for {t: timestamp, v: value} point series.
-  // Shared by the store-page price-history chart and the inventory value-over-time chart.
-  SE.sparklineSvg = (points, opts = {}) => {
-    if (!points || points.length < 2) return '';
-    const { w = 240, h = 60, pad = 4, color = '#66c0f4', bg = '#0d1620' } = opts;
-    const minV = Math.min(...points.map(p => p.v));
-    const maxV = Math.max(...points.map(p => p.v));
-    const minT = points[0].t, maxT = points[points.length - 1].t;
-    const x = (t) => pad + (w - 2 * pad) * (t - minT) / Math.max(1, maxT - minT);
-    const y = (v) => h - pad - (h - 2 * pad) * (v - minV) / Math.max(0.01, maxV - minV);
-    const d = points.map((p, i) => (i ? 'L' : 'M') + x(p.t).toFixed(1) + ',' + y(p.v).toFixed(1)).join(' ');
-    const left = opts.labelLeft != null ? opts.labelLeft : minV.toFixed(2);
-    const right = opts.labelRight != null ? opts.labelRight : new Date(maxT).toISOString().slice(0, 10);
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
-      <rect width="${w}" height="${h}" fill="${bg}" />
-      <path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" />
-      <text x="${pad}" y="12" fill="#8f98a0" font-size="10">${left}</text>
-      <text x="${w - pad}" y="12" fill="#8f98a0" font-size="10" text-anchor="end">${right}</text>
-    </svg>`;
-  };
 
   // Run a feature in try/catch so one broken selector can't kill the whole script.
   // Works for sync fns and promise-returning fns. Returns undefined on failure.

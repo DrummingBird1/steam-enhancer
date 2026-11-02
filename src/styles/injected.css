@@ -196,3 +196,17 @@
 .se-wl-table tr.se-wl-hit td { background: rgba(92, 126, 16, 0.18); }
 .se-wl-more { margin-top: 6px; }
 .se-wl-more:empty { display: none; }
+
+/* Price chart (1.5.0) */
+.se-chart { margin: 4px 0; max-width: 460px; }
+.se-chart-ranges { display: flex; gap: 4px; margin-bottom: 4px; }
+.se-chart-range { padding: 1px 8px; font-size: 11px; opacity: 0.7; }
+.se-chart-range.se-active { opacity: 1; }
+.se-chart-svg { width: 100%; height: auto; display: block; background: #0d1620; border-radius: 3px; }
+.se-chart-line { fill: none; stroke: #66c0f4; stroke-width: 1.5; }
+.se-chart-low { stroke: #a4d007; stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.8; }
+.se-chart-cross { stroke: #8f98a0; stroke-width: 1; }
+.se-chart-dot { fill: #fff; }
+.se-chart-axis { fill: #8f98a0; font-size: 9px; }
+.se-chart-tip { font-size: 11px; color: #c7d5e0; margin-top: 2px; unicode-bidi: plaintext; }
+.se-chart-note { font-size: 11px; }

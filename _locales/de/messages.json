@@ -889,5 +889,17 @@
   },
   "deckUnsupported": {
     "message": "Nicht unterstützt"
+  },
+  "range3M": {
+    "message": "3 Mon."
+  },
+  "range1Y": {
+    "message": "1 J."
+  },
+  "rangeALL": {
+    "message": "Alles"
+  },
+  "chartFromVisits": {
+    "message": "Aus deinen eigenen Besuchen dieser Seite (für den vollen Verlauf einen IsThereAnyDeal-Schlüssel in den Optionen eintragen)."
   }
 }

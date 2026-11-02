@@ -889,5 +889,17 @@
   },
   "deckUnsupported": {
     "message": "לא נתמך"
+  },
+  "range3M": {
+    "message": "3 ח׳"
+  },
+  "range1Y": {
+    "message": "שנה"
+  },
+  "rangeALL": {
+    "message": "הכול"
+  },
+  "chartFromVisits": {
+    "message": "מהביקורים שלך בעמוד הזה (הוסף מפתח IsThereAnyDeal באפשרויות להיסטוריה מלאה)."
   }
 }

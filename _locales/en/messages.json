@@ -889,5 +889,17 @@
   },
   "deckUnsupported": {
     "message": "Unsupported"
+  },
+  "range3M": {
+    "message": "3M"
+  },
+  "range1Y": {
+    "message": "1Y"
+  },
+  "rangeALL": {
+    "message": "All"
+  },
+  "chartFromVisits": {
+    "message": "From your own visits to this page (add an IsThereAnyDeal key in Options for full history)."
   }
 }

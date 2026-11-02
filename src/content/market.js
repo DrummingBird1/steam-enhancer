@@ -77,13 +77,14 @@
       .map(([dateStr, price]) => ({ t: new Date(dateStr).getTime(), v: Number(price) }))
       .filter((p) => isFinite(p.t) && isFinite(p.v));
     if (points.length < 2) { out.textContent = SE.t('needsLoginForChart'); return; }
-    // Sample down to ~120 points so the SVG path stays cheap on items with years of history.
-    const step = Math.max(1, Math.floor(points.length / 120));
-    const sampled = points.filter((_, i) => i % step === 0);
-    const svg = SE.sparklineSvg(sampled, { w: 320, h: 70 });
+    // Sample down to ~300 points so the SVG path stays cheap on items with years of history.
+    const step = Math.max(1, Math.floor(points.length / 300));
+    const sampled = points.filter((_, i) => i % step === 0 || i === points.length - 1);
+    // Sale medians per hour/day, not a price that holds — so a plain line, not steps.
+    const wallet = await SE.walletCurrency();
     out.innerHTML = '';
     out.appendChild(SE.el('div', { class: 'se-label' }, SE.t('priceHistoryChart') + ':'));
-    out.appendChild(SE.el('div', { html: svg }));
+    out.appendChild(SE.priceChart(sampled, { currency: wallet.iso, step: false, w: 420, h: 150 }));
   }
 
   function undercut() {

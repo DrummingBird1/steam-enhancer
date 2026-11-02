@@ -82,6 +82,7 @@
         "src/lib/api.js",
         "src/lib/itad.js",
         "src/lib/prices.js",
+        "src/lib/chart.js",
         "src/lib/notes.js",
         "src/lib/i18n.js",
         "src/content/common.js"

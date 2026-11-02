@@ -334,8 +334,8 @@
     const list = all[key] || [];
     out.innerHTML = '';
     if (list.length < 2) { out.textContent = SE.t('invFewSnapshots', list.length); return; }
-    const svg = SE.sparklineSvg(list.map(p => ({ t: p.ts, v: p.v })), { labelLeft: `${list[0].v.toFixed(2)}` });
-    out.appendChild(SE.el('div', { html: svg }));
+    const wallet = await SE.walletCurrency();
+    out.appendChild(SE.priceChart(list.map(p => ({ t: p.ts, v: p.v })), { currency: wallet.iso, step: false }));
     out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('invSnapshotsRecorded', list.length)));
   }
 

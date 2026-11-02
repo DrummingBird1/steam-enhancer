@@ -59,25 +59,33 @@
 
   async function addPriceChart(appid) {
     const body = panelBody(); if (!body) return;
-    // Steam's own price over the last year, from ITAD's history log. (Until
-    // 1.4.x this read a `lows` field the overview endpoint doesn't have, so the
-    // chart never rendered.)
+    // Steam's own price over the last three years, from ITAD's history log.
+    // (Until 1.4.x this read a `lows` field the overview endpoint doesn't
+    // have, so the chart never rendered.) Without an ITAD key — or for games
+    // ITAD doesn't track — fall back to the prices this browser has seen on
+    // its own visits to this page.
+    let points = [], currency = null, note = null;
     const lookup = await SE.api.itadLookup(appid);
     const game = lookup?.ok ? SE.itad.gameFromLookup(lookup.data) : null;
-    if (!game) return;
-    const r = await SE.api.itadHistory(game.id, SE.ctx.country);
-    const points = SE.itad.historyPoints(r?.ok ? r.data : null);
-    if (!points.length) return;
+    if (game) {
+      const r = await SE.api.itadHistory(game.id, SE.ctx.country);
+      points = SE.itad.historyPoints(r?.ok ? r.data : null);
+      currency = points[0]?.currency || null;
+    }
+    if (points.length < 2) {
+      const seen = await SE.priceHistory.get(appid);
+      points = (seen?.series || []).map(([t, v]) => ({ t, v }));
+      currency = SE.detectSteamCurrency();
+      note = SE.t('chartFromVisits');
+    }
+    // One remembered visit is a dot, not a history.
+    if (!points.length || (note && points.length < 2)) return;
     // History only logs changes; extend the last price to today so the line
     // reaches the present.
-    points.push({ t: Date.now(), v: points[points.length - 1].v });
-    if (points.length < 2) return;
+    points.push({ ...points[points.length - 1], t: Date.now() });
 
-    const minP = Math.min(...points.map(p => p.v));
-    const svg = SE.sparklineSvg(points, { labelLeft: `${SE.t('lowWord')} ${minP.toFixed(2)}` });
-    const wrap = SE.el('div', { class: 'se-row', html: svg });
     body.appendChild(SE.el('div', { class: 'se-row se-label' }, SE.t('priceHistoryLabel')));
-    body.appendChild(wrap);
+    body.appendChild(SE.priceChart(points, { currency, note }));
   }
 
   // Steam shows "Buy as a bundle" boxes on the app page when this game is part

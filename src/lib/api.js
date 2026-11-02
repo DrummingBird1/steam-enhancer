@@ -65,9 +65,9 @@
     },
 
     // Steam's price-change log (history/v2, shops=61). Without `since` ITAD
-    // returns only the last 3 months, so ask for a year.
+    // returns only the last 3 months, so ask for three years.
     async itadHistory(itadId, country = 'us') {
-      const since = new Date(Date.now() - 365 * 24 * 3600_000).toISOString();
+      const since = new Date(Date.now() - 3 * 365 * 24 * 3600_000).toISOString();
       return SE.bg({
         type: 'fetchJson',
         url: `https://api.isthereanydeal.com/games/history/v2?id=${encodeURIComponent(itadId)}&country=${encodeURIComponent(country)}&shops=61&since=${encodeURIComponent(since)}`,

@@ -109,7 +109,7 @@ follow the note printed with it.
 
 Run `node scripts/unit-test.js` for the pure-logic side (parsePrice,
 marketFees, ITAD parsers against `scripts/fixtures/`, currency helpers,
-sparklineSvg, fmtPercent, formatMoney, profileKeyFromPath, and a standing
+chart geometry, fmtPercent, formatMoney, profileKeyFromPath, and a standing
 regression test for the `SE.el(tag, null, …)` crash from 1.2.0) — instant, no
 network. This is what caught the `parsePrice` thousands-separator bug in
 v1.4.0 that four minor versions of manual testing hadn't. If you touch

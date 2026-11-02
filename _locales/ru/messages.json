@@ -889,5 +889,17 @@
   },
   "deckUnsupported": {
     "message": "Не поддерживается"
+  },
+  "range3M": {
+    "message": "3 мес."
+  },
+  "range1Y": {
+    "message": "1 год"
+  },
+  "rangeALL": {
+    "message": "Всё"
+  },
+  "chartFromVisits": {
+    "message": "По вашим посещениям этой страницы (добавьте ключ IsThereAnyDeal в настройках для полной истории)."
   }
 }

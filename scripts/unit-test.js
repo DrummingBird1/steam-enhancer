@@ -20,7 +20,7 @@ const vm = require('vm');
 const sandbox = { console };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
-for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js']) {
+for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js']) {
   const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
   vm.runInContext(src, sandbox, { filename: file });
 }
@@ -215,26 +215,43 @@ console.log('SE.formatMoney');
 t('USD', () => assert.strictEqual(SE.formatMoney(19.99, 'USD', 'en-US'), '$19.99'));
 t('null amount renders em-dash', () => assert.strictEqual(SE.formatMoney(null, 'USD'), '—'));
 t('NaN amount renders em-dash', () => assert.strictEqual(SE.formatMoney(NaN, 'USD'), '—'));
+t('RTL locales: no direction marks (they reorder LTR text around the amount)', () => {
+  for (const loc of ['he-IL', 'ar-EG', 'fa-IR']) {
+    assert.ok(!/[\u200e\u200f\u061c]/.test(SE.formatMoney(29.99, 'USD', loc)), loc);
+  }
+});
 
-console.log('SE.sparklineSvg');
-t('too few points returns empty string', () => {
-  assert.strictEqual(SE.sparklineSvg([], {}), '');
-  assert.strictEqual(SE.sparklineSvg([{ t: 1, v: 1 }], {}), '');
+console.log('SE.chartModel / chartPointAt / chartSince');
+const stepPts = [{ t: 0, v: 10 }, { t: 1000, v: 5 }, { t: 3000, v: 8 }];
+t('fewer than 2 points → null', () => {
+  assert.strictEqual(SE.chartModel([], {}), null);
+  assert.strictEqual(SE.chartModel([{ t: 1, v: 1 }], {}), null);
 });
-t('two points produces a valid SVG with an M and L path command', () => {
-  const svg = SE.sparklineSvg([{ t: 0, v: 1 }, { t: 1000, v: 2 }], {});
-  assert.ok(svg.startsWith('<svg'), 'should start with <svg');
-  assert.ok(/<path d="M[\d.]+,[\d.]+ L[\d.]+,[\d.]+"/.test(svg), 'path should have one M and one L command');
+t('step path uses H/V segments and finds the low', () => {
+  const m = SE.chartModel(stepPts, { w: 100, h: 50, padL: 0, padR: 0, padT: 0, padB: 0 });
+  assert.ok(/^M0\.0,0\.0 H33\.3 V50\.0 H100\.0 V20\.0$/.test(m.d), m.d);
+  assert.strictEqual(m.low.v, 5);
 });
-t('flat series (all same value) does not divide by zero into NaN/Infinity', () => {
-  const svg = SE.sparklineSvg([{ t: 0, v: 5 }, { t: 1000, v: 5 }, { t: 2000, v: 5 }], {});
-  assert.ok(!svg.includes('NaN'), 'flat series should not produce NaN coordinates');
-  assert.ok(!svg.includes('Infinity'), 'flat series should not produce Infinity coordinates');
+t('line mode uses L segments; unsorted input is sorted', () => {
+  const m = SE.chartModel([stepPts[2], stepPts[0], stepPts[1]], { step: false });
+  assert.ok(m.d.includes(' L') && !m.d.includes(' H'));
 });
-t('custom labels are used verbatim', () => {
-  const svg = SE.sparklineSvg([{ t: 0, v: 1 }, { t: 1000, v: 2 }], { labelLeft: 'low 1.00', labelRight: 'today' });
-  assert.ok(svg.includes('>low 1.00<'), 'labelLeft should appear in output');
-  assert.ok(svg.includes('>today<'), 'labelRight should appear in output');
+t('flat or all-zero series never yields NaN/Infinity', () => {
+  for (const v of [5, 0]) {
+    const m = SE.chartModel([{ t: 0, v }, { t: 10, v }], {});
+    assert.ok(!/NaN|Infinity/.test(m.d), m.d);
+  }
+});
+t('pointAt is the price in effect (step semantics)', () => {
+  assert.strictEqual(SE.chartPointAt(stepPts, 999).v, 10);
+  assert.strictEqual(SE.chartPointAt(stepPts, 1000).v, 5);
+  assert.strictEqual(SE.chartPointAt(stepPts, 99999).v, 8);
+});
+t('chartSince carries in the price already in effect', () => {
+  const r = SE.chartSince(stepPts, 2000);
+  assert.strictEqual(r.length, 2);
+  assert.strictEqual(r[0].t, 2000);
+  assert.strictEqual(r[0].v, 5);
 });
 
 console.log('SE.profileKeyFromPath');
