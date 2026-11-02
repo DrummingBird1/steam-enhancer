@@ -65,6 +65,10 @@
     // only for the opt-in "owned by friends" lookup. Never baked into the
     // extension, never sent anywhere but api.steampowered.com from your browser.
     steamWebApiKey: '',
+    // v1.5.0: alerts during these hours ("HH:MM", may wrap past midnight) go
+    // only to the popup's history, without a system notification.
+    quietHoursStart: '',
+    quietHoursEnd: '',
     onboardingSeen: false
   };
 

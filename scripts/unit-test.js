@@ -20,7 +20,7 @@ const vm = require('vm');
 const sandbox = { console };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
-for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js', 'market.js']) {
+for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js', 'market.js', 'alerts.js']) {
   const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
   vm.runInContext(src, sandbox, { filename: file });
 }
@@ -193,6 +193,34 @@ t('order-book id and listing URL parsing', () => {
   const l = MM.listingFromUrl('https://steamcommunity.com/market/listings/730/AK-47%20%7C%20Redline%20(Field-Tested)?filter=x');
   assert.strictEqual(l.appid, '730');
   assert.strictEqual(l.name, 'AK-47 | Redline (Field-Tested)');
+});
+
+console.log('SE.alerts');
+const A = SE.alerts;
+t('history: newest first, unread, capped at 50, input untouched', () => {
+  let list = [];
+  for (let i = 0; i < 55; i++) list = A.add(list, { title: `#${i}` }, 1000 + i);
+  assert.strictEqual(list.length, 50);
+  assert.strictEqual(list[0].title, '#54');
+  assert.strictEqual(A.unreadCount(list), 50);
+  const read = A.markAllRead(list);
+  assert.strictEqual(A.unreadCount(read), 0);
+  assert.strictEqual(A.unreadCount(list), 50);
+});
+t('quiet hours: same-day and overnight windows', () => {
+  const at = (h, m = 0) => new Date(2026, 0, 1, h, m);
+  assert.strictEqual(A.inQuietHours(at(23, 30), '23:00', '08:00'), true);
+  assert.strictEqual(A.inQuietHours(at(7, 59), '23:00', '08:00'), true);
+  assert.strictEqual(A.inQuietHours(at(8, 0), '23:00', '08:00'), false);
+  assert.strictEqual(A.inQuietHours(at(13), '12:00', '14:00'), true);
+  assert.strictEqual(A.inQuietHours(at(15), '12:00', '14:00'), false);
+  assert.strictEqual(A.inQuietHours(at(3), '', '08:00'), false);
+  assert.strictEqual(A.inQuietHours(at(3), '25:00', '08:00'), false);
+});
+t('age labels', () => {
+  assert.strictEqual(A.age(0, 5 * 60000), '5m');
+  assert.strictEqual(A.age(0, 3 * 3600000), '3h');
+  assert.strictEqual(A.age(0, 3 * 86400000), '3d');
 });
 
 console.log('SE.currency');

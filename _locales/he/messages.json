@@ -976,5 +976,23 @@
   },
   "removedListings": {
     "message": "הוסרו {0} מתוך {1}. טען מחדש את העמוד כדי לרענן את הרשימה של Steam."
+  },
+  "recentAlerts": {
+    "message": "התראות אחרונות"
+  },
+  "cacheCleared": {
+    "message": "נוקה!"
+  },
+  "notifWishlistDeal": {
+    "message": "מבצע ברשימת המשאלות: -{0}%"
+  },
+  "notifFreePromo": {
+    "message": "בחינם לזמן מוגבל!"
+  },
+  "notifPriceAlert": {
+    "message": "הגיע ליעד המחיר"
+  },
+  "notifPriceAlertMsg": {
+    "message": "{0} ב-{1} (היעד שלך: {2})"
   }
 }

@@ -21,6 +21,11 @@
     <button data-go="https://isthereanydeal.com/">IsThereAnyDeal</button>
   </section>
 
+  <section class="alerts" id="alerts-section" hidden>
+    <h2><span data-i18n="recentAlerts">Recent alerts</span></h2>
+    <ul id="alerts"></ul>
+  </section>
+
   <section class="toggles">
     <label><input type="checkbox" data-setting="showLowestPrice" /> <span data-i18n="tShowLowest">Show lowest prices</span></label>
     <label><input type="checkbox" data-setting="highlightOwned" /> <span data-i18n="tHighlightOwned">Highlight owned games</span></label>
@@ -37,6 +42,7 @@
   </footer>
 
   <script src="../lib/storage.js"></script>
+  <script src="../lib/alerts.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

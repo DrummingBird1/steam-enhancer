@@ -776,7 +776,17 @@ const T = {
   noneSelectedListings: { en: 'Tick the listings to remove first.', he: 'סמן קודם את ההצעות להסרה.', ru: 'Сначала отметьте лоты, которые нужно снять.', de: 'Hake zuerst die zu entfernenden Angebote an.', ptBR: 'Marque primeiro os anúncios a remover.' },
   confirmRemoveListings: { en: 'Remove {0} listing(s) from the market?', he: 'להסיר {0} הצעות מה-Market?', ru: 'Снять с продажи лотов: {0}?', de: '{0} Angebot(e) vom Markt nehmen?', ptBR: 'Remover {0} anúncio(s) do mercado?' },
   removingListings: { en: 'Removed {0}/{1}…', he: 'הוסרו {0}/{1}…', ru: 'Снято {0}/{1}…', de: '{0}/{1} entfernt…', ptBR: '{0}/{1} removidos…' },
-  removedListings: { en: 'Removed {0} of {1}. Reload the page to refresh Steam\'s list.', he: 'הוסרו {0} מתוך {1}. טען מחדש את העמוד כדי לרענן את הרשימה של Steam.', ru: 'Снято {0} из {1}. Перезагрузите страницу, чтобы обновить список Steam.', de: '{0} von {1} entfernt. Lade die Seite neu, um Steams Liste zu aktualisieren.', ptBR: '{0} de {1} removidos. Recarregue a página para atualizar a lista da Steam.' }
+  removedListings: { en: 'Removed {0} of {1}. Reload the page to refresh Steam\'s list.', he: 'הוסרו {0} מתוך {1}. טען מחדש את העמוד כדי לרענן את הרשימה של Steam.', ru: 'Снято {0} из {1}. Перезагрузите страницу, чтобы обновить список Steam.', de: '{0} von {1} entfernt. Lade die Seite neu, um Steams Liste zu aktualisieren.', ptBR: '{0} de {1} removidos. Recarregue a página para atualizar a lista da Steam.' },
+
+  // v1.5.0 — notification center.
+  recentAlerts: { en: 'Recent alerts', he: 'התראות אחרונות', ru: 'Последние уведомления', de: 'Letzte Benachrichtigungen', ptBR: 'Alertas recentes' },
+  cacheCleared: { en: 'Cleared!', he: 'נוקה!', ru: 'Очищено!', de: 'Geleert!', ptBR: 'Limpo!' },
+
+  // v1.5.0 — notification texts.
+  notifWishlistDeal: { en: 'Wishlist deal: -{0}%', he: 'מבצע ברשימת המשאלות: -{0}%', ru: 'Скидка из списка желаемого: -{0}%', de: 'Wunschlisten-Angebot: -{0} %', ptBR: 'Oferta da lista de desejos: -{0}%' },
+  notifFreePromo: { en: 'Free for a limited time!', he: 'בחינם לזמן מוגבל!', ru: 'Бесплатно ограниченное время!', de: 'Für kurze Zeit kostenlos!', ptBR: 'Grátis por tempo limitado!' },
+  notifPriceAlert: { en: 'Price alert hit', he: 'הגיע ליעד המחיר', ru: 'Цель по цене достигнута', de: 'Preisalarm erreicht', ptBR: 'Alerta de preço atingido' },
+  notifPriceAlertMsg: { en: '{0} at {1} (your target: {2})', he: '{0} ב-{1} (היעד שלך: {2})', ru: '{0} в {1} (ваша цель: {2})', de: '{0} bei {1} (dein Ziel: {2})', ptBR: '{0} na {1} (seu alvo: {2})' }
 };
 
 function build(lang) {

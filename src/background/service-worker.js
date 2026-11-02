@@ -1,6 +1,7 @@
 // MV3 service worker. Handles network proxying (with cache), wishlist deal polling, context menus.
 
 import '../lib/itad.js';
+import '../lib/alerts.js';
 
 const SE = globalThis.SteamEnhancer;
 const SETTINGS_KEY = 'se_settings_v1';
@@ -156,6 +157,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       } else if (msg?.type === 'openOptions') {
         chrome.runtime.openOptionsPage();
         sendResponse({ ok: true });
+      } else if (msg?.type === 'alertsMarkRead') {
+        // Queued behind any history write in progress.
+        historyWrite = historyWrite.then(async () => {
+          const list = SE.alerts.markAllRead((await localGet([SE.alerts.KEY]))[SE.alerts.KEY]);
+          await chrome.storage.local.set({ [SE.alerts.KEY]: list });
+          updateBadge(list);
+        });
+        await historyWrite;
+        sendResponse({ ok: true });
       } else if (msg?.type === 'notify') {
         notify('', msg.title || 'Steam Enhancer', msg.message || '');
         sendResponse({ ok: true });
@@ -169,13 +179,42 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true; // async
 });
 
-// Notification ids of the form "se-app-<appid>-<n>" open that store page on click.
+// Every alert goes into the history the popup shows (and the unread badge on
+// the toolbar icon); a system notification pops up too unless it's quiet
+// hours (Options). Ids of the form "se-app-<appid>-<n>" open that store page
+// on click. History writes are queued so alerts from one run don't overwrite
+// each other.
+// Same {0}-placeholder convention as SE.t in content scripts (src/lib/i18n.js).
+const t = (key, ...subs) => (chrome.i18n.getMessage(key) || key)
+  .replace(/\{(\d)\}/g, (m, i) => (subs[i] != null ? String(subs[i]) : m));
+const money = (amount, currency) => {
+  try {
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount).replace(/[\u200e\u200f\u061c]/g, '');
+  } catch { return `${amount} ${currency || ''}`.trim(); }
+};
+
+let historyWrite = Promise.resolve();
 function notify(id, title, message) {
-  chrome.notifications.create(id, {
-    type: 'basic',
-    iconUrl: chrome.runtime.getURL('icons/icon128.png'),
-    title, message, priority: 1
-  });
+  const appid = id.match(/^se-app-(\d+)-/)?.[1] || null;
+  historyWrite = historyWrite.then(async () => {
+    const settings = await getSettings();
+    const list = (await localGet([SE.alerts.KEY]))[SE.alerts.KEY];
+    const next = SE.alerts.add(list, { appid, title, message });
+    await chrome.storage.local.set({ [SE.alerts.KEY]: next });
+    updateBadge(next);
+    if (SE.alerts.inQuietHours(new Date(), settings.quietHoursStart, settings.quietHoursEnd)) return;
+    chrome.notifications.create(id, {
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+      title, message, priority: 1
+    });
+  }).catch((e) => console.warn('[SE] notify failed', e));
+  return historyWrite;
+}
+function updateBadge(list) {
+  const n = SE.alerts.unreadCount(list);
+  chrome.action.setBadgeBackgroundColor({ color: '#5c7e10' });
+  chrome.action.setBadgeText({ text: n ? String(Math.min(n, 99)) : '' });
 }
 let notifySeq = 0;
 const appNotificationId = (appid) => `se-app-${appid}-${Date.now()}-${notifySeq++}`;
@@ -319,7 +358,7 @@ async function handleWishlistPoll() {
     // Deepest cuts first; at most 3 notifications per run, the rest wait for the next one.
     fresh.sort((a, b) => b[1].cut - a[1].cut);
     for (const [appid, deal] of fresh.slice(0, 3)) {
-      notify(appNotificationId(appid), `Wishlist deal: -${deal.cut}%`, `${deal.shop || 'Store'}: ${deal.price} ${deal.currency || ''}`);
+      notify(appNotificationId(appid), t('notifWishlistDeal', deal.cut), `${deal.shop || 'Steam'}: ${money(deal.price, deal.currency)}`);
       seen[appid] = deal.cut;
     }
     chrome.storage.local.set({ [SEEN_KEY]: seen });
@@ -352,7 +391,7 @@ async function handleFreePromoPoll() {
       if (seen.has(item.id)) continue;
       seen.add(item.id);
       if (notified < 3) {
-        notify(appNotificationId(item.id), 'Free for a limited time!', item.name);
+        notify(appNotificationId(item.id), t('notifFreePromo'), item.name);
         notified++;
       }
     }
@@ -389,8 +428,8 @@ async function handlePriceAlertPoll() {
         if (!notifiedState[appid]) {
           // Over this run's cap: leave it un-flagged so the next run reports it.
           if (sent >= 3) continue;
-          notify(appNotificationId(appid), 'Price alert hit',
-            `${deal.price} ${deal.currency || ''} @ ${deal.shop || 'store'} (your target: ${target})`);
+          notify(appNotificationId(appid), t('notifPriceAlert'),
+            t('notifPriceAlertMsg', money(deal.price, deal.currency), deal.shop || 'Steam', target));
           sent++;
         }
         notifiedState[appid] = true;

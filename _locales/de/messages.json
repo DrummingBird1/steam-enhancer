@@ -976,5 +976,23 @@
   },
   "removedListings": {
     "message": "{0} von {1} entfernt. Lade die Seite neu, um Steams Liste zu aktualisieren."
+  },
+  "recentAlerts": {
+    "message": "Letzte Benachrichtigungen"
+  },
+  "cacheCleared": {
+    "message": "Geleert!"
+  },
+  "notifWishlistDeal": {
+    "message": "Wunschlisten-Angebot: -{0} %"
+  },
+  "notifFreePromo": {
+    "message": "Für kurze Zeit kostenlos!"
+  },
+  "notifPriceAlert": {
+    "message": "Preisalarm erreicht"
+  },
+  "notifPriceAlertMsg": {
+    "message": "{0} bei {1} (dein Ziel: {2})"
   }
 }

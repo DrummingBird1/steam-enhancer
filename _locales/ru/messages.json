@@ -976,5 +976,23 @@
   },
   "removedListings": {
     "message": "Снято {0} из {1}. Перезагрузите страницу, чтобы обновить список Steam."
+  },
+  "recentAlerts": {
+    "message": "Последние уведомления"
+  },
+  "cacheCleared": {
+    "message": "Очищено!"
+  },
+  "notifWishlistDeal": {
+    "message": "Скидка из списка желаемого: -{0}%"
+  },
+  "notifFreePromo": {
+    "message": "Бесплатно ограниченное время!"
+  },
+  "notifPriceAlert": {
+    "message": "Цель по цене достигнута"
+  },
+  "notifPriceAlertMsg": {
+    "message": "{0} в {1} (ваша цель: {2})"
   }
 }

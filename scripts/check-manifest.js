@@ -46,6 +46,8 @@ for (const file of walk(path.join(root, 'src'))) {
   for (const m of text.matchAll(/SE\.t\(\s*'(\w+)'/g)) used.set(m[1], rel);
   for (const m of text.matchAll(/data-i18n="(\w+)"/g)) used.set(m[1], rel);
   for (const m of text.matchAll(/getMessage\(\s*'(\w+)'/g)) used.set(m[1], rel);
+  // The service worker has its own t() (same {0} placeholders as SE.t).
+  if (rel.startsWith('src/background/')) for (const m of text.matchAll(/\bt\(\s*'(\w+)'/g)) used.set(m[1], rel);
 }
 for (const [key, file] of used) {
   if (!en[key]) problems.push(`${file}: i18n key "${key}" missing from _locales/en (add it to scripts/gen-locales.js)`);
