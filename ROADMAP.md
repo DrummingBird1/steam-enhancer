@@ -2,7 +2,7 @@
 
 **🌐 עברית: ראו את [README.he.md](README.he.md) לסקירת הפרויקט. מפת הדרכים כתובה באנגלית.**
 
-This is an informal, best-effort list of what Steam Enhancer may work on next. It is not a commitment and has no dates. Priorities follow what breaks, what users ask for, and the maintainer's free time. Current version: **1.4.0** (see [CHANGELOG.md](CHANGELOG.md)).
+This is an informal, best-effort list of what Steam Enhancer may work on next. It is not a commitment and has no dates. Priorities follow what breaks, what users ask for, and the maintainer's free time. Current version: **1.4.1**. Work in progress: **1.5.0** (see [docs/PLAN-1.5.0.md](docs/PLAN-1.5.0.md)) (see [CHANGELOG.md](CHANGELOG.md)).
 
 > Unofficial. Not affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
 

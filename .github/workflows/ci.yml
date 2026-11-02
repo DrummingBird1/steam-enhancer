@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'release/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Unit tests
+        run: node scripts/unit-test.js
+
+      - name: Manifest and i18n consistency
+        run: node scripts/check-manifest.js
+
+      - name: Locale files match scripts/gen-locales.js
+        run: |
+          node scripts/gen-locales.js
+          git diff --exit-code -- _locales/ || (echo "::error::_locales is out of date — run node scripts/gen-locales.js and commit" && exit 1)
