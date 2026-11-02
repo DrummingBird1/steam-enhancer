@@ -14,7 +14,7 @@ Everything needed to fill in the Chrome Web Store Developer Dashboard.
 | `screenshot-3-options.png` | 1280×800 PNG, real capture: options page | ✅ |
 | `screenshot-4-popup.png` | 1280×800 PNG, real capture: toolbar popup (enlarged) | ✅ |
 
-The screenshots were captured from the real extension on live Steam pages while signed out and without an IsThereAnyDeal key, so the price panels show the "add a free key" notice. Market, inventory, wishlist and trade-offer screens need a signed-in session and are not included; add them if you want a fuller gallery.
+The screenshots were captured from version 1.4.1 on live Steam pages while signed out and without an IsThereAnyDeal key, so the price panels show the "add a free key" notice, and the options page and popup show the old design. **For 1.5.0, retake them** signed in and with an ITAD key — the store page (price chart), the wishlist panel, the new options page and the popup with alerts are the best candidates. See `docs/TESTING-1.5.0.md`.
 
 At least 1 screenshot is required, up to 5 allowed.
 
@@ -39,10 +39,11 @@ The upload package is built into `../dist/` (git-ignored) as `steam-enhancer-vX.
 
 It must contain only: `manifest.json`, `src/`, `icons/`, `_locales/`, `LICENSE`. Do **not** include `.git/`, `.claude/`, `store-assets/`, `scripts/`, `assets/`, `dist/` or `node_modules/`.
 
-For a tagged release, build it from the tag so it matches exactly what was released:
+Build it with the packaging script, which takes the files from git (so it's exactly what's committed) and moves the previous ZIP to `ARCHIVE/`:
 
 ```
-git archive --format=zip -o dist/steam-enhancer-vX.Y.Z.zip vX.Y.Z -- manifest.json src icons _locales LICENSE
+node scripts/package.js           # current commit
+node scripts/package.js vX.Y.Z    # a release tag
 ```
 
 Before uploading, check that the `version` inside the ZIP's `manifest.json` is higher than the one already on the store.

@@ -56,8 +56,12 @@
 
 ## שלב 5 — בדיקה ושחרור
 - ✅ הרחבת smoke test (wishlist API, GetItems, סיכום ביקורות, SSR)
-- ⬜ בדיקה ידנית מחובר (Idan): market, inventory, trade, mass-list — מכירה אמיתית אחת בכמה סנטים
-- ⬜ CHANGELOG, תרגומים ל-5 שפות, צילומי מסך, גרסה 1.5.0, tag, ZIP, העלאה לחנות (Idan)
+- ⬜ בדיקה ידנית מחובר (Idan): לפי `docs/TESTING-1.5.0.md`
+- ✅ CHANGELOG, README בשתי שפות, רישום בחנות ב-5 שפות, מדיניות פרטיות, ROADMAP
+- ✅ גרסה 1.5.0 ב-manifest, `scripts/package.js`, ‏`dist/steam-enhancer-v1.5.0.zip`
+- ⬜ צילומי מסך חדשים (Idan, מחובר)
+- ⬜ push, PR ל-main, tag `v1.5.0`, GitHub release עם ה-ZIP (דורש אישור)
+- ⬜ העלאה לחנות (Idan)
 
 ## נקודות בדיקה מחובר
 1. אחרי שלב 1 — market ו-mass-list
