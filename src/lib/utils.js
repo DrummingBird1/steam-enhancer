@@ -29,7 +29,12 @@
     }
     for (const c of children.flat()) {
       if (c == null || c === false) continue;
-      node.appendChild(c instanceof Node ? c : document.createTextNode(String(c)));
+      if (c instanceof Node) {
+        node.appendChild(c);
+      } else {
+        // Strings (Steam names, review text, API data) only ever become text.
+        node.appendChild(document.createTextNode(String(c)));
+      }
     }
     return node;
   };
