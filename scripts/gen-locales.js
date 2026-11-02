@@ -878,7 +878,12 @@ const T = {
   opt_showFriendsOwnership: { en: 'How many friends own a game (needs your Steam key)', he: 'כמה חברים מחזיקים במשחק (דורש מפתח Steam שלך)', ru: 'Сколько друзей владеют игрой (нужен ваш ключ Steam)', de: 'Wie viele Freunde ein Spiel besitzen (braucht deinen Steam-Schlüssel)', ptBR: 'Quantos amigos têm o jogo (precisa da sua chave da Steam)' },
   opt_notifyWishlistDeals: { en: 'Notify about wishlist deals (hourly)', he: 'התראה על מבצעים ברשימת המשאלות (כל שעה)', ru: 'Уведомлять о скидках из желаемого (ежечасно)', de: 'Bei Wunschlisten-Angeboten benachrichtigen (stündlich)', ptBR: 'Avisar sobre ofertas da lista de desejos (a cada hora)' },
   opt_notifyStorePriceAlerts: { en: 'Notify when an alert price is reached', he: 'התראה כשמחיר מגיע ליעד', ru: 'Уведомлять, когда цена достигла цели', de: 'Benachrichtigen, wenn ein Alarmpreis erreicht ist', ptBR: 'Avisar quando um preço-alvo for atingido' },
-  opt_notifyFreePromos: { en: 'Notify when a game is free for a limited time', he: 'התראה כשמשחק בחינם לזמן מוגבל', ru: 'Уведомлять о временно бесплатных играх', de: 'Benachrichtigen, wenn ein Spiel kurz kostenlos ist', ptBR: 'Avisar quando um jogo estiver grátis por tempo limitado' }
+  opt_notifyFreePromos: { en: 'Notify when a game is free for a limited time', he: 'התראה כשמשחק בחינם לזמן מוגבל', ru: 'Уведомлять о временно бесплатных играх', de: 'Benachrichtigen, wenn ein Spiel kurz kostenlos ist', ptBR: 'Avisar quando um jogo estiver grátis por tempo limitado' },
+
+  // v1.5.0 — store page additions.
+  myAchievements: { en: 'Your achievements:', he: 'ההישגים שלך:', ru: 'Ваши достижения:', de: 'Deine Erfolge:', ptBR: 'Suas conquistas:' },
+  perfectGame: { en: '100%', he: '100%', ru: '100%', de: '100 %', ptBR: '100%' },
+  opt_showDeckBadge: { en: 'Steam Deck compatibility', he: 'תאימות ל-Steam Deck', ru: 'Совместимость со Steam Deck', de: 'Steam-Deck-Kompatibilität', ptBR: 'Compatibilidade com o Steam Deck' }
 };
 
 function build(lang) {

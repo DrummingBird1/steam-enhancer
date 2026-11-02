@@ -1264,5 +1264,14 @@
   },
   "opt_notifyFreePromos": {
     "message": "Notify when a game is free for a limited time"
+  },
+  "myAchievements": {
+    "message": "Your achievements:"
+  },
+  "perfectGame": {
+    "message": "100%"
+  },
+  "opt_showDeckBadge": {
+    "message": "Steam Deck compatibility"
   }
 }

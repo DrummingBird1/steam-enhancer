@@ -31,5 +31,25 @@
     );
   }
 
-  SE.storePage = { panels: {}, insertEnhancerPanel, panelBody, itadKeyNotice };
+  // The signed-in user's SteamID64: Steam's page global, else a profile link
+  // in the header (resolving a vanity URL needs the user's Web API key).
+  async function ownSteamId(key) {
+    const r = await SE.pageCall('steamId');
+    if (r?.ok && r.result) return String(r.result);
+    const navLinks = SE.$$('#global_actions a, .header_actions_ctn a, a[href*="steamcommunity.com/id/"], a[href*="steamcommunity.com/profiles/"]');
+    for (const el of navLinks) {
+      const href = el.href;
+      if (!href) continue;
+      const idMatch = href.match(/\/profiles\/(\d+)/);
+      if (idMatch) return idMatch[1];
+      const vanityMatch = href.match(/\/id\/([^/]+)/);
+      if (vanityMatch) {
+        const resolved = await SE.api.resolveVanityUrl(vanityMatch[1], key);
+        if (resolved?.data?.response?.success === 1 && resolved.data.response.steamid) return resolved.data.response.steamid;
+      }
+    }
+    return null;
+  }
+
+  SE.storePage = { panels: {}, insertEnhancerPanel, panelBody, itadKeyNotice, ownSteamId };
 })();

@@ -96,6 +96,10 @@
     return Number.isFinite(v) ? v : null;
   };
 
+  // Steam Deck compatibility category (store API / page data) → [i18n key, tag kind].
+  const DECK = { 1: ['deckUnsupported', 'ignored'], 2: ['deckPlayable', 'wish'], 3: ['deckVerified', 'good'] };
+  SE.deckLabel = (category) => DECK[category] || null;
+
   // Steam's review-summary tooltip, in any UI language → { pct, total }.
   // `countMeta` is the page's meta[itemprop=reviewCount] content, preferred
   // for the total; otherwise the largest other number in the tooltip.

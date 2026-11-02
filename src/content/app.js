@@ -17,7 +17,7 @@
       addHowLongToBeat, addPlayersOnline, addAchievementStats, addDlcOwnership, addCardSetValue,
       addCardDropsLink, addEarlyAccessBadge, addDrmInfo, addCommunityTags, addNotesBox,
       enhanceWishlistButton, addSubContents, addBoosterCreatorLink, addReviewBreakdown, addReviewFilters,
-      addBestReview, addReviewBombDetector, addFriendsOwnership
+      addBestReview, addReviewBombDetector, addFriendsOwnership, addDeckStatus
     } = SE.storePage.panels;
     const { insertEnhancerPanel } = SE.storePage;
     const { settings } = SE.ctx;
@@ -34,6 +34,7 @@
       if (settings.showLowestPrice || settings.showPriceHistory) SE.safe('priceBox', () => addPriceBox(appid, settings));
       if (settings.showSteamDBLink) SE.safe('externalLinks', () => addExternalLinks(appid));
       if (settings.showProtonDB) SE.safe('protonDB', () => addProtonDB(appid));
+      if (settings.showDeckBadge) SE.safe('deck', () => addDeckStatus(appid));
       if (settings.showHowLongToBeat) SE.safe('hltb', () => addHowLongToBeat());
       if (settings.showPlayersOnline) SE.safe('players', () => addPlayersOnline(appid));
       if (settings.showAchievementStats) SE.safe('achievements', () => addAchievementStats(appid));

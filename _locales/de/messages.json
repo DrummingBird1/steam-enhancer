@@ -1264,5 +1264,14 @@
   },
   "opt_notifyFreePromos": {
     "message": "Benachrichtigen, wenn ein Spiel kurz kostenlos ist"
+  },
+  "myAchievements": {
+    "message": "Deine Erfolge:"
+  },
+  "perfectGame": {
+    "message": "100 %"
+  },
+  "opt_showDeckBadge": {
+    "message": "Steam-Deck-Kompatibilität"
   }
 }

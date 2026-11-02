@@ -1264,5 +1264,14 @@
   },
   "opt_notifyFreePromos": {
     "message": "Уведомлять о временно бесплатных играх"
+  },
+  "myAchievements": {
+    "message": "Ваши достижения:"
+  },
+  "perfectGame": {
+    "message": "100%"
+  },
+  "opt_showDeckBadge": {
+    "message": "Совместимость со Steam Deck"
   }
 }

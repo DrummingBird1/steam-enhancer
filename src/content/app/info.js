@@ -81,10 +81,40 @@
     const list = r?.data?.achievementpercentages?.achievements;
     if (!Array.isArray(list) || !list.length) return;
     const easiest = list[0], rarest = list[list.length - 1];
-    body.appendChild(SE.el('div', { class: 'se-row' },
+    const row = SE.el('div', { class: 'se-row' },
       SE.el('span', { class: 'se-label' }, SE.t('achievements')),
       `${list.length} · ${SE.t('easiestWord')} ${easiest.name} (${Number(easiest.percent).toFixed(1)}%) · ${SE.t('rarestWord')} ${rarest.name} (${Number(rarest.percent).toFixed(2)}%)`
-    ));
+    );
+    body.appendChild(row);
+    SE.safe('myAchievements', () => addMyAchievements(appid, row));
+  }
+
+  // Your own progress, for a game you own — only with your Steam Web API key
+  // (Options), since Steam's API won't say without one.
+  async function addMyAchievements(appid, row) {
+    const key = SE.ctx.settings.steamWebApiKey;
+    if (!key || !SE.ctx.colls?.owned?.has(String(appid))) return;
+    const me = await SE.storePage.ownSteamId(key);
+    if (!me) return;
+    const r = await SE.api.playerAchievements(appid, me, key);
+    const list = r?.data?.playerstats?.achievements;
+    if (!Array.isArray(list) || !list.length) return;
+    const done = list.filter((a) => a.achieved === 1).length;
+    const pct = Math.round((done / list.length) * 100);
+    const bar = SE.el('span', { class: 'se-progress' }, SE.el('span', { style: { width: `${pct}%` } }));
+    row.after(SE.el('div', { class: 'se-row' },
+      SE.el('span', { class: 'se-label' }, SE.t('myAchievements')), bar, ` ${done}/${list.length} (${pct}%)`,
+      done === list.length ? SE.tag(SE.t('perfectGame'), 'good') : ''));
+  }
+
+  // Steam Deck compatibility from Steam's store API.
+  async function addDeckStatus(appid) {
+    const r = await SE.api.storeItems([appid], SE.ctx.country);
+    const cat = (r?.data?.response?.store_items || []).find((s) => String(s.appid) === String(appid))?.platforms?.steam_deck_compat_category;
+    const deck = SE.deckLabel(cat);
+    if (!deck) return;
+    panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
+      SE.el('span', { class: 'se-label' }, 'Steam Deck:'), SE.tag(SE.t(deck[0]), deck[1])));
   }
 
   function addDlcOwnership(appid) {
@@ -224,5 +254,5 @@
     ));
   }
 
-  Object.assign(SE.storePage.panels, { addExternalLinks, addCommunityLinks, addItadWaitlistLink, addProtonDB, addHowLongToBeat, addPlayersOnline, addAchievementStats, addDlcOwnership, addCardSetValue, addCardDropsLink, addEarlyAccessBadge, addDrmInfo, addCommunityTags, addNotesBox, enhanceWishlistButton, addSubContents, addBoosterCreatorLink });
+  Object.assign(SE.storePage.panels, { addExternalLinks, addCommunityLinks, addItadWaitlistLink, addProtonDB, addHowLongToBeat, addPlayersOnline, addAchievementStats, addDlcOwnership, addCardSetValue, addCardDropsLink, addEarlyAccessBadge, addDrmInfo, addCommunityTags, addNotesBox, enhanceWishlistButton, addSubContents, addBoosterCreatorLink, addDeckStatus });
 })();

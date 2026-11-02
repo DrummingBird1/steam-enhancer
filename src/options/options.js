@@ -21,7 +21,7 @@ const SECTIONS = [
   },
   {
     id: 'store', title: 'optSecStore', items: toggles(
-      'showSteamDBLink', 'showProtonDB', 'showHowLongToBeat', 'showPlayersOnline', 'showAchievementStats',
+      'showSteamDBLink', 'showProtonDB', 'showDeckBadge', 'showHowLongToBeat', 'showPlayersOnline', 'showAchievementStats',
       'showDlcCheck', 'showCardSetValue', 'showReviewBreakdown', 'showLiveReviewFilters', 'showBestReview',
       'showReviewBombDetector')
   },

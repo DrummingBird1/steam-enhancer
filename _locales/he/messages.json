@@ -1264,5 +1264,14 @@
   },
   "opt_notifyFreePromos": {
     "message": "התראה כשמשחק בחינם לזמן מוגבל"
+  },
+  "myAchievements": {
+    "message": "ההישגים שלך:"
+  },
+  "perfectGame": {
+    "message": "100%"
+  },
+  "opt_showDeckBadge": {
+    "message": "תאימות ל-Steam Deck"
   }
 }

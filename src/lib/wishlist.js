@@ -17,9 +17,6 @@
 
   const STEAMID = /^7656119\d{10}$/;
 
-  // Steam Deck compatibility category → label key (SE.t) and tag kind.
-  const DECK = { 1: ['deckUnsupported', 'ignored'], 2: ['deckPlayable', 'wish'], 3: ['deckVerified', 'good'] };
-
   SE.wishlistModel = {
     // Whose wishlist this page shows. /wishlist/profiles/<id>/ has it in the
     // URL; /wishlist/id/<vanity>/ only in the page's server-rendered state
@@ -66,8 +63,6 @@
       }
       return out;
     },
-
-    deckLabel(category) { return DECK[category] || null; },
 
     // One row per wishlisted app. `itad` is the Map from SE.priceSummaryBatch
     // (may be empty), `targets` the appid → price map of price alerts.

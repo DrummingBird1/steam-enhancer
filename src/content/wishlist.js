@@ -180,7 +180,7 @@
   }
 
   function renderRow(r) {
-    const deck = W.deckLabel(r.deck);
+    const deck = SE.deckLabel(r.deck);
     const target = SE.el('input', {
       type: 'number', step: '0.01', min: '0', class: 'se-input', style: { width: '80px' },
       placeholder: SE.t('alertMeAtPlaceholder')

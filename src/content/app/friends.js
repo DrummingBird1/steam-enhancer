@@ -8,27 +8,10 @@
   // Opt-in: "N of your friends own this game". Requires a user-supplied Steam
   // Web API key (Options). Samples the first 30 friends to stay rate-limit
   // friendly; friends with private profiles simply won't show as owning it.
-  async function resolveOwnSteamId64(key) {
-    const r = await SE.pageCall('steamId');
-    if (r?.ok && r.result) return String(r.result);
-    const navLinks = SE.$$('#global_actions a, .header_actions_ctn a, a[href*="steamcommunity.com/id/"], a[href*="steamcommunity.com/profiles/"]');
-    for (const el of navLinks) {
-      const href = el.href;
-      if (!href) continue;
-      const idMatch = href.match(/\/profiles\/(\d+)/);
-      if (idMatch) return idMatch[1];
-      const vanityMatch = href.match(/\/id\/([^/]+)/);
-      if (vanityMatch) {
-        const resolved = await SE.api.resolveVanityUrl(vanityMatch[1], key);
-        if (resolved?.data?.response?.success === 1 && resolved.data.response.steamid) return resolved.data.response.steamid;
-      }
-    }
-    return null;
-  }
 
   async function addFriendsOwnership(appid, settings) {
     const key = settings.steamWebApiKey;
-    const ownId = await resolveOwnSteamId64(key);
+    const ownId = await SE.storePage.ownSteamId(key);
     if (!ownId) return;
     const friendsResp = await SE.api.friendsList(ownId, key);
     const friends = friendsResp?.data?.friendslist?.friends || [];

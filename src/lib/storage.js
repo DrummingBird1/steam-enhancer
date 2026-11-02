@@ -19,6 +19,7 @@
     showPriceHistory: true,
     showSteamDBLink: true,
     showProtonDB: true,
+    showDeckBadge: true,
     showHowLongToBeat: true,
     highlightOwned: true,
     highlightWishlist: true,

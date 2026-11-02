@@ -211,6 +211,15 @@
         cacheKey: `friends:${steamid64}`, ttl: 60 * 12
       });
     },
+    // Which achievements this user has unlocked. Needs their key; fails for
+    // private game details.
+    async playerAchievements(appid, steamid64, key) {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?key=${encodeURIComponent(key)}&steamid=${encodeURIComponent(steamid64)}&appid=${encodeURIComponent(appid)}`,
+        cacheKey: `myachv:${steamid64}:${appid}`, ttl: 30
+      });
+    },
     async resolveVanityUrl(vanity, key) {
       return SE.bg({
         type: 'fetchJson',
