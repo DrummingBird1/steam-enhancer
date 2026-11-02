@@ -56,7 +56,7 @@
     const games = readGames();
     const sample = games.slice(0, 60);
     out.textContent = `Pricing ${sample.length}/${games.length} games (sampled)…`;
-    const country = (await SE.storage.getAll()).country || 'us';
+    const country = SE.ctx?.country || 'us';
     let sum = 0, priced = 0;
     for (const g of sample) {
       const r = await SE.api.appDetails(g.appid, country);

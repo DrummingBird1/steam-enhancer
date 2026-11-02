@@ -64,16 +64,15 @@
       });
     },
 
-    async itadOverview(itadId, country = 'us') {
-      const body = JSON.stringify([itadId]);
+    // Steam's price-change log (history/v2, shops=61). Without `since` ITAD
+    // returns only the last 3 months, so ask for a year.
+    async itadHistory(itadId, country = 'us') {
+      const since = new Date(Date.now() - 365 * 24 * 3600_000).toISOString();
       return SE.bg({
         type: 'fetchJson',
-        url: `https://api.isthereanydeal.com/games/overview/v2?country=${encodeURIComponent(country)}`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-        cacheKey: `itadov:${itadId}:${country}`,
-        ttl: 60
+        url: `https://api.isthereanydeal.com/games/history/v2?id=${encodeURIComponent(itadId)}&country=${encodeURIComponent(country)}&shops=61&since=${encodeURIComponent(since)}`,
+        cacheKey: `itadhist:${itadId}:${country}`,
+        ttl: 60 * 6
       });
     },
 
@@ -105,14 +104,19 @@
       });
     },
 
-    async marketPriceOverview(appid, market_hash_name, country = 'US', currency = 1) {
+    // Prices come back in `currency` (a Steam currency id). Defaults to the
+    // user's wallet currency, so values line up with what the market charges
+    // and pays out — see SE.walletCurrency in currency.js.
+    async marketPriceOverview(appid, market_hash_name, country = 'US', currency) {
+      if (currency == null) currency = (await SE.walletCurrency()).id;
       const url = `https://steamcommunity.com/market/priceoverview/?appid=${encodeURIComponent(appid)}&country=${encodeURIComponent(country)}&currency=${encodeURIComponent(currency)}&market_hash_name=${encodeURIComponent(market_hash_name)}`;
       return SE.bg({ type: 'fetchJson', url, cacheKey: `mkt:${appid}:${market_hash_name}:${currency}`, ttl: 30 });
     },
 
     // Order-book depth for a single listing (Valve's own market page calls this
     // via Market_LoadOrderSpread(item_nameid)). Short TTL: the book moves fast.
-    async itemOrdersHistogram(itemNameId, country = 'US', currency = 1) {
+    async itemOrdersHistogram(itemNameId, country = 'US', currency) {
+      if (currency == null) currency = (await SE.walletCurrency()).id;
       const url = `https://steamcommunity.com/market/itemordershistogram?country=${encodeURIComponent(country)}&language=english&currency=${encodeURIComponent(currency)}&item_nameid=${encodeURIComponent(itemNameId)}&two_factor=0`;
       return SE.bg({ type: 'fetchJson', url, cacheKey: `histogram:${itemNameId}:${currency}`, ttl: 2 });
     },

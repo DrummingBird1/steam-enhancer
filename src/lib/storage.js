@@ -4,7 +4,9 @@
 
   const DEFAULTS = {
     currency: 'USD',
-    country: 'us',
+    // Storefront country for price lookups. Empty = use the country Steam
+    // itself reports (see SE.effectiveCountry); set to override.
+    countryOverride: '',
     locale: undefined,
     // When set, price panels additionally show the amount converted into this
     // currency (via SE.fx), independent of the Steam storefront's own currency.

@@ -1,34 +1,61 @@
 // MV3 service worker. Handles network proxying (with cache), wishlist deal polling, context menus.
 
-const CACHE_KEY = 'se_bg_cache_v1';
-const SETTINGS_KEY = 'se_settings_v1';
+import '../lib/itad.js';
 
-async function getCache() {
-  return new Promise((res) => chrome.storage.local.get([CACHE_KEY], (d) => res(d[CACHE_KEY] || {})));
-}
-async function setCache(c) {
-  return new Promise((res) => chrome.storage.local.set({ [CACHE_KEY]: c }, res));
-}
+const SE = globalThis.SteamEnhancer;
+const SETTINGS_KEY = 'se_settings_v1';
+const DETECTED_COUNTRY_KEY = 'se_detected_country';
+
+// Cache: one chrome.storage.local key per entry ("c:<cacheKey>"). Until 1.4.x
+// the whole cache was a single object under se_bg_cache_v1, read-modified-
+// written on every fetch — so parallel requests (a batched search page fires
+// dozens) overwrote each other's entries and most results were never cached.
+const CACHE_PREFIX = 'c:';
+const LEGACY_CACHE_KEY = 'se_bg_cache_v1';
+const CACHE_MAX_ENTRIES = 3000;
+
+const localGet = (keys) => new Promise((res) => chrome.storage.local.get(keys, res));
+
 async function cacheGet(key) {
-  const c = await getCache();
-  const e = c[key];
-  if (!e) return null;
-  if (e.expires && e.expires < Date.now()) return null;
+  const k = CACHE_PREFIX + key;
+  const e = (await localGet([k]))[k];
+  if (!e || (e.expires && e.expires < Date.now())) return null;
   return e.value;
 }
 async function cachePut(key, value, ttlMin) {
-  const c = await getCache();
-  c[key] = { value, expires: Date.now() + (ttlMin || 60) * 60_000 };
-  const keys = Object.keys(c);
-  if (keys.length > 2500) {
-    keys.sort((a, b) => (c[a].expires || 0) - (c[b].expires || 0));
-    for (let i = 0; i < 500; i++) delete c[keys[i]];
+  await chrome.storage.local.set({
+    [CACHE_PREFIX + key]: { value, expires: Date.now() + (ttlMin || 60) * 60_000 }
+  });
+}
+async function cacheClear() {
+  const all = await localGet(null);
+  const keys = Object.keys(all).filter((k) => k.startsWith(CACHE_PREFIX));
+  await chrome.storage.local.remove([...keys, LEGACY_CACHE_KEY]);
+}
+// Run from an alarm, not on every write: drop expired entries, then the
+// soonest-expiring ones if we're still over the cap.
+async function cachePrune() {
+  const all = await localGet(null);
+  const now = Date.now();
+  const entries = Object.entries(all).filter(([k]) => k.startsWith(CACHE_PREFIX));
+  const expired = entries.filter(([, e]) => !e?.expires || e.expires < now).map(([k]) => k);
+  let live = entries.filter(([k]) => !expired.includes(k));
+  const overflow = [];
+  if (live.length > CACHE_MAX_ENTRIES) {
+    live.sort((a, b) => a[1].expires - b[1].expires);
+    overflow.push(...live.slice(0, live.length - CACHE_MAX_ENTRIES).map(([k]) => k));
   }
-  await setCache(c);
+  if (expired.length || overflow.length) await chrome.storage.local.remove([...expired, ...overflow]);
 }
 
 async function getSettings() {
   return new Promise((res) => chrome.storage.sync.get([SETTINGS_KEY], (d) => res(d[SETTINGS_KEY] || {})));
+}
+// Same rule as SE.effectiveCountry in currency.js: Options override, else the
+// country Steam last reported to a content script, else 'us'.
+async function getCountry(settings) {
+  const detected = (await localGet([DETECTED_COUNTRY_KEY]))[DETECTED_COUNTRY_KEY];
+  return String(settings.countryOverride || '').trim().toLowerCase() || detected || 'us';
 }
 
 // IsThereAnyDeal's v2 API requires an API key on every endpoint this codebase
@@ -79,7 +106,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (msg?.type === 'fetchJson') {
         sendResponse(await doFetchJson(msg));
       } else if (msg?.type === 'clearCache') {
-        await setCache({});
+        await cacheClear();
         sendResponse({ ok: true });
       } else if (msg?.type === 'getSettings') {
         sendResponse(await getSettings());
@@ -87,13 +114,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         chrome.runtime.openOptionsPage();
         sendResponse({ ok: true });
       } else if (msg?.type === 'notify') {
-        chrome.notifications.create('', {
-          type: 'basic',
-          iconUrl: chrome.runtime.getURL('icons/icon128.png'),
-          title: msg.title || 'Steam Enhancer',
-          message: msg.message || '',
-          priority: 1
-        });
+        notify('', msg.title || 'Steam Enhancer', msg.message || '');
         sendResponse({ ok: true });
       } else {
         sendResponse({ ok: false, error: 'unknown message' });
@@ -104,6 +125,33 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   })();
   return true; // async
 });
+
+// Notification ids of the form "se-app-<appid>-<n>" open that store page on click.
+function notify(id, title, message) {
+  chrome.notifications.create(id, {
+    type: 'basic',
+    iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+    title, message, priority: 1
+  });
+}
+let notifySeq = 0;
+const appNotificationId = (appid) => `se-app-${appid}-${Date.now()}-${notifySeq++}`;
+chrome.notifications.onClicked.addListener((id) => {
+  const m = id.match(/^se-app-(\d+)-/);
+  if (m) chrome.tabs.create({ url: `https://store.steampowered.com/app/${m[1]}/` });
+  chrome.notifications.clear(id);
+});
+
+// Alarms survive restarts in practice, but Chrome doesn't promise it — so
+// (re)create them on every startup as well as on install. create() with an
+// existing name just replaces it.
+function ensureAlarms() {
+  chrome.alarms.create('se-wishlist-poll', { periodInMinutes: 60 });
+  chrome.alarms.create('se-freepromo-poll', { periodInMinutes: 120 });
+  chrome.alarms.create('se-pricealert-poll', { periodInMinutes: 60 });
+  chrome.alarms.create('se-cache-prune', { periodInMinutes: 60 * 6 });
+}
+chrome.runtime.onStartup.addListener(ensureAlarms);
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   chrome.contextMenus.removeAll(() => {
@@ -123,9 +171,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       contexts: ['selection', 'link']
     });
   });
-  chrome.alarms.create('se-wishlist-poll', { periodInMinutes: 60 });
-  chrome.alarms.create('se-freepromo-poll', { periodInMinutes: 120 });
-  chrome.alarms.create('se-pricealert-poll', { periodInMinutes: 60 });
+  ensureAlarms();
+  // The pre-1.5.0 single-object cache is dead weight now.
+  chrome.storage.local.remove([LEGACY_CACHE_KEY, 'se_cache_v1']);
 
   const v = chrome.runtime.getManifest().version;
   if (details.reason === 'install') {
@@ -165,51 +213,58 @@ chrome.contextMenus.onClicked.addListener((info) => {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'se-freepromo-poll') return handleFreePromoPoll();
   if (alarm.name === 'se-pricealert-poll') return handlePriceAlertPoll();
-  if (alarm.name !== 'se-wishlist-poll') return;
+  if (alarm.name === 'se-wishlist-poll') return handleWishlistPoll();
+  if (alarm.name === 'se-cache-prune') return cachePrune();
+});
+
+// appid → ITAD game id for each appid (each lookup cached 24h), then ONE
+// prices call for all of them. Returns Map<appid, deal|null> or null when no
+// ITAD key is configured.
+async function bestDealsFor(appids, country, { nondeals }) {
+  const lookups = await Promise.all(appids.map(async (appid) => {
+    const r = await doFetchJson({
+      url: `https://api.isthereanydeal.com/games/lookup/v1?appid=${encodeURIComponent(appid)}`,
+      cacheKey: `itadlookup:${appid}`, ttl: 60 * 24
+    });
+    if (r?.needsItadKey) return { appid, needsKey: true };
+    return { appid, id: r?.ok ? SE.itad.gameFromLookup(r.data)?.id : null };
+  }));
+  if (lookups.some((l) => l.needsKey)) return null;
+  const resolved = lookups.filter((l) => l.id);
+  const out = new Map();
+  if (!resolved.length) return out;
+  const prices = await doFetchJson({
+    url: `https://api.isthereanydeal.com/games/prices/v3?country=${encodeURIComponent(country)}&capacity=4&nondeals=${nondeals}`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(resolved.map((l) => l.id))
+  });
+  for (const { appid, id } of resolved) out.set(appid, SE.itad.bestDeal(prices?.data, id));
+  return out;
+}
+
+// Best-effort: the wishlist appids come from the dynamic-store ids the content
+// script captured into se_collections. Sampled to the first 50 to stay polite to ITAD.
+async function handleWishlistPoll() {
   const settings = await getSettings();
   if (!settings.notifyWishlistDeals) return;
-  // Best-effort: fetch the user's wishlist via Steam's public endpoint requires steamId,
-  // which we don't have here without scraping. We rely on the dynamic store ids
-  // captured by the content script and stored in se_collections, plus per-app cached prices.
   try {
-    const coll = await new Promise((r) => chrome.storage.local.get(['se_collections'], (d) => r(d.se_collections || null)));
+    const coll = (await localGet(['se_collections'])).se_collections;
     if (!coll?.wishlist?.length) return;
-    const country = settings.country || 'us';
+    const country = await getCountry(settings);
     const threshold = Number(settings.wishlistDealThreshold || 25);
-    const sample = coll.wishlist.slice(0, 50); // rate-limit-friendly
+    const deals = await bestDealsFor(coll.wishlist.slice(0, 50).map(String), country, { nondeals: false });
+    if (!deals) return;
     let found = 0;
-    for (const appid of sample) {
-      const lookup = await doFetchJson({
-        url: `https://api.isthereanydeal.com/games/lookup/v1?appid=${appid}`,
-        cacheKey: `itadlookup:${appid}`, ttl: 60 * 24
-      });
-      const id = lookup?.data?.data?.game?.id;
-      if (!id) continue;
-      const prices = await doFetchJson({
-        url: `https://api.isthereanydeal.com/games/prices/v3?country=${country}&capacity=4&nondeals=false`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify([id]),
-        cacheKey: `itadprices:${id}:${country}`, ttl: 60
-      });
-      const deal = prices?.data?.data?.[0]?.deals?.[0];
-      if (deal && deal.cut >= threshold) {
-        found++;
-        if (found <= 3) {
-          chrome.notifications.create('', {
-            type: 'basic',
-            iconUrl: chrome.runtime.getURL('icons/icon128.png'),
-            title: `Wishlist deal: -${deal.cut}%`,
-            message: `${deal.shop?.name || 'Store'}: ${deal.price?.amount} ${deal.price?.currency || ''}`,
-            priority: 1
-          });
-        }
-      }
+    for (const [appid, deal] of deals) {
+      if (!deal || !(deal.cut >= threshold)) continue;
+      if (++found > 3) break;
+      notify(appNotificationId(appid), `Wishlist deal: -${deal.cut}%`, `${deal.shop || 'Store'}: ${deal.price} ${deal.currency || ''}`);
     }
   } catch (e) {
     console.warn('[SE] wishlist poll failed', e);
   }
-});
+}
 
 // Free-for-a-limited-time promo tracker. Uses Steam's own featuredcategories
 // feed (the same one the store front page itself reads) and looks for fully
@@ -219,7 +274,7 @@ async function handleFreePromoPoll() {
   const settings = await getSettings();
   if (!settings.notifyFreePromos) return;
   try {
-    const country = settings.country || 'us';
+    const country = await getCountry(settings);
     const r = await doFetchJson({
       url: `https://store.steampowered.com/api/featuredcategories?cc=${country}&l=english`,
       cacheKey: `featured:${country}`, ttl: 60
@@ -229,19 +284,13 @@ async function handleFreePromoPoll() {
     if (!freebies.length) return;
 
     const SEEN_KEY = 'se_seen_free_promos';
-    const seen = new Set((await new Promise((res) => chrome.storage.local.get([SEEN_KEY], (d) => res(d[SEEN_KEY] || [])))));
+    const seen = new Set((await localGet([SEEN_KEY]))[SEEN_KEY] || []);
     let notified = 0;
     for (const item of freebies) {
       if (seen.has(item.id)) continue;
       seen.add(item.id);
       if (notified < 3) {
-        chrome.notifications.create('', {
-          type: 'basic',
-          iconUrl: chrome.runtime.getURL('icons/icon128.png'),
-          title: 'Free for a limited time!',
-          message: item.name,
-          priority: 1
-        });
+        notify(appNotificationId(item.id), 'Free for a limited time!', item.name);
         notified++;
       }
     }
@@ -260,44 +309,26 @@ async function handlePriceAlertPoll() {
   const settings = await getSettings();
   if (!settings.notifyStorePriceAlerts) return;
   try {
-    const targets = await new Promise((res) => chrome.storage.local.get(['se_wishlist_targets'], (d) => res(d.se_wishlist_targets || {})));
-    const appids = Object.keys(targets).slice(0, 50);
+    const targets = (await localGet(['se_wishlist_targets'])).se_wishlist_targets || {};
+    const appids = Object.keys(targets).filter((a) => Number(targets[a]) > 0).slice(0, 50);
     if (!appids.length) return;
 
-    const country = settings.country || 'us';
+    const country = await getCountry(settings);
+    const deals = await bestDealsFor(appids, country, { nondeals: true });
+    if (!deals) return;
     const NOTIFIED_KEY = 'se_price_alert_notified';
-    const notifiedState = await new Promise((res) => chrome.storage.local.get([NOTIFIED_KEY], (d) => res(d[NOTIFIED_KEY] || {})));
+    const notifiedState = (await localGet([NOTIFIED_KEY]))[NOTIFIED_KEY] || {};
     let sent = 0;
 
-    for (const appid of appids) {
+    for (const [appid, deal] of deals) {
+      if (deal?.price == null) continue;
       const target = Number(targets[appid]);
-      if (!isFinite(target) || target <= 0) continue;
-
-      const lookup = await doFetchJson({
-        url: `https://api.isthereanydeal.com/games/lookup/v1?appid=${appid}`,
-        cacheKey: `itadlookup:${appid}`, ttl: 60 * 24
-      });
-      const id = lookup?.data?.data?.game?.id;
-      if (!id) continue;
-
-      const prices = await doFetchJson({
-        url: `https://api.isthereanydeal.com/games/prices/v3?country=${country}&capacity=4&nondeals=true`,
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify([id]), cacheKey: `itadprices:${id}:${country}`, ttl: 60
-      });
-      const deal = prices?.data?.data?.[0]?.deals?.[0];
-      const cur = deal?.price?.amount;
-      if (cur == null) continue;
-
-      if (cur <= target) {
-        if (!notifiedState[appid] && sent < 3) {
-          chrome.notifications.create('', {
-            type: 'basic',
-            iconUrl: chrome.runtime.getURL('icons/icon128.png'),
-            title: 'Price alert hit',
-            message: `${deal.price.amount} ${deal.price.currency || ''} @ ${deal.shop?.name || 'store'} (your target: ${target})`,
-            priority: 1
-          });
+      if (deal.price <= target) {
+        if (!notifiedState[appid]) {
+          // Over this run's cap: leave it un-flagged so the next run reports it.
+          if (sent >= 3) continue;
+          notify(appNotificationId(appid), 'Price alert hit',
+            `${deal.price} ${deal.currency || ''} @ ${deal.shop || 'store'} (your target: ${target})`);
           sent++;
         }
         notifiedState[appid] = true;

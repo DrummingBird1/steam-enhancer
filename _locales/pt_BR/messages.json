@@ -556,5 +556,17 @@
   },
   "changelogItadKey": {
     "message": "Importante: o IsThereAnyDeal agora exige uma chave de API gratuita para todos os recursos de preço. Obtenha uma em isthereanydeal.com/apps/my/ e cole em Opções → Região."
+  },
+  "netWord": {
+    "message": "você recebe"
+  },
+  "buyerPaysWord": {
+    "message": "comprador paga"
+  },
+  "youReceiveWord": {
+    "message": "você recebe"
+  },
+  "walletUnknown": {
+    "message": "Não foi possível ler a moeda da sua carteira Steam nesta página, então nada será anunciado. Recarregue o inventário com a sessão iniciada e tente novamente."
   }
 }

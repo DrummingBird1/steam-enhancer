@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'se_settings_v1';
 
 const DEFAULTS = {
-  currency: 'USD', country: 'us', displayCurrency: '',
+  currency: 'USD', countryOverride: '', displayCurrency: '',
   showLowestPrice: true, showPriceHistory: true, showSteamDBLink: true,
   showProtonDB: true, showHowLongToBeat: true, showRegionalPricing: false,
   showPlayersOnline: true, showAchievementStats: true, showDlcCheck: true,
@@ -87,7 +87,7 @@ async function load() {
   document.querySelectorAll('input[data-setting]').forEach((el) => {
     el.checked = !!cfg[el.dataset.setting];
   });
-  document.getElementById('country').value = cfg.country || 'us';
+  document.getElementById('country').value = cfg.countryOverride || '';
   document.getElementById('currency').value = cfg.currency || 'USD';
   document.getElementById('displayCurrency').value = cfg.displayCurrency || '';
   document.getElementById('wishlistDealThreshold').value = cfg.wishlistDealThreshold;
@@ -102,7 +102,7 @@ async function save() {
   document.querySelectorAll('input[data-setting]').forEach((el) => {
     cur[el.dataset.setting] = el.checked;
   });
-  cur.country = document.getElementById('country').value.trim().toLowerCase() || 'us';
+  cur.countryOverride = document.getElementById('country').value.trim().toLowerCase();
   cur.currency = document.getElementById('currency').value.trim().toUpperCase() || 'USD';
   cur.displayCurrency = document.getElementById('displayCurrency').value.trim().toUpperCase();
   cur.wishlistDealThreshold = +document.getElementById('wishlistDealThreshold').value || 25;

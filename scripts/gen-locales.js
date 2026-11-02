@@ -221,6 +221,18 @@ const T = {
     ru: 'Важно: IsThereAnyDeal теперь требует бесплатный API-ключ для всех функций цен. Получите его на isthereanydeal.com/apps/my/ и вставьте в Настройки → Регион.',
     de: 'Wichtig: IsThereAnyDeal benötigt jetzt einen kostenlosen API-Schlüssel für alle Preisfunktionen. Hol dir einen unter isthereanydeal.com/apps/my/ und füge ihn unter Optionen → Region ein.',
     ptBR: 'Importante: o IsThereAnyDeal agora exige uma chave de API gratuita para todos os recursos de preço. Obtenha uma em isthereanydeal.com/apps/my/ e cole em Opções → Região.'
+  },
+
+  // v1.5.0
+  netWord: { en: 'you get', he: 'תקבל', ru: 'вы получите', de: 'du erhältst', ptBR: 'você recebe' },
+  buyerPaysWord: { en: 'buyer pays', he: 'הקונה משלם', ru: 'покупатель платит', de: 'Käufer zahlt', ptBR: 'comprador paga' },
+  youReceiveWord: { en: 'you receive', he: 'אתה מקבל', ru: 'вы получите', de: 'du erhältst', ptBR: 'você recebe' },
+  walletUnknown: {
+    en: 'Could not read your Steam wallet currency on this page, so nothing will be listed. Reload the inventory page while signed in and try again.',
+    he: 'לא הצלחנו לקרוא את מטבע הארנק שלך ב-Steam בעמוד הזה, ולכן שום דבר לא יוצע למכירה. טען מחדש את עמוד המלאי כשאתה מחובר ונסה שוב.',
+    ru: 'Не удалось определить валюту вашего кошелька Steam на этой странице, поэтому ничего не будет выставлено. Перезагрузите инвентарь, войдя в аккаунт, и попробуйте снова.',
+    de: 'Die Währung deiner Steam-Geldbörse konnte auf dieser Seite nicht gelesen werden, daher wird nichts eingestellt. Lade das Inventar angemeldet neu und versuche es erneut.',
+    ptBR: 'Não foi possível ler a moeda da sua carteira Steam nesta página, então nada será anunciado. Recarregue o inventário com a sessão iniciada e tente novamente.'
   }
 };
 

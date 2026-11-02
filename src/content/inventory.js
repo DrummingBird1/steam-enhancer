@@ -65,21 +65,32 @@
 
   async function getItems(force = false) {
     if (cachedItems && !force) return cachedItems;
+    // contextid matters: game items live in context 2, but Steam's own items
+    // (appid 753: cards, backgrounds, emoticons, gems) live in context 6 — 1.4.x
+    // assumed 2 everywhere, so selling or valuing Steam items silently failed.
     const r = await SE.injectPage(() => {
       try {
         const inv = window.g_ActiveInventory;
-        if (!inv?.rgInventory) return null;
-        const items = Object.values(inv.rgInventory).map(it => {
-          const d = inv.rgDescriptions[it.classid + '_' + it.instanceid] || {};
-          return {
-            id: it.id, classid: it.classid, instanceid: it.instanceid,
-            amount: it.amount, appid: inv.appid,
-            market_hash_name: d.market_hash_name, name: d.name,
-            tradable: d.tradable, marketable: d.marketable,
-            tags: (d.tags || []).map(t => ({ category: t.category, name: t.localized_tag_name || t.name })),
-            actions: d.actions || []
-          };
+        if (!inv) return null;
+        const toItem = (asset, d, contextid) => ({
+          id: asset.assetid || asset.id, classid: asset.classid, instanceid: asset.instanceid,
+          amount: Number(asset.amount) || 1, appid: String(asset.appid || inv.appid),
+          contextid: String(asset.contextid || contextid || inv.contextid || ''),
+          market_hash_name: d.market_hash_name, name: d.name,
+          tradable: !!d.tradable, marketable: !!d.marketable,
+          tags: (d.tags || []).map(t => ({ category: t.category, name: t.localized_tag_name || t.name })),
+          actions: d.actions || []
         });
+        let items = null;
+        if (inv.m_rgAssets && Object.keys(inv.m_rgAssets).length) {
+          // Current inventory code: CAsset objects carrying their own description.
+          items = Object.values(inv.m_rgAssets).map(a => toItem(a, a.description || {}, a.contextid));
+        } else if (inv.rgInventory) {
+          // Older/partial inventories: assets and descriptions in separate maps.
+          items = Object.values(inv.rgInventory).map(it =>
+            toItem(it, inv.rgDescriptions[it.classid + '_' + it.instanceid] || {}, inv.contextid));
+        }
+        if (!items) return null;
         return { items, owner: inv.m_owner && inv.m_owner.strSteamId };
       } catch { return null; }
     });
@@ -283,21 +294,29 @@
     if (!items) { out.textContent = 'Could not read inventory.'; return; }
     const chosen = items.filter(i => selectedIds.has(String(i.id)) && i.marketable && i.market_hash_name);
     if (!chosen.length) { out.textContent = 'None of the selected items are marketable.'; return; }
+    const wallet = await requireWallet(out);
+    if (!wallet) return;
 
     out.innerHTML = '';
     out.appendChild(SE.el('div', { class: 'se-label' }, `Pricing ${chosen.length} selected item(s) — edit prices below, nothing listed yet.`));
 
     const plan = [];
     for (const it of chosen) {
-      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
+      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name, 'US', wallet.id);
       const med = SE.parsePrice(p?.data?.median_price) || SE.parsePrice(p?.data?.lowest_price) || 0;
+      // The input is the buyer price, like every price on the market; the
+      // label next to it shows what you'd actually receive.
       const priceInput = SE.el('input', {
         type: 'number', step: '0.01', min: '0.03', class: 'se-input', style: { width: '70px' },
         value: med > 0.03 ? (med - 0.01).toFixed(2) : '0.03'
       });
+      const receive = SE.el('span', { class: 'se-muted' });
+      const update = () => { receive.textContent = ' ' + receiveLabel(Math.round((parseFloat(priceInput.value) || 0) * 100), wallet.iso); };
+      priceInput.addEventListener('input', update);
+      update();
       plan.push({ it, priceInput });
       out.appendChild(SE.el('div', { class: 'se-row' },
-        `${it.market_hash_name} (median ${med ? med.toFixed(2) : '—'}) → `, priceInput
+        `${it.market_hash_name} (median ${med ? SE.formatMoney(med, wallet.iso) : '—'}) → `, priceInput, receive
       ));
     }
 
@@ -309,7 +328,7 @@
           e.target.disabled = true;
           const finalPlan = plan.map(p => ({
             it: p.it,
-            priceCents: Math.max(3, Math.round((parseFloat(p.priceInput.value) || 0) * 100))
+            buyerCents: Math.max(3, Math.round((parseFloat(p.priceInput.value) || 0) * 100))
           }));
           executeListing(finalPlan, out);
           selectedIds.clear();
@@ -369,22 +388,26 @@
     const out = SE.$('#se-inv-out');
     const items = await getItems(true);
     if (!items) { out.textContent = 'Could not read inventory.'; return; }
-    const marketable = items.filter(i => i.marketable && i.market_hash_name && i.id);
+    const marketable = items.filter(i => i.marketable && i.market_hash_name && i.id && i.contextid);
     const candidates = marketable.slice(0, 10);
     if (!candidates.length) { out.textContent = 'No marketable items in current view.'; return; }
+    const wallet = await requireWallet(out);
+    if (!wallet) return;
 
     out.innerHTML = '';
     out.appendChild(SE.el('div', { class: 'se-label' }, `Dry run — pricing ${candidates.length} items (nothing listed yet)…`));
 
     const plan = [];
     for (const it of candidates) {
-      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
+      // Median in the wallet currency (marketPriceOverview defaults to it).
+      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name, 'US', wallet.id);
       const med = SE.parsePrice(p?.data?.median_price);
       if (med == null || med <= 0.03) continue;
-      const priceCents = Math.max(3, Math.round((med - 0.01) * 100));
-      plan.push({ it, med, priceCents });
+      // One cent under the median, as the buyer sees it.
+      const buyerCents = Math.max(3, Math.round(med * 100) - 1);
+      plan.push({ it, buyerCents });
       out.appendChild(SE.el('div', null,
-        `• ${it.market_hash_name} (app ${it.appid}, asset ${it.id}) → list at ${(priceCents / 100).toFixed(2)} (median ${med.toFixed(2)})`
+        `• ${it.market_hash_name} (median ${SE.formatMoney(med, wallet.iso)}) → ${receiveLabel(buyerCents, wallet.iso)}`
       ));
     }
 
@@ -400,18 +423,36 @@
     out.appendChild(SE.el('div', { class: 'se-muted' }, 'You can cancel any listing from the Market page. Listings still need mobile-authenticator confirmation.'));
   }
 
+  // Selling moves real money, so refuse outright unless we've actually seen the
+  // wallet currency (g_rgWalletInfo) — never list using a guessed currency.
+  async function requireWallet(out) {
+    const wallet = await SE.walletCurrency();
+    if (!wallet.known) { out.textContent = SE.t('walletUnknown'); return null; }
+    return wallet;
+  }
+
+  function receiveLabel(buyerCents, iso) {
+    const receive = SE.marketFees.sellerReceives(buyerCents);
+    return `${SE.t('buyerPaysWord')} ${SE.formatMoney(buyerCents / 100, iso)} · ${SE.t('youReceiveWord')} ${SE.formatMoney(receive / 100, iso)}`;
+  }
+
+  // Plan entries carry the price the BUYER pays (what the market shows). The
+  // sellitem endpoint takes what the SELLER receives, after fees — 1.4.x sent
+  // the buyer price there, listing everything ~15% above what was shown.
   async function executeListing(plan, out) {
     let listed = 0;
     const status = SE.el('div', null, 'Listing…');
     out.appendChild(status);
-    for (const { it, priceCents } of plan) {
+    for (const { it, buyerCents } of plan) {
+      const receiveCents = SE.marketFees.sellerReceives(buyerCents);
+      if (receiveCents < 1 || !it.contextid) continue;
       const r = await SE.injectPage((appid, contextid, assetid, amount, price) => {
         return fetch('/market/sellitem/', {
           method: 'POST', credentials: 'include',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
           body: `sessionid=${encodeURIComponent(g_sessionID)}&appid=${appid}&contextid=${contextid}&assetid=${assetid}&amount=${amount}&price=${price}`
         }).then(r => r.json()).catch(e => ({ error: String(e) }));
-      }, [it.appid, 2, it.id, it.amount || 1, priceCents]);
+      }, [it.appid, it.contextid, it.id, it.amount || 1, receiveCents]);
       if (r?.result?.success) listed++;
       await SE.sleep(1500); // rate-limit-friendly
     }

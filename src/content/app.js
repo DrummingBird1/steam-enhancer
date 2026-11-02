@@ -82,7 +82,7 @@
     const body = panelBody(); if (!body) return;
     const row = SE.el('div', { class: 'se-row se-price-row' }, SE.el('span', { class: 'se-muted' }, SE.t('checkingDeals')));
     body.appendChild(row);
-    const sum = await SE.priceSummary(appid, settings.country || 'us');
+    const sum = await SE.priceSummary(appid, SE.ctx.country);
     row.innerHTML = '';
     if (sum === 'needsItadKey') { row.appendChild(itadKeyNotice()); return; }
     if (!sum) { row.appendChild(SE.el('span', { class: 'se-muted' }, SE.t('noDealData'))); return; }
@@ -265,16 +265,21 @@
   }
 
   function addDrmInfo() {
-    const text = (document.querySelector('.DRM_notice')?.textContent || '').toLowerCase();
-    const haystack = document.body.innerText.slice(0, 6000).toLowerCase();
+    // Only look where Steam states DRM/account requirements: the DRM notices,
+    // the purchase-area notes and the system requirements — not the whole page,
+    // where game descriptions mention launchers and words like "original".
+    const text = SE.$$('.DRM_notice').map((el) => el.textContent).join(' ').toLowerCase();
+    const haystack = (text + ' ' + SE.$$('.game_area_purchase .game_area_purchase_platform, .game_area_sys_req, .game_meta_data')
+      .map((el) => el.textContent).join(' ')).toLowerCase();
+    const has = (re) => re.test(haystack);
     const drms = [];
-    if (text.includes('3rd-party drm') || haystack.includes('denuvo')) drms.push('Denuvo');
-    if (haystack.includes('rockstar games launcher')) drms.push('Rockstar');
-    if (haystack.includes('epic online services') && haystack.includes('login')) drms.push('Epic OS account');
-    if (haystack.includes('ubisoft connect')) drms.push('Ubisoft Connect');
-    if (haystack.includes('ea app') || haystack.includes('origin')) drms.push('EA App');
-    if (haystack.includes('battle.net')) drms.push('Battle.net');
-    if (text.includes('3rd-party drm') && !drms.length) drms.push(SE.t('thirdPartyDrm'));
+    if (has(/\bdenuvo\b/)) drms.push('Denuvo');
+    if (has(/\brockstar games launcher\b/)) drms.push('Rockstar');
+    if (has(/\bepic online services\b/) && has(/\b(account|login)\b/)) drms.push('Epic OS account');
+    if (has(/\bubisoft connect\b|\buplay\b/)) drms.push('Ubisoft Connect');
+    if (has(/\bea app\b|\bea account\b|\borigin client\b/)) drms.push('EA App');
+    if (has(/\bbattle\.net\b/)) drms.push('Battle.net');
+    if (/3rd-party drm/.test(text) && !drms.length) drms.push(SE.t('thirdPartyDrm'));
     if (!drms.length) return;
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
       SE.el('span', { class: 'se-label' }, SE.t('drm')), SE.tag(drms.join(' · '), 'ignored')
@@ -440,23 +445,22 @@
 
   async function addPriceChart(appid) {
     const body = panelBody(); if (!body) return;
-    const country = SE.ctx.settings.country || 'us';
-    // ITAD overview returns price history points; sketch a small SVG sparkline.
-    const r = await SE.api.itadOverview((await SE.api.itadLookup(appid))?.data?.game?.id, country);
-    // Fallback: get historical low + current as 2-point line if no overview.
-    const points = [];
-    if (r?.data?.[0]?.lows) {
-      for (const p of r.data[0].lows.slice(0, 20).reverse()) {
-        if (p.price?.amount && p.timestamp) points.push({ t: new Date(p.timestamp).getTime(), p: p.price.amount });
-      }
-    }
+    // Steam's own price over the last year, from ITAD's history log. (Until
+    // 1.4.x this read a `lows` field the overview endpoint doesn't have, so the
+    // chart never rendered.)
+    const lookup = await SE.api.itadLookup(appid);
+    const game = lookup?.ok ? SE.itad.gameFromLookup(lookup.data) : null;
+    if (!game) return;
+    const r = await SE.api.itadHistory(game.id, SE.ctx.country);
+    const points = SE.itad.historyPoints(r?.ok ? r.data : null);
+    if (!points.length) return;
+    // History only logs changes; extend the last price to today so the line
+    // reaches the present.
+    points.push({ t: Date.now(), v: points[points.length - 1].v });
     if (points.length < 2) return;
 
-    const minP = Math.min(...points.map(p => p.p));
-    const svg = SE.sparklineSvg(
-      points.map(p => ({ t: p.t, v: p.p })),
-      { labelLeft: `${SE.t('lowWord')} ${minP.toFixed(2)}` }
-    );
+    const minP = Math.min(...points.map(p => p.v));
+    const svg = SE.sparklineSvg(points, { labelLeft: `${SE.t('lowWord')} ${minP.toFixed(2)}` });
     const wrap = SE.el('div', { class: 'se-row', html: svg });
     body.appendChild(SE.el('div', { class: 'se-row se-label' }, SE.t('priceHistoryLabel')));
     body.appendChild(wrap);
@@ -479,7 +483,7 @@
   async function addBundleSavings(appid, settings) {
     const bundleBoxes = SE.$$('.game_area_purchase_bundle, .game_area_purchase_game[data-ds-bundleid], .bundle_base_page_content');
     if (!bundleBoxes.length) return;
-    const country = settings.country || 'us';
+    const country = SE.ctx.country;
 
     for (const box of bundleBoxes.slice(0, 2)) {
       const bundlePriceEl = box.querySelector('.discount_final_price, .price, .game_purchase_price');

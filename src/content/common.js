@@ -8,24 +8,31 @@
     if (!(settings.highlightOwned || settings.highlightWishlist || settings.highlightIgnored
           || settings.hideOwnedInSearch || settings.hideIgnoredInSearch)) return null;
     const cached = await SE.collections.get();
-    if (cached && (Date.now() - (cached._ts || 0)) < 10 * 60_000) return cached;
+    if (cached?.ownedPackages && (Date.now() - (cached._ts || 0)) < 10 * 60_000) return cached;
     const resp = await SE.api.dynamicStore();
     if (!resp?.ok || !resp.data) return cached || null;
     const d = resp.data;
+    // App ids and package (sub) ids are separate number spaces — until 1.4.x
+    // they were merged into one set, so owning sub 12345 marked app 12345 as owned.
     const data = {
-      owned: new Set([...(d.rgOwnedApps || []), ...(d.rgOwnedPackages || [])]),
-      wishlist: new Set(d.rgWishlist || []),
-      ignored: new Set(Object.keys(d.rgIgnoredApps || {})),
-      followed: new Set(d.rgFollowedApps || [])
+      owned: d.rgOwnedApps || [],
+      ownedPackages: d.rgOwnedPackages || [],
+      wishlist: d.rgWishlist || [],
+      ignored: Object.keys(d.rgIgnoredApps || {}),
+      followed: d.rgFollowedApps || []
     };
-    await SE.collections.set({
-      owned: [...data.owned], wishlist: [...data.wishlist],
-      ignored: [...data.ignored], followed: [...data.followed]
-    });
-    return {
-      owned: data.owned, wishlist: data.wishlist,
-      ignored: data.ignored, followed: data.followed
-    };
+    await SE.collections.set(data);
+    return { ...data, _ts: Date.now() };
+  }
+
+  // Remember the storefront country Steam reports on this page so community
+  // pages and the background alarms price things for the same country.
+  async function detectCountry() {
+    const KEY = 'se_detected_country';
+    const stored = (await new Promise((r) => chrome.storage.local.get([KEY], r)))[KEY] || null;
+    const fromPage = SE.pageCountry();
+    if (fromPage && fromPage !== stored) chrome.storage.local.set({ [KEY]: fromPage });
+    return fromPage || stored;
   }
 
   // Normalize an Array-or-Set into a Set of strings.
@@ -34,14 +41,18 @@
   async function ready() {
     const settings = await SE.storage.getAll();
     const collsRaw = await loadCollections();
-    const colls = collsRaw ? {
+    // A cache written by 1.4.x has no ownedPackages and a polluted `owned` set.
+    const stale = collsRaw && !collsRaw.ownedPackages;
+    const colls = collsRaw && !stale ? {
       owned: toSet(collsRaw.owned),
+      ownedPackages: toSet(collsRaw.ownedPackages),
       wishlist: toSet(collsRaw.wishlist),
       ignored: toSet(collsRaw.ignored),
       followed: toSet(collsRaw.followed)
     } : null;
+    const country = SE.effectiveCountry(settings, await detectCountry());
 
-    SE.ctx = { settings, colls };
+    SE.ctx = { settings, colls, country };
     SE.log('ready', { url: location.href, hasColls: !!colls });
 
     document.dispatchEvent(new CustomEvent('se-ready', { detail: SE.ctx }));

@@ -15,10 +15,15 @@ const vm = require('vm');
 // utils.js does `(function (global) { ... })(window)` and only touches
 // `document` inside function bodies we won't call here, so a bare object
 // stands in for `window` at load time.
-const sandbox = { window: {}, console };
+// itad.js attaches to globalThis (it's shared with the service worker), so
+// make the fake window the sandbox's own global.
+const sandbox = { console };
+sandbox.window = sandbox;
 vm.createContext(sandbox);
-const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', 'utils.js'), 'utf8');
-vm.runInContext(src, sandbox, { filename: 'utils.js' });
+for (const file of ['utils.js', 'currency.js', 'itad.js']) {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
+  vm.runInContext(src, sandbox, { filename: file });
+}
 const SE = sandbox.window.SteamEnhancer;
 assert.ok(SE, 'SteamEnhancer failed to load onto the fake window');
 
@@ -40,6 +45,81 @@ t('garbage input returns null', () => assert.strictEqual(SE.parsePrice('N/A'), n
 t('empty/null input returns null', () => {
   assert.strictEqual(SE.parsePrice(''), null);
   assert.strictEqual(SE.parsePrice(null), null);
+});
+// v1.5.0: a lone comma/dot followed by exactly 3 digits is a thousands separator.
+t('thousands without decimals (US style)', () => assert.strictEqual(SE.parsePrice('$1,234'), 1234));
+t('yen', () => assert.strictEqual(SE.parsePrice('¥ 1,980'), 1980));
+t('won', () => assert.strictEqual(SE.parsePrice('₩ 12,000'), 12000));
+t('dong (dot thousands)', () => assert.strictEqual(SE.parsePrice('12.000₫'), 12000));
+t('chilean peso', () => assert.strictEqual(SE.parsePrice('CLP$ 5.200'), 5200));
+t('rupiah with space thousands', () => assert.strictEqual(SE.parsePrice('Rp 150 000'), 150000));
+t('ruble with space thousands and trailing dot', () => assert.strictEqual(SE.parsePrice('1 234,56 руб.'), 1234.56));
+t('real (BRL)', () => assert.strictEqual(SE.parsePrice('R$ 1.299,90'), 1299.9));
+t('millions', () => assert.strictEqual(SE.parsePrice('₩ 1,234,000'), 1234000));
+t('kuwaiti dinar keeps 3 decimals', () => assert.strictEqual(SE.parsePrice('2.150 KD'), 2.15));
+t('"Free Weekend $19.99" is the price, not free', () => assert.strictEqual(SE.parsePrice('Free Weekend $19.99'), 19.99));
+t('"Free to Play" is 0', () => assert.strictEqual(SE.parsePrice('Free to Play'), 0));
+
+console.log('SE.marketFees');
+t('buyer pays receive + 5% + 10%, floored, 1-cent minimums', () => {
+  assert.strictEqual(SE.marketFees.buyerPays(100), 115);
+  assert.strictEqual(SE.marketFees.buyerPays(1), 3);
+  assert.strictEqual(SE.marketFees.buyerPays(19), 21);
+});
+t('sellerReceives inverts buyerPays', () => {
+  assert.strictEqual(SE.marketFees.sellerReceives(115), 100);
+  assert.strictEqual(SE.marketFees.sellerReceives(3), 1);
+  assert.strictEqual(SE.marketFees.sellerReceives(2), 0);
+  for (let b = 3; b < 5000; b++) {
+    const r = SE.marketFees.sellerReceives(b);
+    assert.ok(SE.marketFees.buyerPays(r) <= b, `buyer ${b}: pays ${SE.marketFees.buyerPays(r)} > ${b}`);
+    assert.ok(SE.marketFees.buyerPays(r + 1) > b, `buyer ${b}: ${r} is not the max`);
+  }
+});
+t('net is ~13% below the buyer price, not 15%', () => {
+  assert.strictEqual(SE.marketFees.sellerReceives(1000), 870);
+});
+
+console.log('SE.currency');
+t('steam currency ids', () => {
+  assert.strictEqual(SE.currency.isoForSteamId(35), 'ILS');
+  assert.strictEqual(SE.currency.isoForSteamId(1), 'USD');
+  assert.strictEqual(SE.currency.isoForSteamId(999), null);
+  assert.strictEqual(SE.currency.steamIdForIso('eur'), 3);
+});
+t('effectiveCountry: override > detected > us', () => {
+  assert.strictEqual(SE.effectiveCountry({ countryOverride: 'DE' }, 'il'), 'de');
+  assert.strictEqual(SE.effectiveCountry({ countryOverride: '' }, 'il'), 'il');
+  assert.strictEqual(SE.effectiveCountry({}, null), 'us');
+});
+
+console.log('SE.itad (response parsers)');
+const fixture = (name) => JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', name), 'utf8'));
+const GAME = '018d937f-1234-7000-9000-000000000001';
+t('lookup: found / not found', () => {
+  const g = SE.itad.gameFromLookup(fixture('itad-lookup.json'));
+  assert.strictEqual(g.id, GAME);
+  assert.strictEqual(g.slug, 'portal-2');
+  assert.strictEqual(SE.itad.gameFromLookup({ found: false }), null);
+  assert.strictEqual(SE.itad.gameFromLookup(undefined), null);
+});
+t('prices: picks the cheapest deal regardless of order', () => {
+  const d = SE.itad.bestDeal(fixture('itad-prices.json'), GAME);
+  assert.strictEqual(d.price, 1.99);
+  assert.strictEqual(d.shop, 'GOG');
+  assert.strictEqual(d.currency, 'USD');
+  assert.strictEqual(SE.itad.bestDeal(fixture('itad-prices.json'), 'missing'), null);
+});
+t('storelow: reads lows[] (v1.4 read .low and never showed a historical low)', () => {
+  const l = SE.itad.storeLow(fixture('itad-storelow.json'), GAME);
+  assert.strictEqual(l.price, 0.99);
+  assert.strictEqual(l.shop, 'Steam');
+});
+t('history: sorted points, bad rows dropped', () => {
+  const pts = SE.itad.historyPoints(fixture('itad-history.json'));
+  assert.strictEqual(pts.length, 3);
+  assert.ok(pts[0].t < pts[1].t && pts[1].t < pts[2].t);
+  assert.strictEqual(pts[0].v, 9.99);
 });
 
 console.log('SE.fmtPercent');

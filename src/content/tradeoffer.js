@@ -107,9 +107,11 @@
             const elemId = node.id; // item123_456_789
             const m = elemId && elemId.match(/item(\d+)_(\d+)_(\d+)/);
             if (!m) return;
-            const [, appid, , inventoryid] = m;
+            // item<appid>_<contextid>_<assetid>. The context matters: Steam's
+            // own items (753) live in context 6, not 2.
+            const [, appid, contextid, inventoryid] = m;
             const u = id === 'your_slots' ? window.UserYou : window.UserThem;
-            const inv = u && u.getInventory && u.getInventory(appid, 2);
+            const inv = u && u.getInventory && u.getInventory(appid, contextid);
             const desc = inv && inv.rgInventory && inv.rgInventory[inventoryid]
               ? inv.rgDescriptions[inv.rgInventory[inventoryid].classid + '_' + inv.rgInventory[inventoryid].instanceid]
               : null;

@@ -23,9 +23,9 @@
       if (!priceEl) continue;
       const price = SE.parsePrice(priceEl.textContent);
       if (price == null) continue;
-      const fee = Math.max(0.02, Math.round(price * 0.15 * 100) / 100);
-      const net = Math.max(0.01, price - fee);
-      priceEl.appendChild(SE.el('div', { class: 'se-market-net' }, `net ≈ ${net.toFixed(2)}`));
+      const net = SE.marketFees.sellerReceives(Math.round(price * 100)) / 100;
+      if (net <= 0) continue;
+      priceEl.appendChild(SE.el('div', { class: 'se-market-net' }, `${SE.t('netWord')} ≈ ${net.toFixed(2)}`));
     }
   }
 
@@ -95,7 +95,7 @@
     out.appendChild(SE.el('div', null, `Lowest listing: ${p.toFixed(2)}`));
     [0.01, 0.02, 0.05].forEach(c => {
       const np = Math.max(0.03, +(p - c).toFixed(2));
-      const net = Math.max(0.01, +(np * 0.87).toFixed(2));
+      const net = SE.marketFees.sellerReceives(Math.round(np * 100)) / 100;
       out.appendChild(SE.el('div', null, `-${c.toFixed(2)} → list ${np.toFixed(2)} (you get ~${net.toFixed(2)})`));
     });
   }

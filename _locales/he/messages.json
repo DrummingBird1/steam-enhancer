@@ -556,5 +556,17 @@
   },
   "changelogItadKey": {
     "message": "חשוב: IsThereAnyDeal דורש כעת מפתח API חינמי לכל פיצ׳רי המחיר. קבלו אחד ב-isthereanydeal.com/apps/my/ והדביקו באפשרויות ← אזור."
+  },
+  "netWord": {
+    "message": "תקבל"
+  },
+  "buyerPaysWord": {
+    "message": "הקונה משלם"
+  },
+  "youReceiveWord": {
+    "message": "אתה מקבל"
+  },
+  "walletUnknown": {
+    "message": "לא הצלחנו לקרוא את מטבע הארנק שלך ב-Steam בעמוד הזה, ולכן שום דבר לא יוצע למכירה. טען מחדש את עמוד המלאי כשאתה מחובר ונסה שוב."
   }
 }

@@ -67,25 +67,55 @@
   SE.parsePrice = (raw) => {
     if (!raw) return null;
     const s = String(raw).trim();
-    if (/free|kostenlos|gratis|gratuito|gratuit|חינם/i.test(s)) return 0;
-    // Capture the WHOLE contiguous digits/separators run (not just one
-    // separator group) so thousands + decimal together — "$1,234.56" — don't
-    // get truncated to "1,234" before the dot/comma disambiguation below runs.
-    // (Regression covered by scripts/unit-test.js — this silently mis-parsed
-    // any four-figure-plus price from v1.0.0 through v1.3.0.)
-    const m = s.replace(/[^\d.,-]/g, '').match(/-?[\d.,]+/);
+    // "Free" only when there's no number at all — "Free Weekend $19.99" is 19.99.
+    if (!/\d/.test(s)) return /free|kostenlos|gratis|gratuito|gratuit|бесплатно|חינם/i.test(s) ? 0 : null;
+    // Capture the first run of digits/separators (spaces between digit groups
+    // allowed, as in "1 234,56 руб." or "Rp 150 000") as one number, so
+    // thousands + decimal together — "$1,234.56" — aren't truncated before the
+    // separator logic below runs. Trailing separators ("руб.") are dropped.
+    const m = s.match(/-?\d[\d.,\s  ']*/);
     if (!m) return null;
-    let n = m[0];
-    // Heuristic: if string has both . and , the last is the decimal separator.
+    let n = m[0].replace(/[\s  ']/g, '').replace(/[.,]+$/, '');
     const hasDot = n.includes('.'), hasComma = n.includes(',');
     if (hasDot && hasComma) {
+      // Both present: the last one is the decimal separator.
       if (n.lastIndexOf('.') > n.lastIndexOf(',')) n = n.replace(/,/g, '');
       else n = n.replace(/\./g, '').replace(',', '.');
-    } else if (hasComma && !hasDot) {
-      n = n.replace(',', '.');
+    } else if (hasComma || hasDot) {
+      const sep = hasComma ? ',' : '.';
+      const parts = n.split(sep);
+      // One separator followed by exactly 3 digits is a thousands separator
+      // ("$1,234", "¥ 1,980", "12.000₫") — no Steam currency uses 3 decimals,
+      // except the dinar-style ones, which only ever use a dot.
+      const threeDecimals = /\b(KD|KWD|BHD|OMR|JOD)\b/i.test(s);
+      const isThousands = parts.length > 2
+        || (parts[1].length === 3 && !(sep === '.' && threeDecimals));
+      n = isThousands ? parts.join('') : parts.join('.');
     }
     const v = parseFloat(n);
     return Number.isFinite(v) ? v : null;
+  };
+
+  // Steam Community Market fees, in integer cents of the wallet currency.
+  // The seller sets what they receive; the buyer pays that plus a 5% Steam fee
+  // and a (usually 10%) publisher fee, each rounded down with a 1-cent minimum.
+  // Mirrors how the market's own sell dialog computes it.
+  SE.marketFees = {
+    buyerPays(receiveCents, publisherFee = 0.10) {
+      const r = Math.max(1, Math.floor(receiveCents));
+      const steam = Math.max(1, Math.floor(r * 0.05));
+      const pub = publisherFee > 0 ? Math.max(1, Math.floor(r * publisherFee)) : 0;
+      return r + steam + pub;
+    },
+    // Largest amount the seller can receive while the buyer pays at most `buyerCents`.
+    sellerReceives(buyerCents, publisherFee = 0.10) {
+      const b = Math.floor(buyerCents);
+      if (b < 3) return 0;
+      let r = Math.max(1, Math.floor(b / (1.05 + publisherFee)));
+      while (SE.marketFees.buyerPays(r + 1, publisherFee) <= b) r++;
+      while (r > 1 && SE.marketFees.buyerPays(r, publisherFee) > b) r--;
+      return SE.marketFees.buyerPays(r, publisherFee) <= b ? r : 0;
+    }
   };
 
   SE.formatMoney = (amount, currency = 'USD', locale = undefined) => {

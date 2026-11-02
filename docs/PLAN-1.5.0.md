@@ -11,7 +11,7 @@
 - ✅ תיקון הגרסה ב-ROADMAP.md
 - ⬜ merge ל-PR #4 וניקוי branches שמוזגו (דורש אישור)
 
-## שלב 1 — תיקוני באגים
+## שלב 1 — תיקוני באגים ✅
 | # | באג | תיקון |
 |---|---|---|
 | 1 | mass-list מוכר בהפסד (USD מול מטבע הארנק, price כולל עמלה, contextid קבוע 2) | מטבע הארנק מ-`g_rgWalletInfo`, חישוב סכום המוכר אחרי עמלה, contextid מהפריט, תצוגה מקדימה "הקונה משלם / אתה מקבל" |
@@ -25,8 +25,9 @@
 | 9 | השוואה בין מטבעות שונים | זיהוי country/מטבע מהעמוד, הגדרה ידנית כ-override |
 | 10 | race ב-cache | מפתח storage לכל רשומה + ניקוי ב-alarm |
 | 11 | observer כפול ב-wishlist, alarms רק ב-onInstalled | `SE.once`, יצירה גם ב-onStartup |
+| 12 | המחיר הנמוך בהיסטוריה אף פעם לא הוצג (`storelow/v2` מחזיר `lows[]`, הקוד קרא `low`) | parser משותף ב-`itad.js` |
 
-לכל תיקון unit test; fixtures של תשובות ב-`scripts/fixtures/`.
+✅ כל 12 התיקונים בוצעו, עם unit tests ו-fixtures ב-`scripts/fixtures/`. מחכה לבדיקה מחובר (market, mass-list).
 
 ## שלב 2 — תשתית
 - ⬜ מקור אחד לברירות מחדל (popup/options טוענים `storage.js`)

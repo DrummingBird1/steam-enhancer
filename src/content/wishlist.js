@@ -25,7 +25,10 @@
       SE.el('span', { id: 'se-wishlist-count', class: 'se-muted' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);
-    new MutationObserver(SE.throttle(refreshCount, 250)).observe(document.body, { childList: true, subtree: true });
+    // Steam can drop and re-add our toolbar on SPA navigation; only ever one observer.
+    if (SE.once('wl:count-observer')) {
+      new MutationObserver(SE.throttle(refreshCount, 250)).observe(document.body, { childList: true, subtree: true });
+    }
     refreshCount();
   }
 
@@ -80,7 +83,7 @@
   // row, instead of one pair of calls per row.
   async function decorate() {
     const { settings } = SE.ctx;
-    const country = settings.country || 'us';
+    const country = SE.ctx.country;
     const pending = rows().filter((r) => !r.dataset.seDone);
     if (!pending.length) return;
     pending.forEach((r) => { r.dataset.seDone = '1'; });

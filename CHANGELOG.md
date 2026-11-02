@@ -3,6 +3,46 @@
 All notable changes to Steam Enhancer are documented here. Versions follow the
 `version` field in `manifest.json`.
 
+## [1.5.0] — Unreleased (in progress, see docs/PLAN-1.5.0.md)
+
+### Fixed
+- **Mass-list and "list selected" could sell at the wrong price.** Prices were
+  looked up in USD but listed in your wallet currency, the buyer price was
+  sent where Steam expects the after-fee amount you receive (listing ~15% above
+  what was shown), and every item was assumed to be in context 2, so Steam
+  items (cards, backgrounds, gems) couldn't be listed at all. Listing now uses
+  your wallet currency, shows "buyer pays / you receive" per item, uses each
+  item's real context, and refuses to list if the wallet currency can't be read.
+- **Wishlist-deal and price-alert notifications never fired.** The background
+  poll read ITAD responses one level too deep. They now share tested parsers
+  (`src/lib/itad.js`) with the store pages, and each check makes one batched
+  prices call. Clicking a notification opens the game's store page.
+- **The historical low was never shown.** `storelow/v2` returns `lows[]`, but
+  the code read `low`.
+- **The store-page price chart never rendered.** It read a field the overview
+  endpoint doesn't have; it now uses ITAD's `history/v2` log (Steam, last year).
+- **Owned sub ids were treated as owned app ids**, so owning a package could
+  mark an unrelated game with the same number as owned.
+- **`parsePrice`** misread prices with a thousands separator and no decimals
+  (`$1,234`, `¥ 1,980`, `₩ 12,000`, `12.000₫`) and treated "Free Weekend
+  $19.99" as free.
+- **DRM detection** flagged "EA App" on any page containing the word
+  "original"; it now only reads the DRM notice and requirement sections.
+- **Market net-after-fee** used a flat 15%; it now mirrors Steam's fee rounding
+  (about 13% of the buyer price).
+- **Trade-offer values** for Steam items were always 0 (wrong context).
+- **Prices were compared across currencies** — e.g. an Israeli store price
+  against a US historical low. The price country now follows the one Steam
+  reports on the page; Options → Country is an optional override.
+- **Background cache lost most writes** when requests ran in parallel. Each
+  entry now has its own storage key, pruned by an alarm.
+- Alarms are recreated on browser startup, not only on install.
+
+### Added
+- `.github/workflows/ci.yml` and `scripts/check-manifest.js`: every PR runs the
+  unit tests, checks manifest file references and i18n keys, and verifies the
+  locale files match `scripts/gen-locales.js`.
+
 ## [1.4.1] — Store-readiness: trimmed permissions
 
 ### Changed

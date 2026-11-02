@@ -556,5 +556,17 @@
   },
   "changelogItadKey": {
     "message": "Important: IsThereAnyDeal now requires a free API key for all price features. Get one at isthereanydeal.com/apps/my/ and paste it into Options → Region."
+  },
+  "netWord": {
+    "message": "you get"
+  },
+  "buyerPaysWord": {
+    "message": "buyer pays"
+  },
+  "youReceiveWord": {
+    "message": "you receive"
+  },
+  "walletUnknown": {
+    "message": "Could not read your Steam wallet currency on this page, so nothing will be listed. Reload the inventory page while signed in and try again."
   }
 }

@@ -556,5 +556,17 @@
   },
   "changelogItadKey": {
     "message": "Wichtig: IsThereAnyDeal benötigt jetzt einen kostenlosen API-Schlüssel für alle Preisfunktionen. Hol dir einen unter isthereanydeal.com/apps/my/ und füge ihn unter Optionen → Region ein."
+  },
+  "netWord": {
+    "message": "du erhältst"
+  },
+  "buyerPaysWord": {
+    "message": "Käufer zahlt"
+  },
+  "youReceiveWord": {
+    "message": "du erhältst"
+  },
+  "walletUnknown": {
+    "message": "Die Währung deiner Steam-Geldbörse konnte auf dieser Seite nicht gelesen werden, daher wird nichts eingestellt. Lade das Inventar angemeldet neu und versuche es erneut."
   }
 }
