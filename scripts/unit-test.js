@@ -80,6 +80,19 @@ t('net is ~13% below the buyer price, not 15%', () => {
   assert.strictEqual(SE.marketFees.sellerReceives(1000), 870);
 });
 
+console.log('SE.parseReviewSummary');
+t('english tooltip + meta count', () => {
+  const r = SE.parseReviewSummary('98% of the 174,783 user reviews in your language are positive', '174783');
+  assert.strictEqual(r.pct, 98);
+  assert.strictEqual(r.total, 174783);
+});
+t('german tooltip, no meta: total from the tooltip', () => {
+  const r = SE.parseReviewSummary('99 % der 8.757 Nutzerrezensionen in Ihrer Sprache sind positiv.', null);
+  assert.strictEqual(r.pct, 99);
+  assert.strictEqual(r.total, 8757);
+});
+t('no percentage → null', () => assert.strictEqual(SE.parseReviewSummary('No user reviews', null), null));
+
 console.log('SE.currency');
 t('steam currency ids', () => {
   assert.strictEqual(SE.currency.isoForSteamId(35), 'ILS');

@@ -96,6 +96,21 @@
     return Number.isFinite(v) ? v : null;
   };
 
+  // Steam's review-summary tooltip, in any UI language → { pct, total }.
+  // `countMeta` is the page's meta[itemprop=reviewCount] content, preferred
+  // for the total; otherwise the largest other number in the tooltip.
+  SE.parseReviewSummary = (tooltip, countMeta) => {
+    const pctMatch = String(tooltip || '').match(/(\d{1,3})\s*%/);
+    if (!pctMatch) return null;
+    const pct = Number(pctMatch[1]);
+    let total = Number(countMeta);
+    if (!(total > 0)) {
+      const nums = String(tooltip).replace(pctMatch[0], '').match(/\d[\d.,\s  ]*\d|\d/g) || [];
+      total = Math.max(0, ...nums.map((n) => Number(n.replace(/[.,\s  ]/g, ''))));
+    }
+    return total > 0 && pct <= 100 ? { pct, total } : null;
+  };
+
   // Steam Community Market fees, in integer cents of the wallet currency.
   // The seller sets what they receive; the buyer pays that plus a 5% Steam fee
   // and a (usually 10%) publisher fee, each rounded down with a 1-cent minimum.

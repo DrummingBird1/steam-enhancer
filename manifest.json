@@ -91,7 +91,14 @@
     },
     {
       "matches": ["*://store.steampowered.com/app/*", "*://store.steampowered.com/sub/*", "*://store.steampowered.com/bundle/*"],
-      "js": ["src/content/app.js"],
+      "js": [
+        "src/content/app/core.js",
+        "src/content/app/prices.js",
+        "src/content/app/info.js",
+        "src/content/app/reviews.js",
+        "src/content/app/friends.js",
+        "src/content/app.js"
+      ],
       "run_at": "document_idle"
     },
     {
