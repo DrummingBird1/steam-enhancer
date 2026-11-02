@@ -344,6 +344,8 @@ t('SE.el(tag, null, ...) does not throw', () => {
     createElement: (tag) => ({
       tagName: tag, style: {}, dataset: {}, children: [],
       setAttribute() {}, appendChild(c) { this.children.push(c); },
+      // Like ParentNode.append(): strings become text nodes.
+      append(...xs) { for (const x of xs) this.children.push(typeof x === 'string' ? { nodeType: 3, textContent: x } : x); },
       addEventListener() {}
     }),
     createTextNode: (text) => ({ nodeType: 3, textContent: text })
@@ -355,6 +357,8 @@ t('SE.el never writes HTML: no html prop, no string on* handlers, text stays tex
   sandbox.document.createElement = (tag) => {
     const n = { tagName: tag, style: {}, dataset: {}, children: [], attrs: {}, listeners: [],
       setAttribute(k, v) { this.attrs[k] = v; }, appendChild(c) { this.children.push(c); },
+      // Like ParentNode.append(): strings become text nodes.
+      append(...xs) { for (const x of xs) this.children.push(typeof x === 'string' ? { nodeType: 3, textContent: x } : x); },
       addEventListener(k) { this.listeners.push(k); } };
     Object.defineProperty(n, 'innerHTML', { set() { throw new Error('innerHTML was set'); } });
     made.push(n);

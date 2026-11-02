@@ -27,15 +27,11 @@
       else if (v === true) node.setAttribute(k, '');
       else if (v !== false && v != null) node.setAttribute(k, v);
     }
-    for (const c of children.flat()) {
-      if (c == null || c === false) continue;
-      if (c instanceof Node) {
-        node.appendChild(c);
-      } else {
-        // Strings (Steam names, review text, API data) only ever become text.
-        node.appendChild(document.createTextNode(String(c)));
-      }
-    }
+    // ParentNode.append() inserts nodes as-is and turns every string into a
+    // text node — strings (Steam names, review text, API data) can never
+    // become markup here.
+    const kids = children.flat().filter((c) => c != null && c !== false);
+    node.append(...kids.map((c) => (c instanceof Node ? c : String(c))));
     return node;
   };
 
