@@ -132,13 +132,13 @@
   }
 
   function renderItemTable(title, rows) {
-    if (!rows.length) return SE.el('div', { class: 'se-row se-muted' }, `${title}: (none)`);
+    if (!rows.length) return SE.el('div', { class: 'se-row se-muted' }, SE.t('tradeNone', title));
     const table = SE.el('table', { class: 'se-trade-table' },
       SE.el('caption', null, title)
     );
     rows.forEach(({ name, value, priced }) => {
       table.appendChild(SE.el('tr', null,
-        SE.el('td', { class: 'se-trade-name' }, name || '(unmarketable item)'),
+        SE.el('td', { class: 'se-trade-name' }, name || SE.t('tradeUnmarketable')),
         SE.el('td', { class: 'se-trade-value' }, priced ? value.toFixed(2) : '—')
       ));
     });
@@ -185,7 +185,7 @@
     if (priorEntries.length) {
       const avgDiffPct = priorEntries.reduce((s, e) => s + Math.abs(e.diffPct), 0) / priorEntries.length;
       body.appendChild(SE.el('div', { class: 'se-row se-muted' },
-        `Seen ${priorEntries.length} prior offer${priorEntries.length === 1 ? '' : 's'} with this partner in this browser · avg value gap ${avgDiffPct.toFixed(0)}%`
+        SE.t('tradePriorOffers', priorEntries.length, avgDiffPct.toFixed(0))
       ));
     }
 

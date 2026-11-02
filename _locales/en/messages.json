@@ -568,5 +568,203 @@
   },
   "walletUnknown": {
     "message": "Could not read your Steam wallet currency on this page, so nothing will be listed. Reload the inventory page while signed in and try again."
+  },
+  "invSampling": {
+    "message": "Sampling first 25 marketable items…"
+  },
+  "invReadFailed": {
+    "message": "Could not read inventory."
+  },
+  "invValueResult": {
+    "message": "Sampled {0}/25 · avg ≈ {1} · {2} marketable · estimate ≈ {3}"
+  },
+  "invNoDuplicates": {
+    "message": "No duplicates."
+  },
+  "invMarkedDuplicates": {
+    "message": "Marked {0} duplicate tiles in amber."
+  },
+  "invNoCards": {
+    "message": "No trading cards in current inventory view."
+  },
+  "invNoTiles": {
+    "message": "No inventory tiles found."
+  },
+  "invPricingForSort": {
+    "message": "Pricing tiles for sort (first 60)…"
+  },
+  "invSorted": {
+    "message": "Sorted {0} tiles by estimated value (highest first)."
+  },
+  "invGrouped": {
+    "message": "Grouped {0} tiles into {1} type(s): {2}"
+  },
+  "invNoRarity": {
+    "message": "No rarity/quality tags found on items in this inventory."
+  },
+  "invSelectionOn": {
+    "message": "Selection mode on — {0} selected"
+  },
+  "invNoneSelected": {
+    "message": "No items selected. Click \"Select items to sell\", then click checkboxes on tiles."
+  },
+  "invNoneMarketableSelected": {
+    "message": "None of the selected items are marketable."
+  },
+  "invFewSnapshots": {
+    "message": "Only {0} snapshot(s) so far — click \"Estimate value\" a few more times over the coming days to build a trend."
+  },
+  "invSnapshotsRecorded": {
+    "message": "{0} snapshots recorded from your own \"Estimate value\" clicks on this page."
+  },
+  "invNoStickers": {
+    "message": "No stickers visible (open your CS2 inventory)."
+  },
+  "invNoMarketable": {
+    "message": "No marketable items in current view."
+  },
+  "invDryRun": {
+    "message": "Dry run — pricing {0} items (nothing listed yet)…"
+  },
+  "invNoMedian": {
+    "message": "No items had a usable median price."
+  },
+  "invConfirmMassList": {
+    "message": "⚠ Confirm: actually list these {0} items for sale"
+  },
+  "invCancelHint": {
+    "message": "You can cancel any listing from the Market page. Listings still need mobile-authenticator confirmation."
+  },
+  "invPricingSelected": {
+    "message": "Pricing {0} selected item(s) — edit prices below, nothing listed yet."
+  },
+  "invConfirmSelected": {
+    "message": "⚠ Confirm: list these {0} selected items"
+  },
+  "invListing": {
+    "message": "Listing…"
+  },
+  "invListedResult": {
+    "message": "Listed {0}/{1}. Check the Market page and confirm via mobile authenticator."
+  },
+  "medianWord": {
+    "message": "median"
+  },
+  "libTotalHours": {
+    "message": "Total: {0} hours"
+  },
+  "libPricing": {
+    "message": "Pricing {0}/{1} games (sampled)…"
+  },
+  "libValueResult": {
+    "message": "Sampled {0}/{1} · avg {2} · estimate ≈ {3} at CURRENT prices across {4} games (not what you paid — Steam doesn't expose purchase history)"
+  },
+  "libValueFailed": {
+    "message": "Could not price any sampled games (all free-to-play or unavailable in {0}?)."
+  },
+  "mktNoListing": {
+    "message": "No listing found."
+  },
+  "mktLowestListing": {
+    "message": "Lowest listing: {0}"
+  },
+  "mktUndercutRow": {
+    "message": "-{0} → list {1} (you get ~{2})"
+  },
+  "mktCopied": {
+    "message": "Copied: {0}"
+  },
+  "mktFetching": {
+    "message": "Fetching…"
+  },
+  "mktFetchFailed": {
+    "message": "Could not fetch."
+  },
+  "mktLowestListed": {
+    "message": "Lowest listed: {0}"
+  },
+  "mktMedian24": {
+    "message": "Median (24h): {0}"
+  },
+  "mktVolume24": {
+    "message": "Volume (24h): {0}"
+  },
+  "mktNoOrderBookId": {
+    "message": "Could not find this listing's order book id on the page."
+  },
+  "mktFetchingOrderBook": {
+    "message": "Fetching order book…"
+  },
+  "mktOrderBookFailed": {
+    "message": "Could not fetch order book."
+  },
+  "mktHighestBuy": {
+    "message": "Highest buy order: {0} ({1} orders)"
+  },
+  "mktLowestSell": {
+    "message": "Lowest sell listing: {0} ({1} listings)"
+  },
+  "mktSuggestedBuy": {
+    "message": "Suggested: place buy order at {0}"
+  },
+  "mktSuggestedBuyWhy": {
+    "message": " to lead the current queue by the minimum increment."
+  },
+  "mktSpread": {
+    "message": "Spread: {0}"
+  },
+  "mktConverting": {
+    "message": "Converting…"
+  },
+  "mktConvertFailed": {
+    "message": "Conversion failed (no rate)."
+  },
+  "tradePriorOffers": {
+    "message": "Seen {0} prior offer(s) with this partner in this browser · avg value gap {1}%"
+  },
+  "tradeNone": {
+    "message": "{0}: (none)"
+  },
+  "tradeUnmarketable": {
+    "message": "(unmarketable item)"
+  },
+  "discNoReplyBox": {
+    "message": "No reply box found on this page."
+  },
+  "changelog150Selling": {
+    "message": "Selling from your inventory now uses your wallet currency and shows exactly what you receive after fees."
+  },
+  "changelog150Alerts": {
+    "message": "Wishlist-deal and price-alert notifications work again, and the historical low and price chart are back."
+  },
+  "changelog150Country": {
+    "message": "Prices now follow the country Steam shows you; you can override it in Options."
+  },
+  "changelogShortcuts": {
+    "message": "Try Ctrl+Shift+S to toggle the panel, Ctrl+Shift+W for wishlist."
+  },
+  "obStep1Title": {
+    "message": "Browse any game page"
+  },
+  "obStep1Desc": {
+    "message": "Lowest price, historical low, ProtonDB rating, DLC ownership and more show up automatically in a panel."
+  },
+  "obStep2Title": {
+    "message": "Highlight owned/wishlisted games"
+  },
+  "obStep2Desc": {
+    "message": "Search and store lists mark games you own, have wishlisted, or are ignoring — with an option to hide any of them."
+  },
+  "obStep3Title": {
+    "message": "Market & inventory tools"
+  },
+  "obStep3Desc": {
+    "message": "Open your Steam Market or Inventory page for net-after-fee pricing, value estimates, sort/group tiles, and more."
+  },
+  "obStep4Title": {
+    "message": "Everything is toggleable"
+  },
+  "obStep4Desc": {
+    "message": "Click the floating \"SE\" badge (bottom-right of any Steam page) any time to open full settings."
   }
 }

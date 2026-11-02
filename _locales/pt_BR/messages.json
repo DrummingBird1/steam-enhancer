@@ -568,5 +568,203 @@
   },
   "walletUnknown": {
     "message": "Não foi possível ler a moeda da sua carteira Steam nesta página, então nada será anunciado. Recarregue o inventário com a sessão iniciada e tente novamente."
+  },
+  "invSampling": {
+    "message": "Avaliando os primeiros 25 itens comercializáveis…"
+  },
+  "invReadFailed": {
+    "message": "Não foi possível ler o inventário."
+  },
+  "invValueResult": {
+    "message": "{0}/25 avaliados · média ≈ {1} · {2} comercializáveis · estimativa ≈ {3}"
+  },
+  "invNoDuplicates": {
+    "message": "Nenhuma duplicata."
+  },
+  "invMarkedDuplicates": {
+    "message": "{0} duplicatas marcadas em âmbar."
+  },
+  "invNoCards": {
+    "message": "Nenhuma carta colecionável na visualização atual do inventário."
+  },
+  "invNoTiles": {
+    "message": "Nenhum item do inventário encontrado."
+  },
+  "invPricingForSort": {
+    "message": "Precificando itens para ordenar (os primeiros 60)…"
+  },
+  "invSorted": {
+    "message": "{0} itens ordenados por valor estimado (maior primeiro)."
+  },
+  "invGrouped": {
+    "message": "{0} itens agrupados em {1} tipo(s): {2}"
+  },
+  "invNoRarity": {
+    "message": "Nenhuma etiqueta de raridade/qualidade nos itens deste inventário."
+  },
+  "invSelectionOn": {
+    "message": "Modo de seleção ativo — {0} selecionado(s)"
+  },
+  "invNoneSelected": {
+    "message": "Nenhum item selecionado. Clique em \"Selecionar itens para vender\" e marque os itens."
+  },
+  "invNoneMarketableSelected": {
+    "message": "Nenhum dos itens selecionados é comercializável."
+  },
+  "invFewSnapshots": {
+    "message": "Apenas {0} registro(s) até agora — clique em \"Estimar valor\" mais algumas vezes nos próximos dias para formar uma tendência."
+  },
+  "invSnapshotsRecorded": {
+    "message": "{0} registros feitos a partir dos seus cliques em \"Estimar valor\" nesta página."
+  },
+  "invNoStickers": {
+    "message": "Nenhum adesivo visível (abra seu inventário do CS2)."
+  },
+  "invNoMarketable": {
+    "message": "Nenhum item comercializável na visualização atual."
+  },
+  "invDryRun": {
+    "message": "Simulação — precificando {0} itens (nada anunciado ainda)…"
+  },
+  "invNoMedian": {
+    "message": "Nenhum item tinha um preço mediano utilizável."
+  },
+  "invConfirmMassList": {
+    "message": "⚠ Confirmar: anunciar de verdade estes {0} itens à venda"
+  },
+  "invCancelHint": {
+    "message": "Você pode cancelar qualquer anúncio na página do Mercado. Os anúncios ainda precisam de confirmação no autenticador móvel."
+  },
+  "invPricingSelected": {
+    "message": "Precificando {0} item(ns) selecionado(s) — edite os preços abaixo, nada anunciado ainda."
+  },
+  "invConfirmSelected": {
+    "message": "⚠ Confirmar: anunciar estes {0} itens selecionados"
+  },
+  "invListing": {
+    "message": "Anunciando…"
+  },
+  "invListedResult": {
+    "message": "{0}/{1} anunciados. Confira a página do Mercado e confirme no autenticador móvel."
+  },
+  "medianWord": {
+    "message": "mediana"
+  },
+  "libTotalHours": {
+    "message": "Total: {0} horas"
+  },
+  "libPricing": {
+    "message": "Precificando {0}/{1} jogos (amostra)…"
+  },
+  "libValueResult": {
+    "message": "{0}/{1} avaliados · média {2} · estimativa ≈ {3} a preços ATUAIS para {4} jogos (não o que você pagou — a Steam não expõe o histórico de compras)"
+  },
+  "libValueFailed": {
+    "message": "Não foi possível precificar nenhum jogo da amostra (todos gratuitos ou indisponíveis em {0}?)."
+  },
+  "mktNoListing": {
+    "message": "Nenhum anúncio encontrado."
+  },
+  "mktLowestListing": {
+    "message": "Anúncio mais barato: {0}"
+  },
+  "mktUndercutRow": {
+    "message": "-{0} → anunciar por {1} (você recebe ~{2})"
+  },
+  "mktCopied": {
+    "message": "Copiado: {0}"
+  },
+  "mktFetching": {
+    "message": "Carregando…"
+  },
+  "mktFetchFailed": {
+    "message": "Não foi possível carregar."
+  },
+  "mktLowestListed": {
+    "message": "Menor preço anunciado: {0}"
+  },
+  "mktMedian24": {
+    "message": "Mediana (24h): {0}"
+  },
+  "mktVolume24": {
+    "message": "Volume (24h): {0}"
+  },
+  "mktNoOrderBookId": {
+    "message": "Não foi possível encontrar o ID do livro de ofertas nesta página."
+  },
+  "mktFetchingOrderBook": {
+    "message": "Carregando livro de ofertas…"
+  },
+  "mktOrderBookFailed": {
+    "message": "Não foi possível carregar o livro de ofertas."
+  },
+  "mktHighestBuy": {
+    "message": "Maior ordem de compra: {0} ({1} ordens)"
+  },
+  "mktLowestSell": {
+    "message": "Anúncio de venda mais barato: {0} ({1} anúncios)"
+  },
+  "mktSuggestedBuy": {
+    "message": "Sugestão: ordem de compra em {0}"
+  },
+  "mktSuggestedBuyWhy": {
+    "message": " para liderar a fila atual pelo incremento mínimo."
+  },
+  "mktSpread": {
+    "message": "Spread: {0}"
+  },
+  "mktConverting": {
+    "message": "Convertendo…"
+  },
+  "mktConvertFailed": {
+    "message": "Falha na conversão (sem cotação)."
+  },
+  "tradePriorOffers": {
+    "message": "{0} oferta(s) anterior(es) com este parceiro neste navegador · diferença média de valor {1}%"
+  },
+  "tradeNone": {
+    "message": "{0}: (nenhum)"
+  },
+  "tradeUnmarketable": {
+    "message": "(item não comercializável)"
+  },
+  "discNoReplyBox": {
+    "message": "Nenhuma caixa de resposta encontrada nesta página."
+  },
+  "changelog150Selling": {
+    "message": "Vender do inventário agora usa a moeda da sua carteira e mostra exatamente o que você recebe após as taxas."
+  },
+  "changelog150Alerts": {
+    "message": "As notificações de ofertas da lista de desejos e de alertas de preço voltaram a funcionar, assim como o menor preço histórico e o gráfico de preços."
+  },
+  "changelog150Country": {
+    "message": "Os preços agora seguem o país que a Steam mostra para você; dá para alterar nas Opções."
+  },
+  "changelogShortcuts": {
+    "message": "Use Ctrl+Shift+S para mostrar/ocultar o painel e Ctrl+Shift+W para a lista de desejos."
+  },
+  "obStep1Title": {
+    "message": "Abra a página de um jogo"
+  },
+  "obStep1Desc": {
+    "message": "Menor preço, menor preço histórico, nota do ProtonDB, DLCs possuídos e mais aparecem automaticamente em um painel."
+  },
+  "obStep2Title": {
+    "message": "Destaque de jogos possuídos/desejados"
+  },
+  "obStep2Desc": {
+    "message": "A busca e as listas da loja marcam jogos que você possui, deseja ou ignora — com opção de ocultar qualquer um deles."
+  },
+  "obStep3Title": {
+    "message": "Ferramentas de mercado e inventário"
+  },
+  "obStep3Desc": {
+    "message": "Abra o Mercado ou o Inventário da Steam para preço líquido após taxas, estimativas de valor, ordenar/agrupar itens e mais."
+  },
+  "obStep4Title": {
+    "message": "Tudo pode ser ligado/desligado"
+  },
+  "obStep4Desc": {
+    "message": "Clique no selo flutuante \"SE\" (canto inferior direito de qualquer página da Steam) para abrir todas as configurações."
   }
 }

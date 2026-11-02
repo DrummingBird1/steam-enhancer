@@ -30,7 +30,7 @@
 
     // Total hours
     const total = games.reduce((s, g) => s + g.playtime, 0);
-    SE.$('#se-library-out').textContent = `Total: ${Math.round(total / 60).toLocaleString()} hours`;
+    SE.$('#se-library-out').textContent = SE.t('libTotalHours', Math.round(total / 60).toLocaleString());
 
     // Persist a snapshot so profile.js can show "last known library size" even
     // when you're not on the /games page.
@@ -55,7 +55,7 @@
     const out = SE.$('#se-library-out');
     const games = readGames();
     const sample = games.slice(0, 60);
-    out.textContent = `Pricing ${sample.length}/${games.length} games (sampled)…`;
+    out.textContent = SE.t('libPricing', sample.length, games.length);
     const country = SE.ctx?.country || 'us';
     let sum = 0, priced = 0;
     for (const g of sample) {
@@ -66,8 +66,8 @@
     const avg = priced ? sum / priced : 0;
     const estimate = avg * games.length;
     out.textContent = priced
-      ? `Sampled ${priced}/${sample.length} · avg ${avg.toFixed(2)} · estimate ≈ ${estimate.toFixed(2)} at CURRENT prices across ${games.length} games (not what you paid — Steam doesn't expose purchase history)`
-      : `Could not price any sampled games (all free-to-play or unavailable in ${country.toUpperCase()}?).`;
+      ? SE.t('libValueResult', priced, sample.length, avg.toFixed(2), estimate.toFixed(2), games.length)
+      : SE.t('libValueFailed', country.toUpperCase());
     if (priced) SE.safe('lib:valueSnapshot', () => saveSnapshot({ value: estimate, valueSampledGames: priced }));
   }
 

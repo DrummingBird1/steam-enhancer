@@ -101,9 +101,10 @@
           SE.el('p', null, SE.t('thanksForUpdating')),
           SE.el('ul', null,
             SE.el('li', { style: { fontWeight: 'bold' } }, SE.t('changelogItadKey')),
-            SE.el('li', null, 'New: batched search/wishlist price lookups, i18n across every panel, market price-history chart, more languages.'),
-            SE.el('li', null, 'See the options page (gear icon) — most new features have their own on/off toggle now.'),
-            SE.el('li', null, 'Try Ctrl+Shift+S to toggle the panel, Ctrl+Shift+W for wishlist.')
+            SE.el('li', null, SE.t('changelog150Selling')),
+            SE.el('li', null, SE.t('changelog150Alerts')),
+            SE.el('li', null, SE.t('changelog150Country')),
+            SE.el('li', null, SE.t('changelogShortcuts'))
           )
         ),
         SE.el('div', { class: 'se-modal-foot' },
@@ -124,10 +125,10 @@
     if (document.getElementById('se-onboard-modal')) return;
 
     const steps = [
-      ['🏷️', 'Browse any game page', 'Lowest price, historical low, ProtonDB rating, DLC ownership and more show up automatically in a panel.'],
-      ['⭐', 'Highlight owned/wishlisted games', 'Search and store lists mark games you own, have wishlisted, or are ignoring — with an option to hide any of them.'],
-      ['💰', 'Market & inventory tools', 'Open your Steam Market or Inventory page for net-after-fee pricing, value estimates, sort/group tiles, and more.'],
-      ['⚙️', 'Everything is toggleable', 'Click the floating "SE" badge (bottom-right of any Steam page) any time to open full settings.']
+      ['🏷️', SE.t('obStep1Title'), SE.t('obStep1Desc')],
+      ['⭐', SE.t('obStep2Title'), SE.t('obStep2Desc')],
+      ['💰', SE.t('obStep3Title'), SE.t('obStep3Desc')],
+      ['⚙️', SE.t('obStep4Title'), SE.t('obStep4Desc')]
     ];
     const modal = SE.el('div', { id: 'se-onboard-modal', class: 'se-modal' },
       SE.el('div', { class: 'se-modal-box' },

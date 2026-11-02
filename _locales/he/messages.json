@@ -568,5 +568,203 @@
   },
   "walletUnknown": {
     "message": "לא הצלחנו לקרוא את מטבע הארנק שלך ב-Steam בעמוד הזה, ולכן שום דבר לא יוצע למכירה. טען מחדש את עמוד המלאי כשאתה מחובר ונסה שוב."
+  },
+  "invSampling": {
+    "message": "דוגם את 25 הפריטים הסחירים הראשונים…"
+  },
+  "invReadFailed": {
+    "message": "לא הצלחנו לקרוא את המלאי."
+  },
+  "invValueResult": {
+    "message": "נדגמו {0}/25 · ממוצע ≈ {1} · {2} סחירים · הערכה ≈ {3}"
+  },
+  "invNoDuplicates": {
+    "message": "אין כפילויות."
+  },
+  "invMarkedDuplicates": {
+    "message": "סומנו {0} כפילויות בכתום."
+  },
+  "invNoCards": {
+    "message": "אין קלפי מסחר בתצוגת המלאי הנוכחית."
+  },
+  "invNoTiles": {
+    "message": "לא נמצאו פריטים במלאי."
+  },
+  "invPricingForSort": {
+    "message": "מתמחר פריטים למיון (60 הראשונים)…"
+  },
+  "invSorted": {
+    "message": "מוינו {0} פריטים לפי ערך משוער (מהגבוה לנמוך)."
+  },
+  "invGrouped": {
+    "message": "קובצו {0} פריטים ל-{1} סוגים: {2}"
+  },
+  "invNoRarity": {
+    "message": "לא נמצאו תגיות נדירות/איכות בפריטי המלאי הזה."
+  },
+  "invSelectionOn": {
+    "message": "מצב בחירה פעיל — {0} נבחרו"
+  },
+  "invNoneSelected": {
+    "message": "לא נבחרו פריטים. לחץ על \"בחר פריטים למכירה\" ואז סמן את הפריטים."
+  },
+  "invNoneMarketableSelected": {
+    "message": "אף אחד מהפריטים שנבחרו אינו סחיר."
+  },
+  "invFewSnapshots": {
+    "message": "רק {0} תמונות מצב עד עכשיו — לחץ על \"הערך שווי\" עוד כמה פעמים בימים הקרובים כדי לבנות מגמה."
+  },
+  "invSnapshotsRecorded": {
+    "message": "נרשמו {0} תמונות מצב מהלחיצות שלך על \"הערך שווי\" בעמוד הזה."
+  },
+  "invNoStickers": {
+    "message": "לא נראות מדבקות (פתח את מלאי ה-CS2 שלך)."
+  },
+  "invNoMarketable": {
+    "message": "אין פריטים סחירים בתצוגה הנוכחית."
+  },
+  "invDryRun": {
+    "message": "הרצת ניסיון — מתמחר {0} פריטים (שום דבר עוד לא הוצע למכירה)…"
+  },
+  "invNoMedian": {
+    "message": "לאף פריט לא היה מחיר חציוני שמיש."
+  },
+  "invConfirmMassList": {
+    "message": "⚠ אישור: להציע באמת את {0} הפריטים האלה למכירה"
+  },
+  "invCancelHint": {
+    "message": "אפשר לבטל כל הצעה מעמוד ה-Market. ההצעות עדיין דורשות אישור במאמת הנייד."
+  },
+  "invPricingSelected": {
+    "message": "מתמחר {0} פריטים שנבחרו — ערוך את המחירים למטה, שום דבר עוד לא הוצע."
+  },
+  "invConfirmSelected": {
+    "message": "⚠ אישור: להציע את {0} הפריטים שנבחרו"
+  },
+  "invListing": {
+    "message": "מציע למכירה…"
+  },
+  "invListedResult": {
+    "message": "הוצעו {0}/{1}. בדוק בעמוד ה-Market ואשר במאמת הנייד."
+  },
+  "medianWord": {
+    "message": "חציון"
+  },
+  "libTotalHours": {
+    "message": "סה\"כ: {0} שעות"
+  },
+  "libPricing": {
+    "message": "מתמחר {0}/{1} משחקים (מדגם)…"
+  },
+  "libValueResult": {
+    "message": "נדגמו {0}/{1} · ממוצע {2} · הערכה ≈ {3} לפי המחירים הנוכחיים עבור {4} משחקים (לא מה ששילמת — Steam לא חושף היסטוריית רכישות)"
+  },
+  "libValueFailed": {
+    "message": "לא הצלחנו לתמחר אף משחק מהמדגם (כולם חינמיים או לא זמינים ב-{0}?)."
+  },
+  "mktNoListing": {
+    "message": "לא נמצאה הצעה."
+  },
+  "mktLowestListing": {
+    "message": "ההצעה הזולה ביותר: {0}"
+  },
+  "mktUndercutRow": {
+    "message": "-{0} ← הצע ב-{1} (תקבל ~{2})"
+  },
+  "mktCopied": {
+    "message": "הועתק: {0}"
+  },
+  "mktFetching": {
+    "message": "טוען…"
+  },
+  "mktFetchFailed": {
+    "message": "הטעינה נכשלה."
+  },
+  "mktLowestListed": {
+    "message": "המחיר הנמוך המוצע: {0}"
+  },
+  "mktMedian24": {
+    "message": "חציון (24 שעות): {0}"
+  },
+  "mktVolume24": {
+    "message": "נפח (24 שעות): {0}"
+  },
+  "mktNoOrderBookId": {
+    "message": "לא נמצא בעמוד המזהה של ספר ההזמנות של הפריט."
+  },
+  "mktFetchingOrderBook": {
+    "message": "טוען את ספר ההזמנות…"
+  },
+  "mktOrderBookFailed": {
+    "message": "טעינת ספר ההזמנות נכשלה."
+  },
+  "mktHighestBuy": {
+    "message": "הזמנת הקנייה הגבוהה: {0} ({1} הזמנות)"
+  },
+  "mktLowestSell": {
+    "message": "הצעת המכירה הזולה: {0} ({1} הצעות)"
+  },
+  "mktSuggestedBuy": {
+    "message": "מומלץ: הזמנת קנייה ב-{0}"
+  },
+  "mktSuggestedBuyWhy": {
+    "message": " כדי לעקוף את התור הנוכחי בהפרש המינימלי."
+  },
+  "mktSpread": {
+    "message": "מרווח: {0}"
+  },
+  "mktConverting": {
+    "message": "ממיר…"
+  },
+  "mktConvertFailed": {
+    "message": "ההמרה נכשלה (אין שער)."
+  },
+  "tradePriorOffers": {
+    "message": "נראו {0} הצעות קודמות עם השותף הזה בדפדפן הזה · פער ערך ממוצע {1}%"
+  },
+  "tradeNone": {
+    "message": "{0}: (אין)"
+  },
+  "tradeUnmarketable": {
+    "message": "(פריט לא סחיר)"
+  },
+  "discNoReplyBox": {
+    "message": "לא נמצאה תיבת תגובה בעמוד הזה."
+  },
+  "changelog150Selling": {
+    "message": "מכירה מהמלאי משתמשת עכשיו במטבע הארנק שלך ומראה בדיוק כמה תקבל אחרי עמלות."
+  },
+  "changelog150Alerts": {
+    "message": "התראות על מבצעים ברשימת המשאלות ועל יעדי מחיר עובדות שוב, והשפל ההיסטורי וגרף המחירים חזרו."
+  },
+  "changelog150Country": {
+    "message": "המחירים עוקבים עכשיו אחרי המדינה ש-Steam מציג לך; אפשר לשנות אותה באפשרויות."
+  },
+  "changelogShortcuts": {
+    "message": "נסו Ctrl+Shift+S כדי להציג/להסתיר את הפאנל, ו-Ctrl+Shift+W לרשימת המשאלות."
+  },
+  "obStep1Title": {
+    "message": "היכנסו לעמוד של משחק"
+  },
+  "obStep1Desc": {
+    "message": "המחיר הנמוך, השפל ההיסטורי, דירוג ProtonDB, בעלות על DLC ועוד מופיעים אוטומטית בפאנל."
+  },
+  "obStep2Title": {
+    "message": "סימון משחקים בבעלותכם וברשימת המשאלות"
+  },
+  "obStep2Desc": {
+    "message": "רשימות החיפוש והחנות מסמנות משחקים שבבעלותכם, ברשימת המשאלות או שהתעלמתם מהם — עם אפשרות להסתיר כל אחד מהם."
+  },
+  "obStep3Title": {
+    "message": "כלים ל-Market ולמלאי"
+  },
+  "obStep3Desc": {
+    "message": "פתחו את ה-Market או את המלאי ב-Steam לתמחור נטו אחרי עמלה, הערכות שווי, מיון וקיבוץ פריטים ועוד."
+  },
+  "obStep4Title": {
+    "message": "הכול ניתן להפעלה ולכיבוי"
+  },
+  "obStep4Desc": {
+    "message": "לחצו על התג הצף \"SE\" (בפינה הימנית התחתונה של כל עמוד Steam) כדי לפתוח את כל ההגדרות."
   }
 }

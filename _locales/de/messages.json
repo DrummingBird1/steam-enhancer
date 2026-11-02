@@ -568,5 +568,203 @@
   },
   "walletUnknown": {
     "message": "Die Währung deiner Steam-Geldbörse konnte auf dieser Seite nicht gelesen werden, daher wird nichts eingestellt. Lade das Inventar angemeldet neu und versuche es erneut."
+  },
+  "invSampling": {
+    "message": "Bewerte die ersten 25 handelbaren Gegenstände…"
+  },
+  "invReadFailed": {
+    "message": "Inventar konnte nicht gelesen werden."
+  },
+  "invValueResult": {
+    "message": "{0}/25 bewertet · Ø ≈ {1} · {2} handelbar · Schätzung ≈ {3}"
+  },
+  "invNoDuplicates": {
+    "message": "Keine Duplikate."
+  },
+  "invMarkedDuplicates": {
+    "message": "{0} Duplikate bernsteinfarben markiert."
+  },
+  "invNoCards": {
+    "message": "Keine Sammelkarten in der aktuellen Inventaransicht."
+  },
+  "invNoTiles": {
+    "message": "Keine Inventar-Kacheln gefunden."
+  },
+  "invPricingForSort": {
+    "message": "Bewerte Kacheln zum Sortieren (die ersten 60)…"
+  },
+  "invSorted": {
+    "message": "{0} Kacheln nach geschätztem Wert sortiert (höchster zuerst)."
+  },
+  "invGrouped": {
+    "message": "{0} Kacheln in {1} Typ(en) gruppiert: {2}"
+  },
+  "invNoRarity": {
+    "message": "Keine Seltenheits-/Qualitäts-Tags in diesem Inventar gefunden."
+  },
+  "invSelectionOn": {
+    "message": "Auswahlmodus an — {0} ausgewählt"
+  },
+  "invNoneSelected": {
+    "message": "Nichts ausgewählt. Klicke auf „Gegenstände zum Verkauf auswählen“ und hake dann Kacheln an."
+  },
+  "invNoneMarketableSelected": {
+    "message": "Keiner der ausgewählten Gegenstände ist handelbar."
+  },
+  "invFewSnapshots": {
+    "message": "Bisher nur {0} Momentaufnahme(n) — klicke in den nächsten Tagen noch ein paar Mal auf „Wert schätzen“, um einen Verlauf aufzubauen."
+  },
+  "invSnapshotsRecorded": {
+    "message": "{0} Momentaufnahmen aus deinen Klicks auf „Wert schätzen“ auf dieser Seite."
+  },
+  "invNoStickers": {
+    "message": "Keine Sticker sichtbar (öffne dein CS2-Inventar)."
+  },
+  "invNoMarketable": {
+    "message": "Keine handelbaren Gegenstände in der aktuellen Ansicht."
+  },
+  "invDryRun": {
+    "message": "Probelauf — bewerte {0} Gegenstände (noch nichts eingestellt)…"
+  },
+  "invNoMedian": {
+    "message": "Kein Gegenstand hatte einen brauchbaren Medianpreis."
+  },
+  "invConfirmMassList": {
+    "message": "⚠ Bestätigen: diese {0} Gegenstände wirklich zum Verkauf einstellen"
+  },
+  "invCancelHint": {
+    "message": "Jedes Angebot lässt sich auf der Marktseite zurückziehen. Angebote müssen weiterhin im mobilen Authentifikator bestätigt werden."
+  },
+  "invPricingSelected": {
+    "message": "Bewerte {0} ausgewählte(n) Gegenstand/Gegenstände — Preise unten anpassen, noch nichts eingestellt."
+  },
+  "invConfirmSelected": {
+    "message": "⚠ Bestätigen: diese {0} ausgewählten Gegenstände einstellen"
+  },
+  "invListing": {
+    "message": "Wird eingestellt…"
+  },
+  "invListedResult": {
+    "message": "{0}/{1} eingestellt. Prüfe die Marktseite und bestätige im mobilen Authentifikator."
+  },
+  "medianWord": {
+    "message": "Median"
+  },
+  "libTotalHours": {
+    "message": "Gesamt: {0} Stunden"
+  },
+  "libPricing": {
+    "message": "Bewerte {0}/{1} Spiele (Stichprobe)…"
+  },
+  "libValueResult": {
+    "message": "{0}/{1} bewertet · Ø {2} · Schätzung ≈ {3} zu AKTUELLEN Preisen für {4} Spiele (nicht, was du bezahlt hast — Steam gibt keine Kaufhistorie heraus)"
+  },
+  "libValueFailed": {
+    "message": "Kein Spiel der Stichprobe ließ sich bewerten (alle Free-to-Play oder in {0} nicht verfügbar?)."
+  },
+  "mktNoListing": {
+    "message": "Kein Angebot gefunden."
+  },
+  "mktLowestListing": {
+    "message": "Günstigstes Angebot: {0}"
+  },
+  "mktUndercutRow": {
+    "message": "-{0} → für {1} einstellen (du erhältst ~{2})"
+  },
+  "mktCopied": {
+    "message": "Kopiert: {0}"
+  },
+  "mktFetching": {
+    "message": "Wird geladen…"
+  },
+  "mktFetchFailed": {
+    "message": "Laden fehlgeschlagen."
+  },
+  "mktLowestListed": {
+    "message": "Niedrigster Preis: {0}"
+  },
+  "mktMedian24": {
+    "message": "Median (24 h): {0}"
+  },
+  "mktVolume24": {
+    "message": "Volumen (24 h): {0}"
+  },
+  "mktNoOrderBookId": {
+    "message": "Die Orderbuch-ID dieses Angebots wurde auf der Seite nicht gefunden."
+  },
+  "mktFetchingOrderBook": {
+    "message": "Lade Orderbuch…"
+  },
+  "mktOrderBookFailed": {
+    "message": "Orderbuch konnte nicht geladen werden."
+  },
+  "mktHighestBuy": {
+    "message": "Höchster Kaufauftrag: {0} ({1} Aufträge)"
+  },
+  "mktLowestSell": {
+    "message": "Günstigstes Verkaufsangebot: {0} ({1} Angebote)"
+  },
+  "mktSuggestedBuy": {
+    "message": "Vorschlag: Kaufauftrag bei {0}"
+  },
+  "mktSuggestedBuyWhy": {
+    "message": " — damit führst du die Warteschlange mit dem kleinsten Schritt an."
+  },
+  "mktSpread": {
+    "message": "Spanne: {0}"
+  },
+  "mktConverting": {
+    "message": "Wird umgerechnet…"
+  },
+  "mktConvertFailed": {
+    "message": "Umrechnung fehlgeschlagen (kein Kurs)."
+  },
+  "tradePriorOffers": {
+    "message": "{0} frühere(s) Angebot(e) mit diesem Partner in diesem Browser · durchschnittliche Wertdifferenz {1} %"
+  },
+  "tradeNone": {
+    "message": "{0}: (keine)"
+  },
+  "tradeUnmarketable": {
+    "message": "(nicht handelbarer Gegenstand)"
+  },
+  "discNoReplyBox": {
+    "message": "Auf dieser Seite wurde kein Antwortfeld gefunden."
+  },
+  "changelog150Selling": {
+    "message": "Verkäufe aus dem Inventar nutzen jetzt deine Geldbörsenwährung und zeigen genau, was du nach Gebühren erhältst."
+  },
+  "changelog150Alerts": {
+    "message": "Benachrichtigungen zu Wunschlisten-Angeboten und Preisalarmen funktionieren wieder, Tiefstpreis und Preisdiagramm sind zurück."
+  },
+  "changelog150Country": {
+    "message": "Preise richten sich jetzt nach dem Land, das Steam dir anzeigt; in den Optionen lässt es sich ändern."
+  },
+  "changelogShortcuts": {
+    "message": "Strg+Umschalt+S blendet das Panel ein/aus, Strg+Umschalt+W öffnet die Wunschliste."
+  },
+  "obStep1Title": {
+    "message": "Öffne eine Spielseite"
+  },
+  "obStep1Desc": {
+    "message": "Tiefstpreis, historischer Tiefstpreis, ProtonDB-Bewertung, DLC-Besitz und mehr erscheinen automatisch in einem Panel."
+  },
+  "obStep2Title": {
+    "message": "Besessene/gewünschte Spiele hervorheben"
+  },
+  "obStep2Desc": {
+    "message": "Suche und Shop-Listen markieren Spiele, die du besitzt, auf der Wunschliste hast oder ignorierst — jede Gruppe lässt sich ausblenden."
+  },
+  "obStep3Title": {
+    "message": "Markt- und Inventar-Tools"
+  },
+  "obStep3Desc": {
+    "message": "Öffne Steam-Markt oder Inventar für Preise nach Gebühren, Wertschätzungen, Sortieren/Gruppieren und mehr."
+  },
+  "obStep4Title": {
+    "message": "Alles ist abschaltbar"
+  },
+  "obStep4Desc": {
+    "message": "Klicke jederzeit auf das schwebende „SE“-Abzeichen (unten rechts auf jeder Steam-Seite), um alle Einstellungen zu öffnen."
   }
 }

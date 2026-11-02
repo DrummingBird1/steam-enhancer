@@ -79,9 +79,9 @@
 
   async function showValue() {
     const out = SE.$('#se-inv-out');
-    out.textContent = 'Sampling first 25 marketable items…';
+    out.textContent = SE.t('invSampling');
     const items = await getItems(true);
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const marketable = items.filter(i => i.marketable);
     let total = 0, counted = 0;
     for (const it of marketable.slice(0, 25)) {
@@ -91,7 +91,7 @@
     }
     const avg = counted ? total / counted : 0;
     const estimate = avg * marketable.length;
-    out.textContent = `Sampled ${counted}/25 · avg ≈ ${avg.toFixed(2)} · ${marketable.length} marketable · estimate ≈ ${estimate.toFixed(2)}`;
+    out.textContent = SE.t('invValueResult', counted, avg.toFixed(2), marketable.length, estimate.toFixed(2));
     if (counted) SE.safe('inv:valueSnapshot', () => recordValueSnapshot(estimate));
   }
 
@@ -107,7 +107,7 @@
     const dups = [...map.entries()].filter(([, n]) => n > 1).sort((a, b) => b[1] - a[1]).slice(0, 25);
     const out = SE.$('#se-inv-out');
     out.innerHTML = '';
-    if (!dups.length) { out.textContent = 'No duplicates.'; return; }
+    if (!dups.length) { out.textContent = SE.t('invNoDuplicates'); return; }
     dups.forEach(([k, n]) => out.appendChild(SE.el('div', null, `${n}× ${k}`)));
   }
 
@@ -129,7 +129,7 @@
         marked++;
       }
     }
-    SE.$('#se-inv-out').textContent = `Marked ${marked} duplicate tiles in amber.`;
+    SE.$('#se-inv-out').textContent = SE.t('invMarkedDuplicates', marked);
   }
 
   async function cardSetProgress() {
@@ -146,7 +146,7 @@
     }
     const out = SE.$('#se-inv-out');
     out.innerHTML = '';
-    if (!byGame.size) { out.textContent = 'No trading cards in current inventory view.'; return; }
+    if (!byGame.size) { out.textContent = SE.t('invNoCards'); return; }
     [...byGame.entries()].slice(0, 12).forEach(([game, info]) => {
       out.appendChild(SE.el('div', null, `${game}: ${info.unique.size} unique (${info.total} total)`));
     });
@@ -157,12 +157,12 @@
   async function sortTilesByValue() {
     const out = SE.$('#se-inv-out');
     const container = tileContainer();
-    if (!container) { out.textContent = 'No inventory tiles found.'; return; }
+    if (!container) { out.textContent = SE.t('invNoTiles'); return; }
     const items = await getItems();
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const byName = new Map(items.map(i => [i.name, i]));
 
-    out.textContent = 'Pricing tiles for sort (first 60)…';
+    out.textContent = SE.t('invPricingForSort');
     const tiles = SE.$$('.itemHolder, .inventory_item_link').slice(0, 60);
     const valueCache = new Map();
     for (const tile of tiles) {
@@ -182,15 +182,15 @@
     }
     const sorted = tiles.slice().sort((a, b) => (+b.dataset.seValue || 0) - (+a.dataset.seValue || 0));
     sorted.forEach(t => container.appendChild(t));
-    out.textContent = `Sorted ${sorted.length} tiles by estimated value (highest first).`;
+    out.textContent = SE.t('invSorted', sorted.length);
   }
 
   async function groupTilesByType() {
     const out = SE.$('#se-inv-out');
     const container = tileContainer();
-    if (!container) { out.textContent = 'No inventory tiles found.'; return; }
+    if (!container) { out.textContent = SE.t('invNoTiles'); return; }
     const items = await getItems();
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const byName = new Map(items.map(i => [i.name, i]));
 
     const groupOf = (it) => it?.tags?.find(t => t.category === 'Type')?.name
@@ -206,7 +206,7 @@
       groups.get(group).push(tile);
     }
     [...groups.keys()].sort().forEach(g => groups.get(g).forEach(t => container.appendChild(t)));
-    out.textContent = `Grouped ${tiles.length} tiles into ${groups.size} type(s): ${[...groups.keys()].slice(0, 6).join(', ')}${groups.size > 6 ? '…' : ''}`;
+    out.textContent = SE.t('invGrouped', tiles.length, groups.size, [...groups.keys()].slice(0, 6).join(', ') + (groups.size > 6 ? '…' : ''));
   }
 
   // Report-only (doesn't reorder tiles): counts items by Rarity/Quality tag
@@ -214,14 +214,14 @@
   async function rarityBreakdown() {
     const out = SE.$('#se-inv-out');
     const items = await getItems();
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const counts = new Map();
     for (const it of items) {
       const tier = it.tags?.find(t => t.category === 'Rarity' || t.category === 'Quality')?.name || 'Unknown';
       counts.set(tier, (counts.get(tier) || 0) + (it.amount || 1));
     }
     out.innerHTML = '';
-    if (!counts.size) { out.textContent = 'No rarity/quality tags found on items in this inventory.'; return; }
+    if (!counts.size) { out.textContent = SE.t('invNoRarity'); return; }
     [...counts.entries()].sort((a, b) => b[1] - a[1]).forEach(([tier, n]) => {
       out.appendChild(SE.el('div', null, `${tier}: ${n}`));
     });
@@ -238,7 +238,7 @@
     if (btn) btn.textContent = selectMode ? SE.t('selectingBtn') : SE.t('selectItemsBtn');
     if (!selectMode) SE.$$('.se-select-checkbox').forEach(cb => cb.remove());
     else renderSelectionOverlays();
-    SE.$('#se-inv-out').textContent = selectMode ? `Selection mode on — ${selectedIds.size} selected` : '';
+    SE.$('#se-inv-out').textContent = selectMode ? SE.t('invSelectionOn', selectedIds.size) : '';
   }
 
   function renderSelectionOverlays() {
@@ -255,7 +255,7 @@
           e.stopPropagation();
           if (e.target.checked) selectedIds.add(assetid); else selectedIds.delete(assetid);
           const out = SE.$('#se-inv-out');
-          if (out) out.textContent = `Selection mode on — ${selectedIds.size} selected`;
+          if (out) out.textContent = SE.t('invSelectionOn', selectedIds.size);
         }
       }));
     }
@@ -263,16 +263,16 @@
 
   async function prepareSelectedListing() {
     const out = SE.$('#se-inv-out');
-    if (!selectedIds.size) { out.textContent = 'No items selected. Click "Select items to sell", then click checkboxes on tiles.'; return; }
+    if (!selectedIds.size) { out.textContent = SE.t('invNoneSelected'); return; }
     const items = await getItems(true);
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const chosen = items.filter(i => selectedIds.has(String(i.id)) && i.marketable && i.market_hash_name);
-    if (!chosen.length) { out.textContent = 'None of the selected items are marketable.'; return; }
+    if (!chosen.length) { out.textContent = SE.t('invNoneMarketableSelected'); return; }
     const wallet = await requireWallet(out);
     if (!wallet) return;
 
     out.innerHTML = '';
-    out.appendChild(SE.el('div', { class: 'se-label' }, `Pricing ${chosen.length} selected item(s) — edit prices below, nothing listed yet.`));
+    out.appendChild(SE.el('div', { class: 'se-label' }, SE.t('invPricingSelected', chosen.length)));
 
     const plan = [];
     for (const it of chosen) {
@@ -290,7 +290,7 @@
       update();
       plan.push({ it, priceInput });
       out.appendChild(SE.el('div', { class: 'se-row' },
-        `${it.market_hash_name} (median ${med ? SE.formatMoney(med, wallet.iso) : '—'}) → `, priceInput, receive
+        `${it.market_hash_name} (${SE.t('medianWord')} ${med ? SE.formatMoney(med, wallet.iso) : '—'}) → `, priceInput, receive
       ));
     }
 
@@ -311,7 +311,7 @@
           const btn = SE.$('#se-inv-selmode');
           if (btn) btn.textContent = SE.t('selectItemsBtn');
         }
-      }, `⚠ Confirm: list these ${plan.length} selected items`)
+      }, SE.t('invConfirmSelected', plan.length))
     ));
   }
 
@@ -333,10 +333,10 @@
     const all = await new Promise((r) => chrome.storage.local.get([VALUE_HISTORY_KEY], (d) => r(d[VALUE_HISTORY_KEY] || {})));
     const list = all[key] || [];
     out.innerHTML = '';
-    if (list.length < 2) { out.textContent = `Only ${list.length} snapshot(s) so far — click "Estimate value" a few more times over the coming days to build a trend.`; return; }
+    if (list.length < 2) { out.textContent = SE.t('invFewSnapshots', list.length); return; }
     const svg = SE.sparklineSvg(list.map(p => ({ t: p.ts, v: p.v })), { labelLeft: `${list[0].v.toFixed(2)}` });
     out.appendChild(SE.el('div', { html: svg }));
-    out.appendChild(SE.el('div', { class: 'se-muted' }, `${list.length} snapshots recorded from your own "Estimate value" clicks on this page.`));
+    out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('invSnapshotsRecorded', list.length)));
   }
 
   function openBoosterCreator() {
@@ -345,7 +345,7 @@
   function stickerHelper() {
     const items = SE.$$('.itemHolder img').map(i => i.alt).filter(n => /\bSticker\b/i.test(n));
     const out = SE.$('#se-inv-out');
-    if (!items.length) { out.textContent = 'No stickers visible (open your CS2 inventory).'; return; }
+    if (!items.length) { out.textContent = SE.t('invNoStickers'); return; }
     out.innerHTML = '';
     items.slice(0, 12).forEach(name => {
       out.appendChild(SE.el('div', null,
@@ -361,15 +361,15 @@
   async function massListMedian() {
     const out = SE.$('#se-inv-out');
     const items = await getItems(true);
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const marketable = items.filter(i => i.marketable && i.market_hash_name && i.id && i.contextid);
     const candidates = marketable.slice(0, 10);
-    if (!candidates.length) { out.textContent = 'No marketable items in current view.'; return; }
+    if (!candidates.length) { out.textContent = SE.t('invNoMarketable'); return; }
     const wallet = await requireWallet(out);
     if (!wallet) return;
 
     out.innerHTML = '';
-    out.appendChild(SE.el('div', { class: 'se-label' }, `Dry run — pricing ${candidates.length} items (nothing listed yet)…`));
+    out.appendChild(SE.el('div', { class: 'se-label' }, SE.t('invDryRun', candidates.length)));
 
     const plan = [];
     for (const it of candidates) {
@@ -381,20 +381,20 @@
       const buyerCents = Math.max(3, Math.round(med * 100) - 1);
       plan.push({ it, buyerCents });
       out.appendChild(SE.el('div', null,
-        `• ${it.market_hash_name} (median ${SE.formatMoney(med, wallet.iso)}) → ${receiveLabel(buyerCents, wallet.iso)}`
+        `• ${it.market_hash_name} (${SE.t('medianWord')} ${SE.formatMoney(med, wallet.iso)}) → ${receiveLabel(buyerCents, wallet.iso)}`
       ));
     }
 
-    if (!plan.length) { out.appendChild(SE.el('div', { class: 'se-muted' }, 'No items had a usable median price.')); return; }
+    if (!plan.length) { out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('invNoMedian'))); return; }
 
     out.appendChild(SE.el('div', { class: 'se-row' },
       SE.el('button', {
         class: 'se-btn',
         style: { background: 'linear-gradient(to bottom,#c25555 5%,#7a3434 95%)' },
         onclick: (e) => { e.target.disabled = true; executeListing(plan, out); }
-      }, `⚠ Confirm: actually list these ${plan.length} items for sale`)
+      }, SE.t('invConfirmMassList', plan.length))
     ));
-    out.appendChild(SE.el('div', { class: 'se-muted' }, 'You can cancel any listing from the Market page. Listings still need mobile-authenticator confirmation.'));
+    out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('invCancelHint')));
   }
 
   // Selling moves real money, so refuse outright unless we've actually seen the
@@ -415,7 +415,7 @@
   // the buyer price there, listing everything ~15% above what was shown.
   async function executeListing(plan, out) {
     let listed = 0;
-    const status = SE.el('div', null, 'Listing…');
+    const status = SE.el('div', null, SE.t('invListing'));
     out.appendChild(status);
     for (const { it, buyerCents } of plan) {
       const receiveCents = SE.marketFees.sellerReceives(buyerCents);
@@ -426,12 +426,12 @@
       if (r?.result?.success) listed++;
       await SE.sleep(1500); // rate-limit-friendly
     }
-    status.textContent = `Listed ${listed}/${plan.length}. Check the Market page and confirm via mobile authenticator.`;
+    status.textContent = SE.t('invListedResult', listed, plan.length);
   }
 
   async function exportInventory() {
     const items = await getItems(true);
-    if (!items) return alert('Could not read inventory.');
+    if (!items) return alert(SE.t('invReadFailed'));
     const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = 'steam-inventory.json'; a.click();

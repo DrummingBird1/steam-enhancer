@@ -90,18 +90,18 @@
     const first = SE.$('.market_listing_price_with_fee, .market_listing_price');
     const p = first ? SE.parsePrice(first.textContent) : null;
     const out = SE.$('#se-mkt-out');
-    if (p == null) { out.textContent = 'No listing found.'; return; }
+    if (p == null) { out.textContent = SE.t('mktNoListing'); return; }
     out.innerHTML = '';
-    out.appendChild(SE.el('div', null, `Lowest listing: ${p.toFixed(2)}`));
+    out.appendChild(SE.el('div', null, SE.t('mktLowestListing', p.toFixed(2))));
     [0.01, 0.02, 0.05].forEach(c => {
       const np = Math.max(0.03, +(p - c).toFixed(2));
       const net = SE.marketFees.sellerReceives(Math.round(np * 100)) / 100;
-      out.appendChild(SE.el('div', null, `-${c.toFixed(2)} → list ${np.toFixed(2)} (you get ~${net.toFixed(2)})`));
+      out.appendChild(SE.el('div', null, SE.t('mktUndercutRow', c.toFixed(2), np.toFixed(2), net.toFixed(2))));
     });
   }
   function copyHash() {
     const name = decodeURIComponent(location.pathname.split('/').pop());
-    navigator.clipboard.writeText(name).then(() => { SE.$('#se-mkt-out').textContent = 'Copied: ' + name; });
+    navigator.clipboard.writeText(name).then(() => { SE.$('#se-mkt-out').textContent = SE.t('mktCopied', name); });
   }
   function openSCMHistory() {
     const parts = location.pathname.split('/').filter(Boolean);
@@ -115,14 +115,14 @@
     const appid = parts[parts.indexOf('listings') + 1];
     const name = decodeURIComponent(parts[parts.indexOf('listings') + 2] || '');
     const out = SE.$('#se-mkt-out');
-    out.textContent = 'Fetching…';
+    out.textContent = SE.t('mktFetching');
     const r = await SE.api.marketPriceOverview(appid, name);
-    if (!r?.ok || !r.data?.success) { out.textContent = 'Could not fetch.'; return; }
+    if (!r?.ok || !r.data?.success) { out.textContent = SE.t('mktFetchFailed'); return; }
     const d = r.data;
     out.innerHTML = '';
-    out.appendChild(SE.el('div', null, `Lowest listed: ${d.lowest_price || '—'}`));
-    out.appendChild(SE.el('div', null, `Median (24h): ${d.median_price || '—'}`));
-    out.appendChild(SE.el('div', null, `Volume (24h): ${d.volume || '0'}`));
+    out.appendChild(SE.el('div', null, SE.t('mktLowestListed', d.lowest_price || '—')));
+    out.appendChild(SE.el('div', null, SE.t('mktMedian24', d.median_price || '—')));
+    out.appendChild(SE.el('div', null, SE.t('mktVolume24', d.volume || '0')));
   }
 
   // Valve's own market page calls Market_LoadOrderSpread(item_nameid) from an
@@ -139,26 +139,26 @@
   async function buyOrderHelper() {
     const out = SE.$('#se-mkt-out');
     const itemNameId = findItemNameId();
-    if (!itemNameId) { out.textContent = 'Could not find this listing\'s order book id on the page.'; return; }
-    out.textContent = 'Fetching order book…';
+    if (!itemNameId) { out.textContent = SE.t('mktNoOrderBookId'); return; }
+    out.textContent = SE.t('mktFetchingOrderBook');
     const r = await SE.api.itemOrdersHistogram(itemNameId);
-    if (!r?.ok || !r.data?.success) { out.textContent = 'Could not fetch order book.'; return; }
+    if (!r?.ok || !r.data?.success) { out.textContent = SE.t('mktOrderBookFailed'); return; }
     const d = r.data;
     const highestBuy = d.highest_buy_order != null ? Number(d.highest_buy_order) / 100 : null;
     const lowestSell = d.lowest_sell_order != null ? Number(d.lowest_sell_order) / 100 : null;
     out.innerHTML = '';
-    out.appendChild(SE.el('div', null, `Highest buy order: ${highestBuy != null ? highestBuy.toFixed(2) : '—'} (${d.buy_order_count || 0} orders)`));
-    out.appendChild(SE.el('div', null, `Lowest sell listing: ${lowestSell != null ? lowestSell.toFixed(2) : '—'} (${d.sell_order_count || 0} listings)`));
+    out.appendChild(SE.el('div', null, SE.t('mktHighestBuy', highestBuy != null ? highestBuy.toFixed(2) : '—', d.buy_order_count || 0)));
+    out.appendChild(SE.el('div', null, SE.t('mktLowestSell', lowestSell != null ? lowestSell.toFixed(2) : '—', d.sell_order_count || 0)));
     if (highestBuy != null) {
       const suggested = highestBuy + 0.01;
       out.appendChild(SE.el('div', null,
-        SE.tag(`Suggested: place buy order at ${suggested.toFixed(2)}`, 'info'),
-        ' to lead the current queue by the minimum increment.'
+        SE.tag(SE.t('mktSuggestedBuy', suggested.toFixed(2)), 'info'),
+        SE.t('mktSuggestedBuyWhy')
       ));
     }
     if (highestBuy != null && lowestSell != null) {
       const spread = lowestSell - highestBuy;
-      out.appendChild(SE.el('div', { class: 'se-muted' }, `Spread: ${spread.toFixed(2)}`));
+      out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('mktSpread', spread.toFixed(2))));
     }
   }
 
@@ -187,8 +187,8 @@
     const from = SE.$('#se-fx-from').value.trim().toUpperCase();
     const to = SE.$('#se-fx-to').value.trim().toUpperCase();
     const out = SE.$('#se-fx-out');
-    out.textContent = 'Converting…';
+    out.textContent = SE.t('mktConverting');
     const v = await SE.fx.convert(amt, from, to);
-    out.textContent = v != null ? `${amt} ${from} = ${v.toFixed(2)} ${to}` : 'Conversion failed (no rate).';
+    out.textContent = v != null ? `${amt} ${from} = ${v.toFixed(2)} ${to}` : SE.t('mktConvertFailed');
   }
 })();

@@ -233,6 +233,471 @@ const T = {
     ru: 'Не удалось определить валюту вашего кошелька Steam на этой странице, поэтому ничего не будет выставлено. Перезагрузите инвентарь, войдя в аккаунт, и попробуйте снова.',
     de: 'Die Währung deiner Steam-Geldbörse konnte auf dieser Seite nicht gelesen werden, daher wird nichts eingestellt. Lade das Inventar angemeldet neu und versuche es erneut.',
     ptBR: 'Não foi possível ler a moeda da sua carteira Steam nesta página, então nada será anunciado. Recarregue o inventário com a sessão iniciada e tente novamente.'
+  },
+
+  // v1.5.0 — strings that were hardcoded English in content scripts.
+  // {0}, {1}… are filled in by SE.t(key, ...values).
+  invSampling: {
+    en: 'Sampling first 25 marketable items…',
+    he: 'דוגם את 25 הפריטים הסחירים הראשונים…',
+    ru: 'Оцениваем первые 25 продаваемых предметов…',
+    de: 'Bewerte die ersten 25 handelbaren Gegenstände…',
+    ptBR: 'Avaliando os primeiros 25 itens comercializáveis…'
+  },
+  invReadFailed: {
+    en: 'Could not read inventory.',
+    he: 'לא הצלחנו לקרוא את המלאי.',
+    ru: 'Не удалось прочитать инвентарь.',
+    de: 'Inventar konnte nicht gelesen werden.',
+    ptBR: 'Não foi possível ler o inventário.'
+  },
+  invValueResult: {
+    en: 'Sampled {0}/25 · avg ≈ {1} · {2} marketable · estimate ≈ {3}',
+    he: 'נדגמו {0}/25 · ממוצע ≈ {1} · {2} סחירים · הערכה ≈ {3}',
+    ru: 'Оценено {0}/25 · в среднем ≈ {1} · продаваемых: {2} · итого ≈ {3}',
+    de: '{0}/25 bewertet · Ø ≈ {1} · {2} handelbar · Schätzung ≈ {3}',
+    ptBR: '{0}/25 avaliados · média ≈ {1} · {2} comercializáveis · estimativa ≈ {3}'
+  },
+  invNoDuplicates: {
+    en: 'No duplicates.',
+    he: 'אין כפילויות.',
+    ru: 'Дубликатов нет.',
+    de: 'Keine Duplikate.',
+    ptBR: 'Nenhuma duplicata.'
+  },
+  invMarkedDuplicates: {
+    en: 'Marked {0} duplicate tiles in amber.',
+    he: 'סומנו {0} כפילויות בכתום.',
+    ru: 'Отмечено дубликатов: {0} (янтарным).',
+    de: '{0} Duplikate bernsteinfarben markiert.',
+    ptBR: '{0} duplicatas marcadas em âmbar.'
+  },
+  invNoCards: {
+    en: 'No trading cards in current inventory view.',
+    he: 'אין קלפי מסחר בתצוגת המלאי הנוכחית.',
+    ru: 'В текущем инвентаре нет коллекционных карточек.',
+    de: 'Keine Sammelkarten in der aktuellen Inventaransicht.',
+    ptBR: 'Nenhuma carta colecionável na visualização atual do inventário.'
+  },
+  invNoTiles: {
+    en: 'No inventory tiles found.',
+    he: 'לא נמצאו פריטים במלאי.',
+    ru: 'Предметы инвентаря не найдены.',
+    de: 'Keine Inventar-Kacheln gefunden.',
+    ptBR: 'Nenhum item do inventário encontrado.'
+  },
+  invPricingForSort: {
+    en: 'Pricing tiles for sort (first 60)…',
+    he: 'מתמחר פריטים למיון (60 הראשונים)…',
+    ru: 'Оцениваем предметы для сортировки (первые 60)…',
+    de: 'Bewerte Kacheln zum Sortieren (die ersten 60)…',
+    ptBR: 'Precificando itens para ordenar (os primeiros 60)…'
+  },
+  invSorted: {
+    en: 'Sorted {0} tiles by estimated value (highest first).',
+    he: 'מוינו {0} פריטים לפי ערך משוער (מהגבוה לנמוך).',
+    ru: 'Отсортировано предметов: {0} по оценочной стоимости (сначала дорогие).',
+    de: '{0} Kacheln nach geschätztem Wert sortiert (höchster zuerst).',
+    ptBR: '{0} itens ordenados por valor estimado (maior primeiro).'
+  },
+  invGrouped: {
+    en: 'Grouped {0} tiles into {1} type(s): {2}',
+    he: 'קובצו {0} פריטים ל-{1} סוגים: {2}',
+    ru: 'Сгруппировано предметов: {0}, типов: {1}: {2}',
+    de: '{0} Kacheln in {1} Typ(en) gruppiert: {2}',
+    ptBR: '{0} itens agrupados em {1} tipo(s): {2}'
+  },
+  invNoRarity: {
+    en: 'No rarity/quality tags found on items in this inventory.',
+    he: 'לא נמצאו תגיות נדירות/איכות בפריטי המלאי הזה.',
+    ru: 'У предметов этого инвентаря нет меток редкости/качества.',
+    de: 'Keine Seltenheits-/Qualitäts-Tags in diesem Inventar gefunden.',
+    ptBR: 'Nenhuma etiqueta de raridade/qualidade nos itens deste inventário.'
+  },
+  invSelectionOn: {
+    en: 'Selection mode on — {0} selected',
+    he: 'מצב בחירה פעיל — {0} נבחרו',
+    ru: 'Режим выбора — выбрано: {0}',
+    de: 'Auswahlmodus an — {0} ausgewählt',
+    ptBR: 'Modo de seleção ativo — {0} selecionado(s)'
+  },
+  invNoneSelected: {
+    en: 'No items selected. Click "Select items to sell", then click checkboxes on tiles.',
+    he: 'לא נבחרו פריטים. לחץ על "בחר פריטים למכירה" ואז סמן את הפריטים.',
+    ru: 'Ничего не выбрано. Нажмите «Выбрать предметы для продажи» и отметьте предметы.',
+    de: 'Nichts ausgewählt. Klicke auf „Gegenstände zum Verkauf auswählen“ und hake dann Kacheln an.',
+    ptBR: 'Nenhum item selecionado. Clique em "Selecionar itens para vender" e marque os itens.'
+  },
+  invNoneMarketableSelected: {
+    en: 'None of the selected items are marketable.',
+    he: 'אף אחד מהפריטים שנבחרו אינו סחיר.',
+    ru: 'Ни один из выбранных предметов нельзя продать.',
+    de: 'Keiner der ausgewählten Gegenstände ist handelbar.',
+    ptBR: 'Nenhum dos itens selecionados é comercializável.'
+  },
+  invFewSnapshots: {
+    en: 'Only {0} snapshot(s) so far — click "Estimate value" a few more times over the coming days to build a trend.',
+    he: 'רק {0} תמונות מצב עד עכשיו — לחץ על "הערך שווי" עוד כמה פעמים בימים הקרובים כדי לבנות מגמה.',
+    ru: 'Пока снимков: {0} — нажмите «Оценить стоимость» ещё несколько раз в ближайшие дни, чтобы построить график.',
+    de: 'Bisher nur {0} Momentaufnahme(n) — klicke in den nächsten Tagen noch ein paar Mal auf „Wert schätzen“, um einen Verlauf aufzubauen.',
+    ptBR: 'Apenas {0} registro(s) até agora — clique em "Estimar valor" mais algumas vezes nos próximos dias para formar uma tendência.'
+  },
+  invSnapshotsRecorded: {
+    en: '{0} snapshots recorded from your own "Estimate value" clicks on this page.',
+    he: 'נרשמו {0} תמונות מצב מהלחיצות שלך על "הערך שווי" בעמוד הזה.',
+    ru: 'Снимков записано: {0} — по вашим нажатиям «Оценить стоимость» на этой странице.',
+    de: '{0} Momentaufnahmen aus deinen Klicks auf „Wert schätzen“ auf dieser Seite.',
+    ptBR: '{0} registros feitos a partir dos seus cliques em "Estimar valor" nesta página.'
+  },
+  invNoStickers: {
+    en: 'No stickers visible (open your CS2 inventory).',
+    he: 'לא נראות מדבקות (פתח את מלאי ה-CS2 שלך).',
+    ru: 'Наклейки не видны (откройте инвентарь CS2).',
+    de: 'Keine Sticker sichtbar (öffne dein CS2-Inventar).',
+    ptBR: 'Nenhum adesivo visível (abra seu inventário do CS2).'
+  },
+  invNoMarketable: {
+    en: 'No marketable items in current view.',
+    he: 'אין פריטים סחירים בתצוגה הנוכחית.',
+    ru: 'В текущем виде нет продаваемых предметов.',
+    de: 'Keine handelbaren Gegenstände in der aktuellen Ansicht.',
+    ptBR: 'Nenhum item comercializável na visualização atual.'
+  },
+  invDryRun: {
+    en: 'Dry run — pricing {0} items (nothing listed yet)…',
+    he: 'הרצת ניסיון — מתמחר {0} פריטים (שום דבר עוד לא הוצע למכירה)…',
+    ru: 'Пробный прогон — оцениваем предметов: {0} (ничего не выставлено)…',
+    de: 'Probelauf — bewerte {0} Gegenstände (noch nichts eingestellt)…',
+    ptBR: 'Simulação — precificando {0} itens (nada anunciado ainda)…'
+  },
+  invNoMedian: {
+    en: 'No items had a usable median price.',
+    he: 'לאף פריט לא היה מחיר חציוני שמיש.',
+    ru: 'Ни у одного предмета нет подходящей медианной цены.',
+    de: 'Kein Gegenstand hatte einen brauchbaren Medianpreis.',
+    ptBR: 'Nenhum item tinha um preço mediano utilizável.'
+  },
+  invConfirmMassList: {
+    en: '⚠ Confirm: actually list these {0} items for sale',
+    he: '⚠ אישור: להציע באמת את {0} הפריטים האלה למכירה',
+    ru: '⚠ Подтвердить: выставить на продажу предметов: {0}',
+    de: '⚠ Bestätigen: diese {0} Gegenstände wirklich zum Verkauf einstellen',
+    ptBR: '⚠ Confirmar: anunciar de verdade estes {0} itens à venda'
+  },
+  invCancelHint: {
+    en: 'You can cancel any listing from the Market page. Listings still need mobile-authenticator confirmation.',
+    he: 'אפשר לבטל כל הצעה מעמוד ה-Market. ההצעות עדיין דורשות אישור במאמת הנייד.',
+    ru: 'Любой лот можно снять на странице торговой площадки. Лоты всё равно нужно подтвердить в мобильном аутентификаторе.',
+    de: 'Jedes Angebot lässt sich auf der Marktseite zurückziehen. Angebote müssen weiterhin im mobilen Authentifikator bestätigt werden.',
+    ptBR: 'Você pode cancelar qualquer anúncio na página do Mercado. Os anúncios ainda precisam de confirmação no autenticador móvel.'
+  },
+  invPricingSelected: {
+    en: 'Pricing {0} selected item(s) — edit prices below, nothing listed yet.',
+    he: 'מתמחר {0} פריטים שנבחרו — ערוך את המחירים למטה, שום דבר עוד לא הוצע.',
+    ru: 'Оцениваем выбранные предметы: {0} — исправьте цены ниже, пока ничего не выставлено.',
+    de: 'Bewerte {0} ausgewählte(n) Gegenstand/Gegenstände — Preise unten anpassen, noch nichts eingestellt.',
+    ptBR: 'Precificando {0} item(ns) selecionado(s) — edite os preços abaixo, nada anunciado ainda.'
+  },
+  invConfirmSelected: {
+    en: '⚠ Confirm: list these {0} selected items',
+    he: '⚠ אישור: להציע את {0} הפריטים שנבחרו',
+    ru: '⚠ Подтвердить: выставить выбранные предметы ({0})',
+    de: '⚠ Bestätigen: diese {0} ausgewählten Gegenstände einstellen',
+    ptBR: '⚠ Confirmar: anunciar estes {0} itens selecionados'
+  },
+  invListing: {
+    en: 'Listing…',
+    he: 'מציע למכירה…',
+    ru: 'Выставляем…',
+    de: 'Wird eingestellt…',
+    ptBR: 'Anunciando…'
+  },
+  invListedResult: {
+    en: 'Listed {0}/{1}. Check the Market page and confirm via mobile authenticator.',
+    he: 'הוצעו {0}/{1}. בדוק בעמוד ה-Market ואשר במאמת הנייד.',
+    ru: 'Выставлено {0}/{1}. Проверьте торговую площадку и подтвердите в мобильном аутентификаторе.',
+    de: '{0}/{1} eingestellt. Prüfe die Marktseite und bestätige im mobilen Authentifikator.',
+    ptBR: '{0}/{1} anunciados. Confira a página do Mercado e confirme no autenticador móvel.'
+  },
+  medianWord: {
+    en: 'median',
+    he: 'חציון',
+    ru: 'медиана',
+    de: 'Median',
+    ptBR: 'mediana'
+  },
+  libTotalHours: {
+    en: 'Total: {0} hours',
+    he: 'סה"כ: {0} שעות',
+    ru: 'Всего: {0} ч',
+    de: 'Gesamt: {0} Stunden',
+    ptBR: 'Total: {0} horas'
+  },
+  libPricing: {
+    en: 'Pricing {0}/{1} games (sampled)…',
+    he: 'מתמחר {0}/{1} משחקים (מדגם)…',
+    ru: 'Оцениваем игр: {0}/{1} (выборка)…',
+    de: 'Bewerte {0}/{1} Spiele (Stichprobe)…',
+    ptBR: 'Precificando {0}/{1} jogos (amostra)…'
+  },
+  libValueResult: {
+    en: 'Sampled {0}/{1} · avg {2} · estimate ≈ {3} at CURRENT prices across {4} games (not what you paid — Steam doesn\'t expose purchase history)',
+    he: 'נדגמו {0}/{1} · ממוצע {2} · הערכה ≈ {3} לפי המחירים הנוכחיים עבור {4} משחקים (לא מה ששילמת — Steam לא חושף היסטוריית רכישות)',
+    ru: 'Оценено {0}/{1} · в среднем {2} · итого ≈ {3} по ТЕКУЩИМ ценам для {4} игр (не то, что вы заплатили — Steam не раскрывает историю покупок)',
+    de: '{0}/{1} bewertet · Ø {2} · Schätzung ≈ {3} zu AKTUELLEN Preisen für {4} Spiele (nicht, was du bezahlt hast — Steam gibt keine Kaufhistorie heraus)',
+    ptBR: '{0}/{1} avaliados · média {2} · estimativa ≈ {3} a preços ATUAIS para {4} jogos (não o que você pagou — a Steam não expõe o histórico de compras)'
+  },
+  libValueFailed: {
+    en: 'Could not price any sampled games (all free-to-play or unavailable in {0}?).',
+    he: 'לא הצלחנו לתמחר אף משחק מהמדגם (כולם חינמיים או לא זמינים ב-{0}?).',
+    ru: 'Не удалось оценить ни одной игры из выборки (все бесплатные или недоступны в {0}?).',
+    de: 'Kein Spiel der Stichprobe ließ sich bewerten (alle Free-to-Play oder in {0} nicht verfügbar?).',
+    ptBR: 'Não foi possível precificar nenhum jogo da amostra (todos gratuitos ou indisponíveis em {0}?).'
+  },
+  mktNoListing: {
+    en: 'No listing found.',
+    he: 'לא נמצאה הצעה.',
+    ru: 'Лоты не найдены.',
+    de: 'Kein Angebot gefunden.',
+    ptBR: 'Nenhum anúncio encontrado.'
+  },
+  mktLowestListing: {
+    en: 'Lowest listing: {0}',
+    he: 'ההצעה הזולה ביותר: {0}',
+    ru: 'Самый дешёвый лот: {0}',
+    de: 'Günstigstes Angebot: {0}',
+    ptBR: 'Anúncio mais barato: {0}'
+  },
+  mktUndercutRow: {
+    en: '-{0} → list {1} (you get ~{2})',
+    he: '-{0} ← הצע ב-{1} (תקבל ~{2})',
+    ru: '-{0} → выставить за {1} (вы получите ~{2})',
+    de: '-{0} → für {1} einstellen (du erhältst ~{2})',
+    ptBR: '-{0} → anunciar por {1} (você recebe ~{2})'
+  },
+  mktCopied: {
+    en: 'Copied: {0}',
+    he: 'הועתק: {0}',
+    ru: 'Скопировано: {0}',
+    de: 'Kopiert: {0}',
+    ptBR: 'Copiado: {0}'
+  },
+  mktFetching: {
+    en: 'Fetching…',
+    he: 'טוען…',
+    ru: 'Загрузка…',
+    de: 'Wird geladen…',
+    ptBR: 'Carregando…'
+  },
+  mktFetchFailed: {
+    en: 'Could not fetch.',
+    he: 'הטעינה נכשלה.',
+    ru: 'Не удалось загрузить.',
+    de: 'Laden fehlgeschlagen.',
+    ptBR: 'Não foi possível carregar.'
+  },
+  mktLowestListed: {
+    en: 'Lowest listed: {0}',
+    he: 'המחיר הנמוך המוצע: {0}',
+    ru: 'Минимальная цена: {0}',
+    de: 'Niedrigster Preis: {0}',
+    ptBR: 'Menor preço anunciado: {0}'
+  },
+  mktMedian24: {
+    en: 'Median (24h): {0}',
+    he: 'חציון (24 שעות): {0}',
+    ru: 'Медиана (24 ч): {0}',
+    de: 'Median (24 h): {0}',
+    ptBR: 'Mediana (24h): {0}'
+  },
+  mktVolume24: {
+    en: 'Volume (24h): {0}',
+    he: 'נפח (24 שעות): {0}',
+    ru: 'Объём (24 ч): {0}',
+    de: 'Volumen (24 h): {0}',
+    ptBR: 'Volume (24h): {0}'
+  },
+  mktNoOrderBookId: {
+    en: 'Could not find this listing\'s order book id on the page.',
+    he: 'לא נמצא בעמוד המזהה של ספר ההזמנות של הפריט.',
+    ru: 'Не удалось найти на странице идентификатор книги заказов.',
+    de: 'Die Orderbuch-ID dieses Angebots wurde auf der Seite nicht gefunden.',
+    ptBR: 'Não foi possível encontrar o ID do livro de ofertas nesta página.'
+  },
+  mktFetchingOrderBook: {
+    en: 'Fetching order book…',
+    he: 'טוען את ספר ההזמנות…',
+    ru: 'Загружаем книгу заказов…',
+    de: 'Lade Orderbuch…',
+    ptBR: 'Carregando livro de ofertas…'
+  },
+  mktOrderBookFailed: {
+    en: 'Could not fetch order book.',
+    he: 'טעינת ספר ההזמנות נכשלה.',
+    ru: 'Не удалось загрузить книгу заказов.',
+    de: 'Orderbuch konnte nicht geladen werden.',
+    ptBR: 'Não foi possível carregar o livro de ofertas.'
+  },
+  mktHighestBuy: {
+    en: 'Highest buy order: {0} ({1} orders)',
+    he: 'הזמנת הקנייה הגבוהה: {0} ({1} הזמנות)',
+    ru: 'Лучший запрос на покупку: {0} (запросов: {1})',
+    de: 'Höchster Kaufauftrag: {0} ({1} Aufträge)',
+    ptBR: 'Maior ordem de compra: {0} ({1} ordens)'
+  },
+  mktLowestSell: {
+    en: 'Lowest sell listing: {0} ({1} listings)',
+    he: 'הצעת המכירה הזולה: {0} ({1} הצעות)',
+    ru: 'Самый дешёвый лот: {0} (лотов: {1})',
+    de: 'Günstigstes Verkaufsangebot: {0} ({1} Angebote)',
+    ptBR: 'Anúncio de venda mais barato: {0} ({1} anúncios)'
+  },
+  mktSuggestedBuy: {
+    en: 'Suggested: place buy order at {0}',
+    he: 'מומלץ: הזמנת קנייה ב-{0}',
+    ru: 'Совет: запрос на покупку по {0}',
+    de: 'Vorschlag: Kaufauftrag bei {0}',
+    ptBR: 'Sugestão: ordem de compra em {0}'
+  },
+  mktSuggestedBuyWhy: {
+    en: ' to lead the current queue by the minimum increment.',
+    he: ' כדי לעקוף את התור הנוכחי בהפרש המינימלי.',
+    ru: ' — так вы опередите очередь на минимальный шаг.',
+    de: ' — damit führst du die Warteschlange mit dem kleinsten Schritt an.',
+    ptBR: ' para liderar a fila atual pelo incremento mínimo.'
+  },
+  mktSpread: {
+    en: 'Spread: {0}',
+    he: 'מרווח: {0}',
+    ru: 'Спред: {0}',
+    de: 'Spanne: {0}',
+    ptBR: 'Spread: {0}'
+  },
+  mktConverting: {
+    en: 'Converting…',
+    he: 'ממיר…',
+    ru: 'Конвертируем…',
+    de: 'Wird umgerechnet…',
+    ptBR: 'Convertendo…'
+  },
+  mktConvertFailed: {
+    en: 'Conversion failed (no rate).',
+    he: 'ההמרה נכשלה (אין שער).',
+    ru: 'Не удалось конвертировать (нет курса).',
+    de: 'Umrechnung fehlgeschlagen (kein Kurs).',
+    ptBR: 'Falha na conversão (sem cotação).'
+  },
+  tradePriorOffers: {
+    en: 'Seen {0} prior offer(s) with this partner in this browser · avg value gap {1}%',
+    he: 'נראו {0} הצעות קודמות עם השותף הזה בדפדפן הזה · פער ערך ממוצע {1}%',
+    ru: 'Предыдущих предложений с этим партнёром в этом браузере: {0} · средняя разница в стоимости {1}%',
+    de: '{0} frühere(s) Angebot(e) mit diesem Partner in diesem Browser · durchschnittliche Wertdifferenz {1} %',
+    ptBR: '{0} oferta(s) anterior(es) com este parceiro neste navegador · diferença média de valor {1}%'
+  },
+  tradeNone: {
+    en: '{0}: (none)',
+    he: '{0}: (אין)',
+    ru: '{0}: (нет)',
+    de: '{0}: (keine)',
+    ptBR: '{0}: (nenhum)'
+  },
+  tradeUnmarketable: {
+    en: '(unmarketable item)',
+    he: '(פריט לא סחיר)',
+    ru: '(непродаваемый предмет)',
+    de: '(nicht handelbarer Gegenstand)',
+    ptBR: '(item não comercializável)'
+  },
+  discNoReplyBox: {
+    en: 'No reply box found on this page.',
+    he: 'לא נמצאה תיבת תגובה בעמוד הזה.',
+    ru: 'На этой странице нет поля для ответа.',
+    de: 'Auf dieser Seite wurde kein Antwortfeld gefunden.',
+    ptBR: 'Nenhuma caixa de resposta encontrada nesta página.'
+  },
+  changelog150Selling: {
+    en: 'Selling from your inventory now uses your wallet currency and shows exactly what you receive after fees.',
+    he: 'מכירה מהמלאי משתמשת עכשיו במטבע הארנק שלך ומראה בדיוק כמה תקבל אחרי עמלות.',
+    ru: 'Продажа из инвентаря теперь идёт в валюте вашего кошелька и показывает точную сумму после комиссии.',
+    de: 'Verkäufe aus dem Inventar nutzen jetzt deine Geldbörsenwährung und zeigen genau, was du nach Gebühren erhältst.',
+    ptBR: 'Vender do inventário agora usa a moeda da sua carteira e mostra exatamente o que você recebe após as taxas.'
+  },
+  changelog150Alerts: {
+    en: 'Wishlist-deal and price-alert notifications work again, and the historical low and price chart are back.',
+    he: 'התראות על מבצעים ברשימת המשאלות ועל יעדי מחיר עובדות שוב, והשפל ההיסטורי וגרף המחירים חזרו.',
+    ru: 'Уведомления о скидках из списка желаемого и о целевых ценах снова работают, вернулись исторический минимум и график цен.',
+    de: 'Benachrichtigungen zu Wunschlisten-Angeboten und Preisalarmen funktionieren wieder, Tiefstpreis und Preisdiagramm sind zurück.',
+    ptBR: 'As notificações de ofertas da lista de desejos e de alertas de preço voltaram a funcionar, assim como o menor preço histórico e o gráfico de preços.'
+  },
+  changelog150Country: {
+    en: 'Prices now follow the country Steam shows you; you can override it in Options.',
+    he: 'המחירים עוקבים עכשיו אחרי המדינה ש-Steam מציג לך; אפשר לשנות אותה באפשרויות.',
+    ru: 'Цены теперь соответствуют стране, которую показывает Steam; её можно изменить в настройках.',
+    de: 'Preise richten sich jetzt nach dem Land, das Steam dir anzeigt; in den Optionen lässt es sich ändern.',
+    ptBR: 'Os preços agora seguem o país que a Steam mostra para você; dá para alterar nas Opções.'
+  },
+  changelogShortcuts: {
+    en: 'Try Ctrl+Shift+S to toggle the panel, Ctrl+Shift+W for wishlist.',
+    he: 'נסו Ctrl+Shift+S כדי להציג/להסתיר את הפאנל, ו-Ctrl+Shift+W לרשימת המשאלות.',
+    ru: 'Ctrl+Shift+S — показать/скрыть панель, Ctrl+Shift+W — список желаемого.',
+    de: 'Strg+Umschalt+S blendet das Panel ein/aus, Strg+Umschalt+W öffnet die Wunschliste.',
+    ptBR: 'Use Ctrl+Shift+S para mostrar/ocultar o painel e Ctrl+Shift+W para a lista de desejos.'
+  },
+  obStep1Title: {
+    en: 'Browse any game page',
+    he: 'היכנסו לעמוד של משחק',
+    ru: 'Откройте страницу игры',
+    de: 'Öffne eine Spielseite',
+    ptBR: 'Abra a página de um jogo'
+  },
+  obStep1Desc: {
+    en: 'Lowest price, historical low, ProtonDB rating, DLC ownership and more show up automatically in a panel.',
+    he: 'המחיר הנמוך, השפל ההיסטורי, דירוג ProtonDB, בעלות על DLC ועוד מופיעים אוטומטית בפאנל.',
+    ru: 'Минимальная цена, исторический минимум, рейтинг ProtonDB, наличие DLC и многое другое появятся на панели автоматически.',
+    de: 'Tiefstpreis, historischer Tiefstpreis, ProtonDB-Bewertung, DLC-Besitz und mehr erscheinen automatisch in einem Panel.',
+    ptBR: 'Menor preço, menor preço histórico, nota do ProtonDB, DLCs possuídos e mais aparecem automaticamente em um painel.'
+  },
+  obStep2Title: {
+    en: 'Highlight owned/wishlisted games',
+    he: 'סימון משחקים בבעלותכם וברשימת המשאלות',
+    ru: 'Подсветка купленных и желаемых игр',
+    de: 'Besessene/gewünschte Spiele hervorheben',
+    ptBR: 'Destaque de jogos possuídos/desejados'
+  },
+  obStep2Desc: {
+    en: 'Search and store lists mark games you own, have wishlisted, or are ignoring — with an option to hide any of them.',
+    he: 'רשימות החיפוש והחנות מסמנות משחקים שבבעלותכם, ברשימת המשאלות או שהתעלמתם מהם — עם אפשרות להסתיר כל אחד מהם.',
+    ru: 'В поиске и списках магазина отмечаются купленные, желаемые и игнорируемые игры — любые из них можно скрыть.',
+    de: 'Suche und Shop-Listen markieren Spiele, die du besitzt, auf der Wunschliste hast oder ignorierst — jede Gruppe lässt sich ausblenden.',
+    ptBR: 'A busca e as listas da loja marcam jogos que você possui, deseja ou ignora — com opção de ocultar qualquer um deles.'
+  },
+  obStep3Title: {
+    en: 'Market & inventory tools',
+    he: 'כלים ל-Market ולמלאי',
+    ru: 'Инструменты для рынка и инвентаря',
+    de: 'Markt- und Inventar-Tools',
+    ptBR: 'Ferramentas de mercado e inventário'
+  },
+  obStep3Desc: {
+    en: 'Open your Steam Market or Inventory page for net-after-fee pricing, value estimates, sort/group tiles, and more.',
+    he: 'פתחו את ה-Market או את המלאי ב-Steam לתמחור נטו אחרי עמלה, הערכות שווי, מיון וקיבוץ פריטים ועוד.',
+    ru: 'Откройте торговую площадку или инвентарь Steam: цены после комиссии, оценка стоимости, сортировка и группировка и многое другое.',
+    de: 'Öffne Steam-Markt oder Inventar für Preise nach Gebühren, Wertschätzungen, Sortieren/Gruppieren und mehr.',
+    ptBR: 'Abra o Mercado ou o Inventário da Steam para preço líquido após taxas, estimativas de valor, ordenar/agrupar itens e mais.'
+  },
+  obStep4Title: {
+    en: 'Everything is toggleable',
+    he: 'הכול ניתן להפעלה ולכיבוי',
+    ru: 'Всё можно отключить',
+    de: 'Alles ist abschaltbar',
+    ptBR: 'Tudo pode ser ligado/desligado'
+  },
+  obStep4Desc: {
+    en: 'Click the floating "SE" badge (bottom-right of any Steam page) any time to open full settings.',
+    he: 'לחצו על התג הצף "SE" (בפינה הימנית התחתונה של כל עמוד Steam) כדי לפתוח את כל ההגדרות.',
+    ru: 'Нажмите плавающий значок «SE» (внизу справа на любой странице Steam), чтобы открыть все настройки.',
+    de: 'Klicke jederzeit auf das schwebende „SE“-Abzeichen (unten rechts auf jeder Steam-Seite), um alle Einstellungen zu öffnen.',
+    ptBR: 'Clique no selo flutuante "SE" (canto inferior direito de qualquer página da Steam) para abrir todas as configurações.'
   }
 };
 
