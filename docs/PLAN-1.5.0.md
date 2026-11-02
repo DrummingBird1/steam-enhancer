@@ -29,11 +29,11 @@
 
 ✅ כל 12 התיקונים בוצעו, עם unit tests ו-fixtures ב-`scripts/fixtures/`. מחכה לבדיקה מחובר (market, mass-list).
 
-## שלב 2 — תשתית
-- ⬜ מקור אחד לברירות מחדל (popup/options טוענים `storage.js`)
-- ⬜ `"world": "MAIN"` במקום הזרקת `<script>` inline
-- ⬜ תור בקשות ב-service worker עם rate limit לכל host ו-backoff ב-429
-- ⬜ ניקוי קוד מת (`SE.api.hltb`, `SE.cache`, `featuredSpecials`) והורדת host permissions שמשמשים רק ללינקים
+## שלב 2 — תשתית 🔄
+- ✅ מקור אחד לברירות מחדל (popup/options טוענים `storage.js`)
+- ✅ `"world": "MAIN"` במקום הזרקת `<script>` inline
+- ✅ תור בקשות ב-service worker עם rate limit לכל host ו-backoff ב-429
+- ✅ ניקוי קוד מת (`SE.api.hltb`, `SE.cache`, `featuredSpecials`) והורדת host permissions שמשמשים רק ללינקים
 - ⬜ פירוק `app.js` לקבצי פאנלים
 - ⬜ השלמת i18n (אונבורדינג, changelog, "net ≈", כלי inventory, popup)
 - ⬜ זיהוי לפי classes/ערכים ולא regex באנגלית (ביקורות, Early Access)
