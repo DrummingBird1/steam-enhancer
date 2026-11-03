@@ -110,6 +110,27 @@ Found in a signed-in test run on live Steam:
   entry now has its own storage key, pruned by an alarm.
 - Alarms are recreated on browser startup, not only on install.
 
+### Security and permissions
+- **No more injected page scripts.** Reading Steam's own page data (wallet,
+  inventory, trade items) and selling went through inline `<script>` tags
+  built from strings, which only worked because Steam's CSP allows inline
+  code. A fixed set of named operations in `src/content/page-bridge.js`
+  (a `"world": "MAIN"` content script, hence Chrome 111+) replaces them;
+  nothing is evaluated.
+- **No HTML from data.** `SE.el` no longer has an `innerHTML` option or
+  string `on…` handlers, so text from Steam or the APIs (game names, reviews,
+  item names) can only ever be text.
+- **Steam cookies go only to Steam.** The background sends your session
+  cookies only to `steampowered.com` / `steamcommunity.com` over https,
+  decided by the parsed host name, not by a substring of the URL.
+- **Fewer permissions.** Host access to `steamstatic.com`,
+  `isthereanydeal.com` (the website, not the API), `steamdb.info` and
+  `howlongtobeat.com` is gone (those are plain links), and so are the
+  `web_accessible_resources`.
+- **Gentler on Steam.** Market, store-details and ITAD requests are paced
+  per endpoint, a "too many requests" answer pauses that lane for a minute,
+  and identical requests in flight share one fetch.
+
 ### Wishlist, rebuilt
 Steam's wishlist became a React app in late 2024 and none of 1.4.x's wishlist
 features found anything on it. The wishlist now gets a panel above Steam's list,
