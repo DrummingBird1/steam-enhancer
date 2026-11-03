@@ -495,7 +495,7 @@
     "message": "Obrigado por atualizar!"
   },
   "changelogItadKey": {
-    "message": "Importante: o IsThereAnyDeal agora exige uma chave de API gratuita para todos os recursos de preço. Obtenha uma em isthereanydeal.com/apps/my/ e cole em Opções → Região."
+    "message": "Importante: os recursos de preço precisam de uma chave de API gratuita do IsThereAnyDeal. Obtenha uma em isthereanydeal.com/apps/my/ e cole em Opções → Preços e chaves."
   },
   "netWord": {
     "message": "você recebe"
@@ -681,7 +681,16 @@
     "message": "Os preços agora seguem o país que a Steam mostra para você; dá para alterar nas Opções."
   },
   "changelogShortcuts": {
-    "message": "Use Ctrl+Shift+S para mostrar/ocultar o painel e Ctrl+Shift+W para a lista de desejos."
+    "message": "Novos atalhos: Alt+Shift+S mostra/oculta o painel, Alt+Shift+W abre a lista de desejos. Altere-os em chrome://extensions/shortcuts."
+  },
+  "changelog150Wishlist": {
+    "message": "Novo painel da lista de desejos ao lado da lista do Steam: ordene e filtre por preço, desconto e menor preço histórico, alertas de preço por jogo, exportação CSV."
+  },
+  "changelog150Market": {
+    "message": "Mercado: venda rápida e instantânea do inventário, verificação dos seus anúncios (mais barato ou superado, remover vários de uma vez) e gráfico de histórico de preços."
+  },
+  "changelog150Options": {
+    "message": "Página de configurações redesenhada, com busca e predefinições, e alertas recentes no pop-up da barra, com horário silencioso opcional."
   },
   "obStep1Title": {
     "message": "Abra a página de um jogo"

@@ -12,4 +12,11 @@
       ? msg.replace(/\{(\d)\}/g, (m, i) => (subs[i] != null ? String(subs[i]) : m))
       : msg;
   };
+  // Text direction of the extension's own UI language, for blocks that are
+  // all our text (modals) — Steam's page itself stays as it is.
+  SE.uiDir = () => {
+    let ui = '';
+    try { ui = chrome.i18n.getUILanguage(); } catch {}
+    return /^(he|ar|fa)/.test(ui) ? 'rtl' : 'ltr';
+  };
 })(window);

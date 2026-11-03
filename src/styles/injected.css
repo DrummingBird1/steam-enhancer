@@ -124,6 +124,8 @@
   width: min(520px, 90vw); background: #1b2838; color: #c7d5e0;
   border: 1px solid #2a475e; border-radius: 4px; padding: 20px;
   font: 14px/1.5 'Motiva Sans', Arial, sans-serif;
+  max-height: 85vh; overflow: auto; /* the 1.5.0 list is long on small screens */
+  text-align: start; /* follows dir (Hebrew modals are rtl) */
 }
 .se-modal-h {
   color: #66c0f4; font-weight: 700; font-size: 18px;
@@ -132,7 +134,7 @@
 .se-modal-body p { margin: 0 0 8px; }
 .se-modal-body ul { margin: 0 0 12px; padding-left: 20px; }
 .se-modal-body li { margin-bottom: 4px; }
-.se-modal-foot { text-align: right; }
+.se-modal-foot { text-align: end; }
 
 .se-hold-overlay {
   display: inline-block; position: relative;

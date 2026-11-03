@@ -196,11 +196,11 @@ const T = {
   welcomeTitle: { en: 'Welcome to Steam Enhancer', he: 'ברוכים הבאים ל-Steam Enhancer', ru: 'Добро пожаловать в Steam Enhancer', de: 'Willkommen bei Steam Enhancer', ptBR: 'Bem-vindo ao Steam Enhancer' },
   thanksForUpdating: { en: 'Thanks for updating!', he: 'תודה על העדכון!', ru: 'Спасибо за обновление!', de: 'Danke fürs Aktualisieren!', ptBR: 'Obrigado por atualizar!' },
   changelogItadKey: {
-    en: 'Important: IsThereAnyDeal now requires a free API key for all price features. Get one at isthereanydeal.com/apps/my/ and paste it into Options → Region.',
-    he: 'חשוב: IsThereAnyDeal דורש כעת מפתח API חינמי לכל פיצ׳רי המחיר. קבלו אחד ב-isthereanydeal.com/apps/my/ והדביקו באפשרויות ← אזור.',
-    ru: 'Важно: IsThereAnyDeal теперь требует бесплатный API-ключ для всех функций цен. Получите его на isthereanydeal.com/apps/my/ и вставьте в Настройки → Регион.',
-    de: 'Wichtig: IsThereAnyDeal benötigt jetzt einen kostenlosen API-Schlüssel für alle Preisfunktionen. Hol dir einen unter isthereanydeal.com/apps/my/ und füge ihn unter Optionen → Region ein.',
-    ptBR: 'Importante: o IsThereAnyDeal agora exige uma chave de API gratuita para todos os recursos de preço. Obtenha uma em isthereanydeal.com/apps/my/ e cole em Opções → Região.'
+    en: 'Important: price features need a free IsThereAnyDeal API key. Get one at isthereanydeal.com/apps/my/ and paste it in Options → Prices & keys.',
+    he: 'חשוב: פיצ׳רי המחיר דורשים מפתח API חינמי של IsThereAnyDeal. קבלו אחד ב-isthereanydeal.com/apps/my/ והדביקו באפשרויות ← מחירים ומפתחות.',
+    ru: 'Важно: для функций цен нужен бесплатный API-ключ IsThereAnyDeal. Получите его на isthereanydeal.com/apps/my/ и вставьте в Настройки → Цены и ключи.',
+    de: 'Wichtig: Die Preisfunktionen brauchen einen kostenlosen IsThereAnyDeal-API-Schlüssel. Hol dir einen unter isthereanydeal.com/apps/my/ und füge ihn unter Optionen → Preise & Schlüssel ein.',
+    ptBR: 'Importante: os recursos de preço precisam de uma chave de API gratuita do IsThereAnyDeal. Obtenha uma em isthereanydeal.com/apps/my/ e cole em Opções → Preços e chaves.'
   },
 
   // v1.5.0
@@ -617,11 +617,32 @@ const T = {
     ptBR: 'Os preços agora seguem o país que a Steam mostra para você; dá para alterar nas Opções.'
   },
   changelogShortcuts: {
-    en: 'Try Ctrl+Shift+S to toggle the panel, Ctrl+Shift+W for wishlist.',
-    he: 'נסו Ctrl+Shift+S כדי להציג/להסתיר את הפאנל, ו-Ctrl+Shift+W לרשימת המשאלות.',
-    ru: 'Ctrl+Shift+S — показать/скрыть панель, Ctrl+Shift+W — список желаемого.',
-    de: 'Strg+Umschalt+S blendet das Panel ein/aus, Strg+Umschalt+W öffnet die Wunschliste.',
-    ptBR: 'Use Ctrl+Shift+S para mostrar/ocultar o painel e Ctrl+Shift+W para a lista de desejos.'
+    en: 'New keyboard shortcuts: Alt+Shift+S shows/hides the panel, Alt+Shift+W opens your wishlist. Change them at chrome://extensions/shortcuts.',
+    he: 'קיצורי מקלדת חדשים: Alt+Shift+S מציג/מסתיר את הפאנל, Alt+Shift+W פותח את רשימת המשאלות. אפשר לשנות אותם ב-chrome://extensions/shortcuts.',
+    ru: 'Новые сочетания клавиш: Alt+Shift+S — показать/скрыть панель, Alt+Shift+W — список желаемого. Изменить их можно на chrome://extensions/shortcuts.',
+    de: 'Neue Tastenkürzel: Alt+Umschalt+S blendet das Panel ein/aus, Alt+Umschalt+W öffnet die Wunschliste. Ändern unter chrome://extensions/shortcuts.',
+    ptBR: 'Novos atalhos: Alt+Shift+S mostra/oculta o painel, Alt+Shift+W abre a lista de desejos. Altere-os em chrome://extensions/shortcuts.'
+  },
+  changelog150Wishlist: {
+    en: 'A new wishlist dashboard beside Steam\'s wishlist: sort and filter by price, discount and historical low, set price alerts per game, export to CSV.',
+    he: 'לוח רשימת משאלות חדש ליד הרשימה של Steam: מיון וסינון לפי מחיר, הנחה ושפל היסטורי, התראת מחיר לכל משחק, וייצוא ל-CSV.',
+    ru: 'Новая панель списка желаемого рядом со списком Steam: сортировка и фильтры по цене, скидке и историческому минимуму, ценовые уведомления, экспорт в CSV.',
+    de: 'Neues Wunschlisten-Dashboard neben Steams Wunschliste: Sortieren und Filtern nach Preis, Rabatt und Tiefstpreis, Preisalarme pro Spiel, CSV-Export.',
+    ptBR: 'Novo painel da lista de desejos ao lado da lista do Steam: ordene e filtre por preço, desconto e menor preço histórico, alertas de preço por jogo, exportação CSV.'
+  },
+  changelog150Market: {
+    en: 'Market: quick and instant sell from the inventory, a check of your listings (lowest or undercut, remove several at once) and a price-history chart.',
+    he: 'Market: מכירה מהירה ומיידית מהמלאי, בדיקה של ההצעות שלך (הזולה ביותר או שעקפו אותך, הסרה של כמה בבת אחת) וגרף היסטוריית מחירים.',
+    ru: 'Торговая площадка: быстрая и мгновенная продажа из инвентаря, проверка ваших лотов (самый дешёвый или перебит, снятие нескольких сразу) и график истории цен.',
+    de: 'Markt: Schnell- und Sofortverkauf aus dem Inventar, Prüfung deiner Angebote (günstigstes oder unterboten, mehrere auf einmal entfernen) und ein Preisverlauf.',
+    ptBR: 'Mercado: venda rápida e instantânea do inventário, verificação dos seus anúncios (mais barato ou superado, remover vários de uma vez) e gráfico de histórico de preços.'
+  },
+  changelog150Options: {
+    en: 'A redesigned settings page with search and presets, and recent alerts in the toolbar popup, with optional quiet hours.',
+    he: 'דף הגדרות מעוצב מחדש עם חיפוש ופריסטים, והתראות אחרונות בחלון של אייקון התוסף, עם שעות שקטות לבחירה.',
+    ru: 'Обновлённая страница настроек с поиском и пресетами, последние уведомления во всплывающем окне значка и тихие часы по желанию.',
+    de: 'Neu gestaltete Einstellungen mit Suche und Voreinstellungen, dazu die letzten Alarme im Toolbar-Popup und optionale Ruhezeiten.',
+    ptBR: 'Página de configurações redesenhada, com busca e predefinições, e alertas recentes no pop-up da barra, com horário silencioso opcional.'
   },
   obStep1Title: {
     en: 'Browse any game page',

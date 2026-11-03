@@ -72,7 +72,7 @@ A panel above Steam's own wishlist, built from Steam's wishlist and store data �
 ### Everywhere
 - 🔔 **Notification center** — every alert kept in the toolbar popup with an unread badge; click one to open the game; **quiet hours**
 - ⚙️ **Settings page** with search, presets (Minimal / Deal hunter / Trader / Everything), saves as you go, full **backup & restore**, custom CSS
-- 🖱 Right-click lookups, floating **SE** badge, keyboard shortcuts (`Ctrl+Shift+S/W/I`)
+- 🖱 Right-click lookups, floating **SE** badge, keyboard shortcuts (`Alt+Shift+S/W/D`)
 - 🌐 Prices follow the country Steam shows you (or your own choice); English, Hebrew (RTL), Russian, German, Portuguese (Brazil)
 
 ## Install

@@ -109,25 +109,36 @@
     }
   });
 
+  // Where a one-time modal may pop up: the first Steam page after an update or
+  // install (until 1.5.0 only the store front page, which people who go
+  // straight to their inventory or the market might not open for weeks) —
+  // but never over checkout, sign-in, account or trade pages.
+  const MODAL_HOSTS = ['store.steampowered.com', 'steamcommunity.com'];
+  const QUIET_PATHS = /^\/(checkout|cart|login|account|tradeoffer|mobileconf)/i;
+  const modalAllowedHere = () => MODAL_HOSTS.includes(location.hostname) && !QUIET_PATHS.test(location.pathname);
+
   // Changelog modal — shown once after install/update.
   async function maybeShowChangelog() {
     const d = await new Promise((r) => chrome.storage.local.get(['se_show_changelog'], r));
     if (!d.se_show_changelog) return;
-    // Only the store front page shows it; until then the flag stays set (1.4.x
-    // cleared it on whatever Steam page came first, so most people never saw it).
-    if (location.hostname !== 'store.steampowered.com' || location.pathname !== '/') return;
+    // The flag stays set until a page that can show it (1.4.x cleared it on
+    // whatever Steam page came first, and showed it only on the front page).
+    if (!modalAllowedHere()) return;
     chrome.storage.local.set({ se_show_changelog: false });
     if (document.getElementById('se-changelog-modal')) return;
     const v = chrome.runtime.getManifest().version;
     const modal = SE.el('div', { id: 'se-changelog-modal', class: 'se-modal' },
-      SE.el('div', { class: 'se-modal-box' },
+      SE.el('div', { class: 'se-modal-box', dir: SE.uiDir() },
         SE.el('div', { class: 'se-modal-h' }, `Steam Enhancer v${v}`),
         SE.el('div', { class: 'se-modal-body' },
           SE.el('p', null, SE.t('thanksForUpdating')),
           SE.el('ul', null,
             SE.el('li', { style: { fontWeight: 'bold' } }, SE.t('changelogItadKey')),
+            SE.el('li', null, SE.t('changelog150Wishlist')),
+            SE.el('li', null, SE.t('changelog150Market')),
             SE.el('li', null, SE.t('changelog150Selling')),
             SE.el('li', null, SE.t('changelog150Alerts')),
+            SE.el('li', null, SE.t('changelog150Options')),
             SE.el('li', null, SE.t('changelog150Country')),
             SE.el('li', null, SE.t('changelogShortcuts'))
           )
@@ -145,7 +156,7 @@
   async function maybeShowOnboarding() {
     const d = await new Promise((r) => chrome.storage.local.get(['se_show_onboarding'], r));
     if (!d.se_show_onboarding) return;
-    if (location.hostname !== 'store.steampowered.com' || location.pathname !== '/') return;
+    if (!modalAllowedHere()) return;
     chrome.storage.local.set({ se_show_onboarding: false });
     if (document.getElementById('se-onboard-modal')) return;
 
@@ -156,7 +167,7 @@
       ['⚙️', SE.t('obStep4Title'), SE.t('obStep4Desc')]
     ];
     const modal = SE.el('div', { id: 'se-onboard-modal', class: 'se-modal' },
-      SE.el('div', { class: 'se-modal-box' },
+      SE.el('div', { class: 'se-modal-box', dir: SE.uiDir() },
         SE.el('div', { class: 'se-modal-h' }, SE.t('welcomeTitle')),
         SE.el('div', { class: 'se-modal-body' },
           SE.el('div', { class: 'se-onboard-steps' },

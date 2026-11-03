@@ -37,15 +37,15 @@
 
   "commands": {
     "toggle-panel": {
-      "suggested_key": { "default": "Ctrl+Shift+S" },
+      "suggested_key": { "default": "Alt+Shift+S" },
       "description": "Toggle Steam Enhancer panel on the current Steam tab"
     },
     "open-wishlist": {
-      "suggested_key": { "default": "Ctrl+Shift+W" },
+      "suggested_key": { "default": "Alt+Shift+W" },
       "description": "Open your Steam wishlist"
     },
     "open-itad": {
-      "suggested_key": { "default": "Ctrl+Shift+I" },
+      "suggested_key": { "default": "Alt+Shift+D" },
       "description": "Open IsThereAnyDeal lookup for the current app"
     }
   },

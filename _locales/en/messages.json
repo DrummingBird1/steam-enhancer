@@ -495,7 +495,7 @@
     "message": "Thanks for updating!"
   },
   "changelogItadKey": {
-    "message": "Important: IsThereAnyDeal now requires a free API key for all price features. Get one at isthereanydeal.com/apps/my/ and paste it into Options → Region."
+    "message": "Important: price features need a free IsThereAnyDeal API key. Get one at isthereanydeal.com/apps/my/ and paste it in Options → Prices & keys."
   },
   "netWord": {
     "message": "you get"
@@ -681,7 +681,16 @@
     "message": "Prices now follow the country Steam shows you; you can override it in Options."
   },
   "changelogShortcuts": {
-    "message": "Try Ctrl+Shift+S to toggle the panel, Ctrl+Shift+W for wishlist."
+    "message": "New keyboard shortcuts: Alt+Shift+S shows/hides the panel, Alt+Shift+W opens your wishlist. Change them at chrome://extensions/shortcuts."
+  },
+  "changelog150Wishlist": {
+    "message": "A new wishlist dashboard beside Steam's wishlist: sort and filter by price, discount and historical low, set price alerts per game, export to CSV."
+  },
+  "changelog150Market": {
+    "message": "Market: quick and instant sell from the inventory, a check of your listings (lowest or undercut, remove several at once) and a price-history chart."
+  },
+  "changelog150Options": {
+    "message": "A redesigned settings page with search and presets, and recent alerts in the toolbar popup, with optional quiet hours."
   },
   "obStep1Title": {
     "message": "Browse any game page"

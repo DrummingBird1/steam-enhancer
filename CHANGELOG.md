@@ -95,6 +95,17 @@ Found in a signed-in test run on live Steam:
   now shows the game count and the value estimate (with currency) in a small
   floating bar; Steam's page has its own sort and filter.
 - Charts in Hebrew had their edge labels cut off (RTL flipped the anchoring).
+
+### Changed
+- **The "what's new" window** shows on the first Steam page after an update
+  (not only the store front page), never on checkout, sign-in, account or
+  trade pages. It lists the 1.5.0 features, points to the right settings
+  section (Prices & keys), and is right-to-left in Hebrew.
+- **Keyboard shortcuts** moved off Chrome's own: `Alt+Shift+S` (panel),
+  `Alt+Shift+W` (wishlist), `Alt+Shift+D` (IsThereAnyDeal). `Ctrl+Shift+W`
+  closes the window and `Ctrl+Shift+I` opens DevTools. Chrome applies
+  suggested shortcuts only on a new install, so people updating keep
+  whatever they had; the window points them to chrome://extensions/shortcuts.
 - **Background cache lost most writes** when requests ran in parallel. Each
   entry now has its own storage key, pruned by an alarm.
 - Alarms are recreated on browser startup, not only on install.
