@@ -163,6 +163,15 @@ t('no percentage → null', () => assert.strictEqual(SE.parseReviewSummary('No u
 
 console.log('SE.marketMath');
 const MM = SE.marketMath;
+t('price history: Steam\'s `prices` rows → UTC points', () => {
+  const pts = MM.historyPoints({ success: true, price_prefix: '₪', prices: [['Dec 11 2014 01: +0', 1.13, '1249'], ['Jan 2 2026 13: +0', '2.5', '7'], ['garbage', 1, '1']] });
+  assert.strictEqual(pts.length, 2);
+  assert.strictEqual(pts[0].t, Date.UTC(2014, 11, 11, 1));
+  assert.strictEqual(pts[1].t, Date.UTC(2026, 0, 2, 13));
+  assert.strictEqual(pts[1].v, 2.5);
+  assert.strictEqual(MM.historyPoints(null).length, 0);
+  assert.strictEqual(MM.historyPoints({ success: false }).length, 0);
+});
 t('quick sell: one cent under the lowest, 3-cent floor', () => {
   assert.strictEqual(MM.quickSellBuyerCents(125), 124);
   assert.strictEqual(MM.quickSellBuyerCents(3), 3);

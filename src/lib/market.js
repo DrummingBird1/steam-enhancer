@@ -47,6 +47,20 @@
       return m ? m[1] : null;
     },
 
+    // /market/pricehistory/ → [{ t, v }]. Verified signed in (2026): the
+    // series is in `prices`, as ["Dec 11 2014 01: +0", 1.13, "1249"] (UTC
+    // hour, median price in the wallet currency, units sold). 1.4.x read a
+    // `price_history` field that doesn't exist, so the chart never drew.
+    historyPoints(body) {
+      const rows = (body && (body.prices || body.price_history)) || [];
+      if (!Array.isArray(rows)) return [];
+      return rows.map(([date, price]) => {
+        const m = String(date).match(/^([A-Za-z]{3}) (\d{1,2}) (\d{4}) (\d{1,2})/);
+        const t = m ? Date.parse(`${m[1]} ${m[2]} ${m[3]} ${m[4]}:00:00 UTC`) : NaN;
+        return { t, v: Number(price) };
+      }).filter((p) => Number.isFinite(p.t) && Number.isFinite(p.v));
+    },
+
     // /market/listings/<appid>/<market_hash_name> → { appid, name }
     listingFromUrl(url) {
       const m = String(url || '').match(/\/market\/listings\/(\d+)\/([^/?#]+)/);

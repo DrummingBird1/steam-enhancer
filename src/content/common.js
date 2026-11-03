@@ -53,6 +53,9 @@
     const country = SE.effectiveCountry(settings, await detectCountry());
 
     SE.ctx = { settings, colls, country };
+    // Pages with g_rgWalletInfo (inventory, market home…) record the wallet
+    // currency; the Market Beta item page has none and relies on it.
+    if (location.hostname === 'steamcommunity.com') SE.safe('wallet', () => SE.walletCurrency());
     applyCustomCss(settings.customCss);
     SE.log('ready', { url: location.href, hasColls: !!colls });
 

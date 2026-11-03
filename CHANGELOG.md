@@ -72,6 +72,29 @@ new tools. How it was planned: `docs/PLAN-1.5.0.md`.
   so every current deal was announced again on the next run.
 - The library page polled forever when it found no games; it stops after 10 s.
 - The right-click menu items are translated.
+
+Found in a signed-in test run on live Steam:
+- **The market price-history chart never drew.** Steam returns the series as
+  `prices`, not `price_history`; parsing is now in `SE.marketMath.historyPoints`
+  (tested).
+- **Steam's new inventory item pane** (React) has none of the old markup and
+  its tile images no longer carry item names, so "View on Market", quick sell,
+  tile prices, sorting, grouping, duplicate marking and the name filter all
+  found nothing. Tiles are matched to items by asset id now, the pane by its
+  visible `#iteminfo0/1` and `<h1>`, the game by the `#730` hash. The item list
+  also skips the empty grid placeholders Steam keeps in `m_rgAssets` (an
+  inventory of 1 item reported 36).
+- **Steam's "Market Beta" item page** (React) has no classic markup and no
+  order-book id. The tools that only need the URL (price chart, 24 h summary,
+  copy name, SteamDB) now appear in a floating panel there; instant sell says
+  the order book can't be read instead of "no buy orders".
+- **Market prices were in USD on pages without wallet info** (Market Beta);
+  every classic community page now records the wallet currency.
+- **"You receive ≈" appeared twice** on each market search row.
+- **Library on Steam's new games page**: the old toolbar found no games. It
+  now shows the game count and the value estimate (with currency) in a small
+  floating bar; Steam's page has its own sort and filter.
+- Charts in Hebrew had their edge labels cut off (RTL flipped the anchoring).
 - **Background cache lost most writes** when requests ran in parallel. Each
   entry now has its own storage key, pruned by an alarm.
 - Alarms are recreated on browser startup, not only on install.

@@ -178,6 +178,18 @@
 
 /* Wishlist panel (1.5.0) */
 .se-wl-panel { max-width: 1100px; margin: 12px auto; }
+/* Market Beta item page: tools float beside the React page. */
+.se-market-float {
+  position: fixed; left: 16px; bottom: 16px; z-index: 9999; width: min(460px, calc(100vw - 100px));
+  max-height: 70vh; overflow: auto; box-shadow: 0 4px 14px rgba(0,0,0,.5);
+  background: #16202d; /* opaque: it floats over the page */
+}
+/* Library on Steam's React games page: floats beside the page, not inside it. */
+.se-library-float {
+  position: fixed; left: 16px; bottom: 16px; z-index: 9999; max-width: min(560px, calc(100vw - 100px));
+  background: #16202d; border: 1px solid #2a475e; border-radius: 4px; padding: 6px 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.5);
+}
 .se-wl-panel .se-panel-h { display: flex; align-items: center; gap: 6px; }
 .se-wl-toggle { padding: 0 6px; font-size: 11px; }
 .se-wl-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 4px 0; }
@@ -203,6 +215,9 @@
 .se-chart-range { padding: 1px 8px; font-size: 11px; opacity: 0.7; }
 .se-chart-range.se-active { opacity: 1; }
 .se-chart-svg { width: 100%; height: auto; display: block; background: #0d1620; border-radius: 3px; }
+/* Axis labels are positioned for left-to-right; in an RTL panel (Hebrew)
+   text-anchor flips and the edge labels were cut off. */
+.se-chart-plot { direction: ltr; }
 .se-chart-line { fill: none; stroke: #66c0f4; stroke-width: 1.5; }
 .se-chart-low { stroke: #a4d007; stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.8; }
 .se-chart-cross { stroke: #8f98a0; stroke-width: 1; }

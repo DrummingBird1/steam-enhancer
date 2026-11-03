@@ -44,10 +44,12 @@
       SE.el('span', { id: 'se-inv-out', class: 'se-muted' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);
-    SE.$('#se-inv-filter').addEventListener('input', SE.debounce((e) => {
+    SE.$('#se-inv-filter').addEventListener('input', SE.debounce(async (e) => {
       const q = e.target.value.toLowerCase().trim();
-      for (const tile of SE.$$('.itemHolder, .inventory_item_link')) {
-        const name = (tile.querySelector('.hover_item_name')?.textContent || tile.innerText || '').toLowerCase();
+      const items = q ? await getItems() : null;
+      for (const tile of SE.$$('.itemHolder')) {
+        if (!assetIdFromTile(tile)) continue; // empty slot
+        const name = ((items && itemForTile(tile, items)?.name) || '').toLowerCase();
         tile.style.display = (!q || name.includes(q)) ? '' : 'none';
       }
     }, 150));
@@ -59,10 +61,29 @@
   }
 
   function assetIdFromTile(tile) {
-    // Steam inventory tile ids look like "160_2_10995123456" (appid_contextid_assetid).
-    const m = (tile.id || '').match(/(\d+)_(\d+)_(\d+)$/);
+    // Steam inventory tile ids look like "160_2_10995123456" (appid_contextid_assetid),
+    // on the tile itself or on the .item inside an .itemHolder.
+    const id = tile.id || tile.querySelector('.item')?.id || '';
+    const m = id.match(/(\d+)_(\d+)_(\d+)$/);
     return m ? m[3] : null;
   }
+
+  // The item behind a tile, by asset id. (Tile images used to carry the item
+  // name as alt text; they don't any more, so names can't be matched.)
+  function itemForTile(tile, items) {
+    const id = assetIdFromTile(tile);
+    return id ? items.find((i) => String(i.id) === id) || null : null;
+  }
+
+  // The item-detail pane Steam is showing: it alternates between #iteminfo0
+  // and #iteminfo1 and hides the other one. The pane's content is now React,
+  // with the item name in its <h1>.
+  function visibleInfoPane() {
+    return [SE.$('#iteminfo0'), SE.$('#iteminfo1')].find((p) => p && p.offsetParent !== null)
+      || SE.$('.inventory_iteminfo.activeInfo');
+  }
+  const paneItemName = (pane) =>
+    (pane.querySelector('h1')?.textContent || pane.querySelector('.hover_item_name')?.textContent || '').trim();
 
   async function getItems(force = false) {
     // Switching games (#730 → #753) is only a hash change: the items read
@@ -124,10 +145,9 @@
       if (k) counts.set(k, (counts.get(k) || 0) + 1);
     });
     let marked = 0;
-    for (const tile of SE.$$('.itemHolder, .inventory_item_link')) {
-      const name = tile.querySelector('.hover_item_name')?.textContent
-                 || tile.querySelector('img')?.alt
-                 || '';
+    for (const tile of SE.$$('.itemHolder')) {
+      const it = itemForTile(tile, items);
+      const name = it && (it.market_hash_name || it.name);
       if (name && counts.get(name) > 1) {
         tile.style.outline = '2px solid #b07a1f';
         marked++;
@@ -164,14 +184,11 @@
     if (!container) { out.textContent = SE.t('invNoTiles'); return; }
     const items = await getItems();
     if (!items) { out.textContent = SE.t('invReadFailed'); return; }
-    const byName = new Map(items.map(i => [i.name, i]));
-
     out.textContent = SE.t('invPricingForSort');
-    const tiles = SE.$$('.itemHolder, .inventory_item_link').slice(0, 60);
+    const tiles = SE.$$('.itemHolder').filter((t) => assetIdFromTile(t)).slice(0, 60);
     const valueCache = new Map();
     for (const tile of tiles) {
-      const name = tile.querySelector('img')?.alt || tile.querySelector('.hover_item_name')?.textContent;
-      const it = name && byName.get(name);
+      const it = itemForTile(tile, items);
       let val = 0;
       if (it?.marketable && it.market_hash_name) {
         const key = it.appid + ':' + it.market_hash_name;
@@ -195,17 +212,14 @@
     if (!container) { out.textContent = SE.t('invNoTiles'); return; }
     const items = await getItems();
     if (!items) { out.textContent = SE.t('invReadFailed'); return; }
-    const byName = new Map(items.map(i => [i.name, i]));
-
     const groupOf = (it) => it?.tags?.find(t => t.category === 'Type')?.name
       || it?.tags?.[0]?.name
       || 'Other';
 
-    const tiles = SE.$$('.itemHolder, .inventory_item_link');
+    const tiles = SE.$$('.itemHolder').filter((t) => assetIdFromTile(t));
     const groups = new Map();
     for (const tile of tiles) {
-      const name = tile.querySelector('img')?.alt || tile.querySelector('.hover_item_name')?.textContent;
-      const group = groupOf(byName.get(name));
+      const group = groupOf(itemForTile(tile, items));
       if (!groups.has(group)) groups.set(group, []);
       groups.get(group).push(tile);
     }
@@ -346,8 +360,9 @@
   function openBoosterCreator() {
     window.open('https://steamcommunity.com/tradingcards/boostercreator/', '_blank');
   }
-  function stickerHelper() {
-    const items = SE.$$('.itemHolder img').map(i => i.alt).filter(n => /\bSticker\b/i.test(n));
+  async function stickerHelper() {
+    const items = [...new Set((await getItems() || []).map((i) => i.market_hash_name || i.name)
+      .filter((n) => n && /\bSticker\b/i.test(n)))];
     const out = SE.$('#se-inv-out');
     if (!items.length) { out.textContent = SE.t('invNoStickers'); return; }
     out.innerHTML = '';
@@ -427,7 +442,9 @@
         buyerCents = SE.marketMath.quickSellBuyerCents(SE.marketMath.cents(SE.parsePrice(p?.data?.lowest_price)));
       } else {
         const nameId = await SE.api.itemNameId(it.appid, it.market_hash_name);
-        const h = nameId ? await SE.api.itemOrdersHistogram(nameId, 'US', wallet.id) : null;
+        // Steam's Market Beta item page doesn't carry the order-book id.
+        if (!nameId) { out.textContent = SE.t('qsNoOrderBook'); return; }
+        const h = await SE.api.itemOrdersHistogram(nameId, 'US', wallet.id);
         buyerCents = SE.marketMath.instantSellBuyerCents(h?.data?.highest_buy_order);
       }
       if (buyerCents == null) { out.textContent = SE.t(kind === 'quick' ? 'qsNoListings' : 'qsNoBuyOrders'); return; }
@@ -514,8 +531,7 @@
     if (!items) return;
     for (const tile of tiles) {
       tile.setAttribute('data-se-priced', '1');
-      const name = tile.querySelector('img')?.alt;
-      const it = items.find(x => x.name === name);
+      const it = itemForTile(tile, items);
       if (!it?.marketable) continue;
       const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
       const v = p?.data?.median_price || p?.data?.lowest_price;
@@ -528,9 +544,9 @@
   }
 
   async function decorateSelected() {
-    const sel = SE.$('.inventory_iteminfo.activeInfo, #iteminfo1, #iteminfo0');
+    const sel = visibleInfoPane();
     if (!sel) return;
-    const stamp = sel.id + (sel.querySelector('.hover_item_name')?.textContent || '');
+    const stamp = sel.id + paneItemName(sel);
     if (sel.dataset.seDone === stamp) return;
     sel.dataset.seDone = stamp;
     // Steam alternates between two info panes and refills them in place, so
@@ -538,15 +554,24 @@
     // the quick-sell box would sell THAT item. Start clean.
     sel.querySelectorAll('.se-inv-added').forEach((n) => n.remove());
 
-    const name = sel.querySelector('.hover_item_name')?.textContent?.trim();
+    const name = paneItemName(sel);
     if (!name) return;
-    const appidMatch = location.hash.match(/inventory_[^_]+_(\d+)/)
+    // The hash is "#730" or "#753_6" (game, context), and empty on first load,
+    // when the selected game tab says it; older pages used
+    // "#inventory_<steamid>_<appid>".
+    const appidMatch = location.hash.match(/^#(\d+)/)
+      || location.hash.match(/inventory_[^_]+_(\d+)/)
+      || SE.$('.games_list_tab.active')?.id.match(/inventory_link_(\d+)/)
       || sel.querySelector('a[href*="/market/listings/"]')?.href.match(/listings\/(\d+)\//);
     const appid = appidMatch?.[1];
     if (!appid) return;
+    // The market page is keyed by market_hash_name, which can differ from the
+    // display name (CS2 wear, item renames).
+    const selected = (await SE.pageCall('selectedItem'))?.result;
+    const hashName = (selected?.name === name && selected.market_hash_name) || name;
     sel.appendChild(SE.el('a', {
       class: 'se-btn se-quicksell se-inv-added',
-      href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(name)}`,
+      href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(hashName)}`,
       target: '_blank', rel: 'noopener'
     }, SE.t('viewOnMarket')));
     if (SE.ctx?.settings.enableQuickSell) SE.safe('inv:quickSell', () => addQuickSell(sel));
@@ -555,8 +580,10 @@
     // per-item inspect link (Steam embeds one per asset) so CSFloat opens the
     // precise item rather than a generic name search.
     if (appid === '730') {
+      // The selected asset itself — several items can share a name.
+      const selected = (await SE.pageCall('selectedItem'))?.result;
       const items = await getItems();
-      const it = items?.find(x => x.name === name);
+      const it = items?.find(x => String(x.id) === String(selected?.id)) || items?.find(x => x.name === name);
       const inspectAction = it?.actions?.find(a => /inspect/i.test(a.name || ''));
       if (inspectAction?.link && cachedOwnerId && it?.id) {
         const inspectLink = inspectAction.link

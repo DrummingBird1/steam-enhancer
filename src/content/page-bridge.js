@@ -34,7 +34,9 @@
       let items = null;
       if (inv.m_rgAssets && Object.keys(inv.m_rgAssets).length) {
         // Current inventory code: CAsset objects carrying their own description.
-        items = Object.values(inv.m_rgAssets).map((a) => toItem(a, a.description || {}, a.contextid));
+        // m_rgAssets also holds empty placeholders for unfilled grid slots.
+        items = Object.values(inv.m_rgAssets).filter((a) => a && a.assetid && a.description)
+          .map((a) => toItem(a, a.description, a.contextid));
       } else if (inv.rgInventory) {
         // Older/partial inventories: assets and descriptions in separate maps.
         items = Object.values(inv.rgInventory).map((it) =>

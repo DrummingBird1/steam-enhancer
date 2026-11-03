@@ -857,6 +857,12 @@
   "qsNoListings": {
     "message": "Ninguém está vendendo este item agora, então não há o que superar."
   },
+  "qsNoOrderBook": {
+    "message": "Não foi possível ler o livro de ofertas: a página Market Beta do Steam não o inclui. Use a venda rápida ou o mercado clássico (Exit Market Beta)."
+  },
+  "mktBetaNote": {
+    "message": "Cobrir preço e o assistente de ordens de compra precisam da página clássica (Exit Market Beta)."
+  },
   "qsNoBuyOrders": {
     "message": "Não há ordens de compra para este item (ou o livro de ofertas exige login)."
   },

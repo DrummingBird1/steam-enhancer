@@ -13,6 +13,7 @@
   function insertToolbar(tries = 0) {
     if (SE.$('#se-library-toolbar')) return;
     const games = readGames();
+    if (!games.length && reactGameIds().length) { insertReactBarWhenLoaded(); return; }
     // The list renders after load; give up after ~10 s (private or empty
     // library, or markup we don't recognize) instead of polling forever.
     if (!games.length) { if (tries < 20) setTimeout(() => insertToolbar(tries + 1), 500); return; }
@@ -39,6 +40,38 @@
     SE.safe('lib:snapshot', () => saveSnapshot({ gameCount: games.length, totalMinutes: total }));
   }
 
+  // Steam's current games page is a React app with its own sort, filter and
+  // playtime, and its markup is generated class names we can't rearrange
+  // safely. So there we add only what it lacks — the game count and the value
+  // estimate — in a small floating bar outside its tree (never inside it).
+  // Every game row links to its store page, which gives the app ids.
+  function reactGameIds() {
+    return [...new Set(SE.$$('a[href*="store.steampowered.com/app/"]')
+      .map((a) => a.href.match(/\/app\/(\d+)/)?.[1]).filter(Boolean))];
+  }
+  // The list fills in over a few seconds: wait until the count holds still.
+  function insertReactBarWhenLoaded(last = -1, tries = 0) {
+    if (SE.$('#se-library-toolbar')) return;
+    const n = reactGameIds().length;
+    if ((n !== last || n === 0) && tries < 20) {
+      setTimeout(() => insertReactBarWhenLoaded(n, tries + 1), 1000);
+      return;
+    }
+    if (n) insertReactBar();
+  }
+  function insertReactBar() {
+    const ids = reactGameIds();
+    const bar = SE.el('div', { id: 'se-library-toolbar', class: 'se-toolbar se-library-float', dir: 'auto' },
+      SE.el('span', { class: 'se-label' }, `${SE.t('libraryWord')}: ${ids.length} ${SE.t('gamesWord')}`),
+      SE.ctx?.settings.showLibraryValue
+        ? SE.el('button', { class: 'se-btn', onclick: () => estimateLibraryValue(reactGameIds()) }, SE.t('estimateLibraryValue'))
+        : null,
+      SE.el('span', { id: 'se-library-out', class: 'se-muted' }, '')
+    );
+    document.body.appendChild(bar);
+    SE.safe('lib:snapshot', () => saveSnapshot({ gameCount: ids.length }));
+  }
+
   const SNAPSHOT_KEY = 'se_library_snapshot_v1';
   async function saveSnapshot(patch) {
     const key = SE.profileKeyFromPath();
@@ -53,22 +86,23 @@
   // sample of the library, then extrapolates. Rate-limit-friendly: first 60
   // games only, same "sample and extrapolate" pattern used elsewhere in the
   // extension (inventory value estimate, etc.).
-  async function estimateLibraryValue() {
+  async function estimateLibraryValue(appids) {
     const out = SE.$('#se-library-out');
-    const games = readGames();
+    const games = Array.isArray(appids) ? appids.map((appid) => ({ appid })) : readGames();
     const sample = games.slice(0, 60);
     out.textContent = SE.t('libPricing', sample.length, games.length);
     const country = SE.ctx?.country || 'us';
-    let sum = 0, priced = 0;
+    let sum = 0, priced = 0, currency = null;
     for (const g of sample) {
       const r = await SE.api.appDetails(g.appid, country);
       const po = r?.data?.[g.appid]?.data?.price_overview;
-      if (po?.final != null) { sum += po.final / 100; priced++; }
+      if (po?.final != null) { sum += po.final / 100; priced++; currency = currency || po.currency; }
     }
     const avg = priced ? sum / priced : 0;
     const estimate = avg * games.length;
+    const money = (v) => (currency ? SE.formatMoney(v, currency) : v.toFixed(2));
     out.textContent = priced
-      ? SE.t('libValueResult', priced, sample.length, avg.toFixed(2), estimate.toFixed(2), games.length)
+      ? SE.t('libValueResult', priced, sample.length, money(avg), money(estimate), games.length)
       : SE.t('libValueFailed', country.toUpperCase());
     if (priced) SE.safe('lib:valueSnapshot', () => saveSnapshot({ value: estimate, valueSampledGames: priced }));
   }

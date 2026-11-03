@@ -21,7 +21,9 @@
       if (it.dataset.seDone) continue;
       it.dataset.seDone = '1';
       const priceEl = it.querySelector('.market_listing_price_with_fee, .market_listing_their_price, .market_listing_price');
-      if (!priceEl) continue;
+      // Search results nest a .market_listing_row inside a .market_listing_row_link,
+      // so the same price cell is reached twice.
+      if (!priceEl || priceEl.querySelector('.se-market-net')) continue;
       const price = SE.parsePrice(priceEl.textContent);
       if (price == null) continue;
       const net = SE.marketFees.sellerReceives(Math.round(price * 100)) / 100;
@@ -121,8 +123,9 @@
   }
 
   async function insertItemTools() {
+    if (SE.$('#se-mkt-tools')) return;
     const anchor = SE.$('#largeiteminfo_item_descriptors') || SE.$('#market_buyorder_info') || SE.$('.market_listing_largeimage');
-    if (!anchor || SE.$('#se-mkt-tools')) return;
+    if (!anchor) { insertBetaItemTools(); return; }
     const showBuyOrder = SE.ctx?.settings.showBuyOrderHelper;
     const box = SE.el('div', { id: 'se-mkt-tools', class: 'se-panel' },
       SE.el('div', { class: 'se-panel-h' }, SE.t('marketQuickTools')),
@@ -146,6 +149,31 @@
     anchor.parentElement?.insertBefore(box, anchor);
   }
 
+  // Steam's "Market Beta" item page is a React app: none of the classic
+  // markup, and no order-book id (Market_LoadOrderSpread) in the page. The
+  // tools that only need the item's URL still work, so they go in a small
+  // floating panel outside the React tree (never inside it); undercut and the
+  // buy-order helper need the classic page.
+  function insertBetaItemTools(tries = 0) {
+    if (SE.$('#se-mkt-tools')) return;
+    if (!document.querySelector('[data-react-nav-root]')) {
+      if (tries < 10) setTimeout(() => insertBetaItemTools(tries + 1), 1000);
+      return;
+    }
+    const btn = (label, fn) => SE.el('button', { class: 'se-btn', onclick: fn }, label);
+    document.body.appendChild(SE.el('div', { id: 'se-mkt-tools', class: 'se-panel se-market-float', dir: 'auto' },
+      SE.el('div', { class: 'se-panel-h' }, SE.t('marketQuickTools')),
+      SE.el('div', { class: 'se-panel-body' },
+        SE.el('div', { class: 'se-row' },
+          btn(SE.t('priceHistoryChart'), showPriceHistoryChart), ' ',
+          btn(SE.t('salesSummaryBtn'), salesSummary), ' ',
+          btn(SE.t('copyHashBtn'), copyHash), ' ',
+          btn(SE.t('openSteamDbBtn'), openSCMHistory)),
+        SE.el('div', { class: 'se-row se-muted' }, SE.t('mktBetaNote')),
+        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted' }, '')
+      )));
+  }
+
   function listingNameFromUrl() {
     const parts = location.pathname.split('/').filter(Boolean);
     const appid = parts[parts.indexOf('listings') + 1];
@@ -159,14 +187,7 @@
     if (!appid || !name) return;
     out.textContent = '…';
     const r = await SE.api.marketPriceHistory(appid, name);
-    const raw = r?.data?.price_history;
-    if (!r?.ok || !Array.isArray(raw) || !raw.length) {
-      out.textContent = SE.t('needsLoginForChart');
-      return;
-    }
-    const points = raw
-      .map(([dateStr, price]) => ({ t: new Date(dateStr).getTime(), v: Number(price) }))
-      .filter((p) => isFinite(p.t) && isFinite(p.v));
+    const points = r?.ok ? SE.marketMath.historyPoints(r.data) : [];
     if (points.length < 2) { out.textContent = SE.t('needsLoginForChart'); return; }
     // Sample down to ~300 points so the SVG path stays cheap on items with years of history.
     const step = Math.max(1, Math.floor(points.length / 300));

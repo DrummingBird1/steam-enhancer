@@ -857,6 +857,12 @@
   "qsNoListings": {
     "message": "Gerade verkauft niemand diesen Gegenstand, es gibt nichts zu unterbieten."
   },
+  "qsNoOrderBook": {
+    "message": "Das Orderbuch konnte nicht gelesen werden: Die Market-Beta-Seite von Steam enthält es nicht. Nutze den Schnellverkauf oder den klassischen Markt (Exit Market Beta)."
+  },
+  "mktBetaNote": {
+    "message": "Unterbieten und der Kaufauftrag-Helfer brauchen die klassische Marktseite (Exit Market Beta)."
+  },
   "qsNoBuyOrders": {
     "message": "Keine Kaufaufträge für diesen Gegenstand (oder das Orderbuch erfordert eine Anmeldung)."
   },

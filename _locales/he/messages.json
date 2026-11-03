@@ -857,6 +857,12 @@
   "qsNoListings": {
     "message": "אף אחד לא מוכר את הפריט הזה כרגע, אז אין מה לעקוף."
   },
+  "qsNoOrderBook": {
+    "message": "לא הצלחתי לקרוא את ספר ההזמנות של הפריט: עמוד ה-Market Beta של Steam לא כולל אותו. אפשר להשתמש במכירה מהירה, או ב-Market הקלאסי (Exit Market Beta)."
+  },
+  "mktBetaNote": {
+    "message": "עקיפת מחיר ועזרה בהזמנות קנייה דורשות את עמוד ה-Market הקלאסי (Exit Market Beta)."
+  },
   "qsNoBuyOrders": {
     "message": "אין הזמנות קנייה לפריט הזה (או שספר ההזמנות דורש התחברות)."
   },

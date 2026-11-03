@@ -857,6 +857,12 @@
   "qsNoListings": {
     "message": "Nobody is selling this item right now, so there's nothing to undercut."
   },
+  "qsNoOrderBook": {
+    "message": "Couldn't read this item's order book: Steam's Market Beta page doesn't include it. Use quick sell, or the classic market (Exit Market Beta)."
+  },
+  "mktBetaNote": {
+    "message": "Undercut and the buy-order helper need the classic market page (Exit Market Beta)."
+  },
   "qsNoBuyOrders": {
     "message": "No buy orders for this item (or the order book needs you to be signed in)."
   },

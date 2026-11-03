@@ -137,6 +137,8 @@ checkAuthOnly('Community market: pricehistory endpoint (market.js price-history 
   // session cookies via the background SW, which this anonymous script has none of.
   const url = 'https://steamcommunity.com/market/pricehistory/?appid=440&market_hash_name=' + encodeURIComponent('Mann Co. Supply Crate Key');
   const r = await fetch(url);
+  // Signed in it answers { success, price_prefix, prices: [[date, price, volume], …] }
+  // (SE.marketMath.historyPoints).
   assertTruthy(r.status === 200, `expected 200 with a session; anonymous got ${r.status} (expected — needs a logged-in check)`);
 });
 
