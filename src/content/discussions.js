@@ -31,7 +31,7 @@
 
   function insertQuote(text) {
     const box = document.querySelector('.commentthread_entry textarea, #commentthread_ForumTopic_TopicComment, textarea[name="comment"]');
-    if (!box) { alert('No reply box found on this page.'); return; }
+    if (!box) { alert(SE.t('discNoReplyBox')); return; }
     const quoted = `[quote]${text}[/quote]\n`;
     box.value = quoted + (box.value || '');
     box.focus();

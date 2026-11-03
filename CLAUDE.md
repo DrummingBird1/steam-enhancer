@@ -11,20 +11,27 @@ It is **not** affiliated with Valve, Augmented Steam, or Steam Inventory Helper.
 ## Repository layout
 
 ```
-manifest.json              MV3 manifest. Adds host permissions for store/community/ITAD/SteamDB/ProtonDB/HLTB.
+manifest.json              MV3 manifest. Host permissions: Steam store/community/Web API, ITAD API, ProtonDB, open.er-api.com.
 src/
-  background/service-worker.js   Network proxy with caching, context menus, wishlist deal alarm.
+  background/service-worker.js   Network proxy (per-entry cache, per-endpoint pacing), context menus, alarms.
   lib/                           Loaded into every content script bundle (NOT ES modules).
     utils.js                     DOM helpers, parsePrice, message bridge, page-context injection.
     storage.js                   chrome.storage.sync settings + chrome.storage.local cache/collections.
-    currency.js                  Country → currency map.
-    api.js                       Thin wrappers around ITAD / Steam storefront / ProtonDB / HLTB calls.
+    currency.js                  Country/currency maps, Steam currency ids, SE.walletCurrency, SE.effectiveCountry.
+    api.js                       Thin wrappers around ITAD / Steam storefront / ProtonDB calls.
+    itad.js                      Pure parsers for ITAD responses. Shared with the service worker (attaches to globalThis).
+    wishlist.js                  Pure wishlist model (API parsing, rows, sort/filter, CSV). Loaded only on wishlist pages.
     prices.js                    Composite "priceSummary(appid)" used by store pages.
+    chart.js                     Interactive price chart (SE.priceChart); pure geometry in SE.chartModel.
+    market.js                    Pure market helpers (quick/instant sell prices, listing status, parsing).
+    alerts.js                    Pure alert history + quiet hours. Shared with the service worker and popup.
   content/                       Page-specific content scripts.
+    page-bridge.js               Runs in the page's MAIN world; named ops reading Steam globals (see SE.pageCall).
     common.js                    Loads dynamicstore (owned/wishlist/ignored), dispatches `se-ready`, onboarding/changelog modals.
-    app.js                       Store /app/, /sub/, /bundle/ pages — the biggest file; most store-page panels live here.
+    app.js                       Store /app/, /sub/, /bundle/ pages: decides which panels run.
+    app/                         The store-page panels (core, prices, info, reviews, friends).
     search.js                    /search/, /specials/, /sale/ — row decoration + price tags.
-    wishlist.js                  Wishlist toolbar, export, per-row price targets.
+    wishlist.js                  Wishlist panel: table built from Steam's wishlist + store APIs (the page itself is React).
     market.js                    Steam Community market — net-fee, undercut, buy-order helper.
     inventory.js                 Community inventory tools (uses g_ActiveInventory via page injection).
     profile.js                   User-profile shortcuts, library/badge summaries, media links.
@@ -43,7 +50,7 @@ scripts/smoke-test.js            Standalone Node script (no deps) that hits live
                                   with `node scripts/smoke-test.js` before a release or when
                                   something seems broken after a Steam redesign.
 scripts/unit-test.js             Standalone Node script (no deps) testing the pure, non-DOM logic
-                                  in src/lib/utils.js (parsePrice, sparklineSvg, etc.) by loading
+                                  in src/lib/ (parsePrice, market fees, API parsers, chart geometry, etc.) by loading
                                   it into a vm sandbox. No network, runs instantly. Run with
                                   `node scripts/unit-test.js`.
 scripts/gen-locales.js           Regenerates every _locales/*/messages.json from one source table.
@@ -56,10 +63,12 @@ scripts/gen-locales.js           Regenerates every _locales/*/messages.json from
 - **No build step.** Files are loaded directly by Chrome. Don't add a bundler unless there's a strong reason.
 - **No ES modules in content scripts.** Each file attaches to `window.SteamEnhancer` (aliased as `SE`). The background service worker is the only `"type": "module"` slot, but currently uses plain JS.
 - **All network calls go through the background SW** via `SE.bg({ type: 'fetchJson', url, cacheKey, ttl })`. This centralizes caching and keeps CORS-sensitive endpoints working. Do not `fetch()` from a content script.
-- **Page-context access** (Steam's `g_ActiveInventory`, `g_sessionID`, etc.) uses `SE.injectPage(fn)` which appends a `<script>` and round-trips via `postMessage`. Don't try to read those directly from the isolated world.
+- **Page-context access** (Steam's `g_ActiveInventory`, `g_sessionID`, etc.) uses `SE.pageCall('op', args)`, which round-trips via `postMessage` to `src/content/page-bridge.js` (a `"world": "MAIN"` content script). To read something new, add a named op there — nothing is eval'd or injected as inline `<script>`. Don't try to read those globals directly from the isolated world.
 - **DOM decoration**: every injected node gets a class prefixed `se-` and most receive a `dataset.seDone = '1'` flag so MutationObservers don't re-decorate the same row.
-- **Settings** live under `chrome.storage.sync` key `se_settings_v1` and are read once on `se-ready`. Defaults are duplicated in `src/lib/storage.js` and `src/options/options.js` — keep them in sync if you change them.
-- **Cache** lives under `chrome.storage.local` key `se_bg_cache_v1` (background) and `se_cache_v1` (content, currently unused — prefer the background cache). TTL is per-entry in minutes.
+- **Settings** live under `chrome.storage.sync` key `se_settings_v1` and are read once on `se-ready`, except the few too big for sync's 8KB item quota (`LOCAL_KEYS` in `storage.js`, currently `customCss`), which live in `chrome.storage.local` under `se_settings_local_v1`. Always go through `SE.storage`. Defaults live only in `src/lib/storage.js`; the popup and options pages load that file too. The Options page is generated from `SECTIONS` in `options.js` — add a setting there and an `opt_<key>` label in `gen-locales.js`.
+- **Cache** lives in the background only, one `chrome.storage.local` key per entry (`c:<cacheKey>`), pruned by the `se-cache-prune` alarm. TTL is per-entry in minutes. Identical in-flight requests share one fetch.
+- **Money**: market prices are in the user's wallet currency (`SE.walletCurrency()`), and anything that lists items for sale must refuse when `known` is false. Use `SE.marketFees` for buyer-pays/seller-receives — `sellitem` takes the after-fee amount.
+- **Price country** is `SE.ctx.country`: the Options override, else the country Steam reports on the page (`#application_config`), else `us`.
 - **i18n**: content-script UI text goes through `SE.t('key')` (defined in `src/lib/i18n.js`), never a hardcoded string. Add new keys to the table in `scripts/gen-locales.js` and re-run it — don't hand-edit `_locales/*/messages.json`. Popup/options HTML uses `data-i18n="key"` attributes read by each page's own `localize()`.
 
 ## External APIs used
@@ -68,22 +77,25 @@ scripts/gen-locales.js           Regenerates every _locales/*/messages.json from
 
 | Service | Why | Auth |
 |---|---|---|
-| `api.isthereanydeal.com` v2 (lookup/prices/storelow/overview) | Current/historical lowest prices | **User-supplied ITAD API key (Options → IsThereAnyDeal API key), required since v1.4.0** |
+| `api.isthereanydeal.com` v2 (lookup/prices/storelow/history) | Current lowest, Steam historical low, price-history chart | **User-supplied ITAD API key (Options → IsThereAnyDeal API key), required since v1.4.0** |
 | `store.steampowered.com/api/appdetails` | Regional pricing | Cookie-based (we include credentials) |
-| `api.steampowered.com` GetNumberOfCurrentPlayers / GetGlobalAchievementPercentagesForApp | Player count, achievement rarity | None |
+| `api.steampowered.com` GetNumberOfCurrentPlayers / IPlayerService/GetGameAchievements | Player count, achievement names + rarity | None |
 | `steamcommunity.com/market/priceoverview` | Market item value | Steam session cookie |
 | `protondb.com` summary API | Linux compat rating | None |
-| `howlongtobeat.com` search API | Playtime estimates | None (anti-bot may break this) |
+| `api.steampowered.com` IWishlistService/GetWishlist | Wishlist panel: whose wishlist, priority, date added | None (public wishlists only) |
+| `api.steampowered.com` IStoreBrowseService/GetItems | Wishlist panel: names, prices, discounts, reviews, Steam Deck category (100 apps per call) | None |
 | `store.steampowered.com/dynamicstore/userdata/` | Owned / wishlist / ignored ids | Steam session cookie |
 | `store.steampowered.com/api/featuredcategories` | Free-promo detection (100%-off specials) | None |
 | `store.steampowered.com/appreviewhistogram/{appid}` | Review-bomb heuristic (recommendation counts over time) | None |
 | `steamcommunity.com/market/itemordershistogram` | Buy-order helper (order-book depth) | Steam session cookie; `item_nameid` is scraped from a `Market_LoadOrderSpread(...)` inline script on the listing page — **verified anonymous requests don't render this script at all** (see `scripts/smoke-test.js`), so it's untested against a real logged-in session |
-| `api.steampowered.com` GetFriendList / GetOwnedGames / ResolveVanityURL | Opt-in "owned by friends" | User-supplied Steam Web API key (Options page), never baked in |
+| `api.steampowered.com` GetFriendList / GetOwnedGames / ResolveVanityURL / GetPlayerAchievements | Opt-in "owned by friends", your achievement progress | User-supplied Steam Web API key (Options page), never baked in |
+| `steamcommunity.com/market/listings/{appid}/{name}` (page) | Order-book id for instant sell (`SE.api.itemNameId`, remembered per item) | Steam session cookie |
+| `steamcommunity.com/market/sellitem`, `/market/removelisting/{id}` | Quick/instant sell, mass-list, my-listings removal — only via `page-bridge.js`, only after an explicit confirm click | Steam session (page context) |
 | `steamcommunity.com/market/pricehistory` | Market item price-history chart | Steam session cookie — **verified anonymous requests get `400` with an empty body**; only works logged in (see `smoke-test.js`) |
 
-If an endpoint breaks (HLTB especially), the relevant feature should degrade to a search link rather than throw.
+If an endpoint breaks, the relevant feature should degrade to a search link rather than throw. HowLongToBeat's API blocks extensions (403), so it's a search link only and has no host permission.
 
-Two endpoints I *didn't* wire up after trying to verify them — don't re-add without re-checking first: an ITAD deep price-history endpoint (docs page 404'd) and a key-free SteamRep/backpack.tf reputation API (both docs and the classic `/api/beta4/reputation/` URL 404'd). The existing profile-link-based SteamRep/backpack.tf shortcuts are what's shipped instead.
+One endpoint I *didn't* wire up after trying to verify it — don't re-add without re-checking first: a key-free SteamRep/backpack.tf reputation API (both docs and the classic `/api/beta4/reputation/` URL 404'd). The existing profile-link-based SteamRep/backpack.tf shortcuts are what's shipped instead.
 
 ## How to load locally
 
@@ -102,12 +114,17 @@ session to be meaningful and this anonymous script can't fully verify it —
 follow the note printed with it.
 
 Run `node scripts/unit-test.js` for the pure-logic side (parsePrice,
-sparklineSvg, fmtPercent, formatMoney, profileKeyFromPath, and a standing
+marketFees, ITAD parsers against `scripts/fixtures/`, currency helpers,
+chart geometry, fmtPercent, formatMoney, profileKeyFromPath, and a standing
 regression test for the `SE.el(tag, null, …)` crash from 1.2.0) — instant, no
 network. This is what caught the `parsePrice` thousands-separator bug in
 v1.4.0 that four minor versions of manual testing hadn't. If you touch
 `utils.js`'s pure helpers, add a case here rather than only relying on the
 live smoke test.
+
+`node scripts/check-manifest.js` checks manifest file references and that every
+i18n key used in `src/` exists. CI (`.github/workflows/ci.yml`) runs both plus a
+locale-drift check on every PR.
 
 There's no browser-based test suite here (no build step, no CI browser), so
 these two scripts plus manual DevTools checks are the whole
@@ -116,8 +133,9 @@ regression-detection story.
 ## Things to be careful about
 
 - **`hideOwnedInSearch` / `hideIgnoredInSearch`** mutate `display: none` on Steam's lazy-loaded rows. If Steam restructures those classes, the filter silently does nothing — that's expected, not a bug to chase.
-- **Trade offer / inventory features** rely on Steam's page-context globals. Anything reading from there must go through `SE.injectPage`. The community pages also re-render constantly; use `setInterval` polling sparingly, prefer MutationObserver scoped to a small subtree.
-- **Wishlist deal notifications** are best-effort: we sample the first 50 wishlisted appids per hour to stay polite to ITAD. Don't raise that cap without coordinating.
+- **Trade offer / inventory features** rely on Steam's page-context globals. Anything reading from there must go through `SE.pageCall`. The community pages also re-render constantly; use `setInterval` polling sparingly, prefer MutationObserver scoped to a small subtree.
+- **Wishlist deal / price-alert notifications** check up to 500 apps per hourly run (`MAX_POLLED_APPS` in the service worker): ITAD lookups are cached a day and prices are batched 200 per call. Each deal is announced once (again only if it deepens).
+- **The wishlist page is a React app.** Never insert into its tree (`#StoreTemplate`); the panel goes beside it, and data comes from the APIs, not the DOM.
 - **Don't ship API keys.** As of v1.4.0, ITAD v2 endpoints require a key (`itadApiKey` setting) and the opt-in friends-ownership feature requires a Steam Web API key (`steamWebApiKey`) — both are user-supplied via Options, never baked in. If you add another keyed endpoint, follow the same pattern.
 - Markdown docs (`README.md`, `store-assets/description.md`) reference the *unofficial* status — keep that disclaimer when editing.
 

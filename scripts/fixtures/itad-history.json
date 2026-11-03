@@ -1,0 +1,6 @@
+[
+  { "timestamp": "2025-11-27T19:00:00+01:00", "shop": { "id": 61, "name": "Steam" }, "deal": { "price": { "amount": 1.99, "amountInt": 199, "currency": "USD" }, "regular": { "amount": 9.99, "amountInt": 999, "currency": "USD" }, "cut": 80 } },
+  { "timestamp": "2025-06-26T19:00:00+02:00", "shop": { "id": 61, "name": "Steam" }, "deal": { "price": { "amount": 9.99, "amountInt": 999, "currency": "USD" }, "regular": { "amount": 9.99, "amountInt": 999, "currency": "USD" }, "cut": 0 } },
+  { "timestamp": "not a date", "shop": { "id": 61, "name": "Steam" }, "deal": { "price": { "amount": 5 } } },
+  { "timestamp": "2026-01-05T19:00:00+01:00", "shop": { "id": 61, "name": "Steam" }, "deal": { "price": { "amount": 9.99, "amountInt": 999, "currency": "USD" }, "regular": { "amount": 9.99, "amountInt": 999, "currency": "USD" }, "cut": 0 } }
+]

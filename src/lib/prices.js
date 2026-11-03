@@ -2,42 +2,27 @@
   'use strict';
   const SE = global.SteamEnhancer || (global.SteamEnhancer = {});
 
-  // Resolve a Steam appid → an ITAD price summary (current low + historical low + deal store).
-  // Returns null on any failure, or the string 'needsItadKey' specifically when
-  // no IsThereAnyDeal API key is configured (Options → Region) — callers use
-  // that to show a helpful "add a free key" message instead of just going quiet.
+  // Resolve a Steam appid → an ITAD price summary (current low + Steam's own
+  // historical low). Returns null on any failure, or the string 'needsItadKey'
+  // specifically when no IsThereAnyDeal API key is configured (Options → Region)
+  // — callers use that to show a helpful "add a free key" message instead of
+  // just going quiet. Response parsing lives in itad.js (unit-tested).
   SE.priceSummary = async (appid, country = 'us') => {
     if (!appid) return null;
     try {
       const lookup = await SE.api.itadLookup(appid);
       if (lookup?.needsItadKey) return 'needsItadKey';
-      if (!lookup?.ok || !lookup.data?.game?.id) return null;
-      const id = lookup.data.game.id;
+      const game = lookup?.ok ? SE.itad.gameFromLookup(lookup.data) : null;
+      if (!game) return null;
       const [prices, low] = await Promise.all([
-        SE.api.itadPrices(id, country),
-        SE.api.itadHistoryLow(id, country)
+        SE.api.itadPrices(game.id, country),
+        SE.api.itadHistoryLow(game.id, country)
       ]);
-      const priceEntry = prices?.data?.[0];
-      const current = priceEntry?.deals?.[0];
-      const histLow = low?.data?.[0]?.low;
       return {
-        itadId: id,
-        slug: lookup.data.game.slug,
-        currentLow: current ? {
-          price: current.price?.amount,
-          regular: current.regular?.amount,
-          cut: current.cut,
-          shop: current.shop?.name,
-          url: current.url,
-          currency: current.price?.currency
-        } : null,
-        historicalLow: histLow ? {
-          price: histLow.price?.amount,
-          cut: histLow.cut,
-          shop: histLow.shop?.name,
-          timestamp: histLow.timestamp,
-          currency: histLow.price?.currency
-        } : null
+        itadId: game.id,
+        slug: game.slug,
+        currentLow: SE.itad.bestDeal(prices?.data, game.id),
+        historicalLow: SE.itad.storeLow(low?.data, game.id)
       };
     } catch (e) {
       SE.warn('priceSummary failed', e);
@@ -57,39 +42,31 @@
     const lookups = await Promise.all(uniqueIds.map(async (appid) => {
       const r = await SE.api.itadLookup(appid);
       if (r?.needsItadKey) return { appid, needsItadKey: true };
-      return { appid, itadId: r?.ok ? r.data?.game?.id : null, slug: r?.ok ? r.data?.game?.slug : null };
+      const game = r?.ok ? SE.itad.gameFromLookup(r.data) : null;
+      return { appid, itadId: game?.id || null, slug: game?.slug || null };
     }));
     if (lookups.some((l) => l.needsItadKey)) return 'needsItadKey';
 
     const resolved = lookups.filter((l) => l.itadId);
     if (!resolved.length) return new Map();
 
-    const ids = resolved.map((l) => l.itadId);
-    const [pricesResp, lowResp] = await Promise.all([
-      SE.api.itadPricesBatch(ids, country),
-      SE.api.itadHistoryLowBatch(ids, country)
-    ]);
-    if (pricesResp?.needsItadKey || lowResp?.needsItadKey) return 'needsItadKey';
-
-    const pricesById = new Map((pricesResp?.data || []).map((p) => [p.id, p]));
-    const lowById = new Map((lowResp?.data || []).map((p) => [p.id, p]));
-
+    // ITAD's batch endpoints take at most 200 ids per call.
     const out = new Map();
-    for (const { appid, itadId, slug } of resolved) {
-      const priceEntry = pricesById.get(itadId);
-      const current = priceEntry?.deals?.[0];
-      const histLow = lowById.get(itadId)?.low;
-      out.set(appid, {
-        itadId, slug,
-        currentLow: current ? {
-          price: current.price?.amount, regular: current.regular?.amount, cut: current.cut,
-          shop: current.shop?.name, url: current.url, currency: current.price?.currency
-        } : null,
-        historicalLow: histLow ? {
-          price: histLow.price?.amount, cut: histLow.cut, shop: histLow.shop?.name,
-          timestamp: histLow.timestamp, currency: histLow.price?.currency
-        } : null
-      });
+    for (let i = 0; i < resolved.length; i += 200) {
+      const chunk = resolved.slice(i, i + 200);
+      const ids = chunk.map((l) => l.itadId);
+      const [pricesResp, lowResp] = await Promise.all([
+        SE.api.itadPricesBatch(ids, country),
+        SE.api.itadHistoryLowBatch(ids, country)
+      ]);
+      if (pricesResp?.needsItadKey || lowResp?.needsItadKey) return 'needsItadKey';
+      for (const { appid, itadId, slug } of chunk) {
+        out.set(appid, {
+          itadId, slug,
+          currentLow: SE.itad.bestDeal(pricesResp?.data, itadId),
+          historicalLow: SE.itad.storeLow(lowResp?.data, itadId)
+        });
+      }
     }
     return out;
   };

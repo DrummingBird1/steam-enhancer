@@ -46,6 +46,11 @@
         overlay.classList.add('se-holding');
         holdT = setTimeout(() => {
           overlay.remove();
+          escape.remove();
+          // Back to normal: if Steam's own dialog is cancelled, the button
+          // must still work (it stayed greyed out and unclickable before).
+          btn.style.opacity = '';
+          btn.style.pointerEvents = '';
           btn.click();
         }, 2000);
       };
@@ -98,33 +103,7 @@
   let lastSignature = null;
 
   async function refresh() {
-    const r = await SE.injectPage(() => {
-      try {
-        const collect = (id) => {
-          const items = [];
-          document.querySelectorAll(`#${id} .item`).forEach(node => {
-            // Resolve description via UserYou/UserThem item lookup.
-            const elemId = node.id; // item123_456_789
-            const m = elemId && elemId.match(/item(\d+)_(\d+)_(\d+)/);
-            if (!m) return;
-            const [, appid, , inventoryid] = m;
-            const u = id === 'your_slots' ? window.UserYou : window.UserThem;
-            const inv = u && u.getInventory && u.getInventory(appid, 2);
-            const desc = inv && inv.rgInventory && inv.rgInventory[inventoryid]
-              ? inv.rgDescriptions[inv.rgInventory[inventoryid].classid + '_' + inv.rgInventory[inventoryid].instanceid]
-              : null;
-            items.push({
-              appid,
-              name: desc?.name || '',
-              market_hash_name: desc?.market_hash_name || '',
-              marketable: !!desc?.marketable
-            });
-          });
-          return items;
-        };
-        return { your: collect('your_slots'), their: collect('their_slots') };
-      } catch { return null; }
-    });
+    const r = await SE.pageCall('tradeItems');
 
     if (!r?.ok || !r.result) return;
     const body = SE.$('#se-trade-body'); if (!body) return;
@@ -158,13 +137,13 @@
   }
 
   function renderItemTable(title, rows) {
-    if (!rows.length) return SE.el('div', { class: 'se-row se-muted' }, `${title}: (none)`);
+    if (!rows.length) return SE.el('div', { class: 'se-row se-muted' }, SE.t('tradeNone', title));
     const table = SE.el('table', { class: 'se-trade-table' },
       SE.el('caption', null, title)
     );
     rows.forEach(({ name, value, priced }) => {
       table.appendChild(SE.el('tr', null,
-        SE.el('td', { class: 'se-trade-name' }, name || '(unmarketable item)'),
+        SE.el('td', { class: 'se-trade-name' }, name || SE.t('tradeUnmarketable')),
         SE.el('td', { class: 'se-trade-value' }, priced ? value.toFixed(2) : '—')
       ));
     });
@@ -211,7 +190,7 @@
     if (priorEntries.length) {
       const avgDiffPct = priorEntries.reduce((s, e) => s + Math.abs(e.diffPct), 0) / priorEntries.length;
       body.appendChild(SE.el('div', { class: 'se-row se-muted' },
-        `Seen ${priorEntries.length} prior offer${priorEntries.length === 1 ? '' : 's'} with this partner in this browser · avg value gap ${avgDiffPct.toFixed(0)}%`
+        SE.t('tradePriorOffers', priorEntries.length, avgDiffPct.toFixed(0))
       ));
     }
 

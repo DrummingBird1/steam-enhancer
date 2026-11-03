@@ -3,6 +3,192 @@
 All notable changes to Steam Enhancer are documented here. Versions follow the
 `version` field in `manifest.json`.
 
+## [1.5.0] — Wishlist dashboard, Market Pro, price charts
+
+The biggest release so far: a round of real bug fixes (some had been there
+since 1.0), the wishlist rebuilt for Steam's new wishlist page, and a set of
+new tools. How it was planned: `docs/PLAN-1.5.0.md`.
+
+### Fixed
+- **Mass-list and "list selected" could sell at the wrong price.** Prices were
+  looked up in USD but listed in your wallet currency, the buyer price was
+  sent where Steam expects the after-fee amount you receive (listing ~15% above
+  what was shown), and every item was assumed to be in context 2, so Steam
+  items (cards, backgrounds, gems) couldn't be listed at all. Listing now uses
+  your wallet currency, shows "buyer pays / you receive" per item, uses each
+  item's real context, and refuses to list if the wallet currency can't be read.
+- **Wishlist-deal and price-alert notifications never fired.** The background
+  poll read ITAD responses one level too deep. They now share tested parsers
+  (`src/lib/itad.js`) with the store pages, and each check makes one batched
+  prices call. Clicking a notification opens the game's store page.
+- **The historical low was never shown.** `storelow/v2` returns `lows[]`, but
+  the code read `low`.
+- **The store-page price chart never rendered.** It read a field the overview
+  endpoint doesn't have; it now uses ITAD's `history/v2` log (Steam, last year).
+- **Owned sub ids were treated as owned app ids**, so owning a package could
+  mark an unrelated game with the same number as owned.
+- **`parsePrice`** misread prices with a thousands separator and no decimals
+  (`$1,234`, `¥ 1,980`, `₩ 12,000`, `12.000₫`) and treated "Free Weekend
+  $19.99" as free.
+- **DRM detection** flagged "EA App" on any page containing the word
+  "original"; it now only reads the DRM notice and requirement sections.
+- **Market net-after-fee** used a flat 15%; it now mirrors Steam's fee rounding
+  (about 13% of the buyer price).
+- **Trade-offer values** for Steam items were always 0 (wrong context).
+- **Prices were compared across currencies** — e.g. an Israeli store price
+  against a US historical low. The price country now follows the one Steam
+  reports on the page; Options → Country is an optional override.
+- **"Price drop since your last visit" compared prices across currencies.**
+  Visiting a game in another store currency showed e.g. "-73% (110.95 →
+  29.99)" for shekels → dollars. The remembered prices now carry their
+  currency, and a currency change starts the history over.
+- **Achievement stats showed internal names** ("AchClearErebus") instead of the
+  achievement's name. They now come from `IPlayerService/GetGameAchievements`,
+  which has the display names in the page's language (no key needed).
+- **Wishlist-deal and price-alert notifications didn't say which game** they
+  were about; they now start with the game's name ("Hades II · Steam: $14.99").
+- The notes box on store pages was wider than the panel.
+- **The quick-sell box could stay attached to the previous item.** Steam
+  reuses the inventory's item-detail panes, so buttons added for one item were
+  still there after selecting another. They're now rebuilt per item, and the
+  confirm click checks the selected item is still the one priced.
+- **Switching games in the inventory kept the previous game's items** for
+  duplicates, sorting and tile prices.
+- **Tile prices queued the whole inventory** behind the market's one request
+  per 2.5 s, so a quick sell could wait minutes. Only the visible page is
+  priced now.
+- **Mass-list didn't say a stack is listed whole** (at the per-item price);
+  the preview now shows "N× … each".
+- **Received trade offers showed the partner's items as unmarketable** (value
+  0, false "value mismatch"); item details now come from the item elements.
+- **The hold-to-confirm trade button stayed disabled** if Steam's own dialog
+  was cancelled.
+- **Any `#` change on a store page added every panel row a second time.**
+- **The "what's new" window was almost never shown**: the first Steam page
+  after an update cleared it unless that page was the store front page.
+- **"Historical low and price-history chart" off still showed the chart**, and
+  "Lowest current price" off still showed the historical low.
+- **A failed ITAD call made the wishlist alert forget what it had announced**,
+  so every current deal was announced again on the next run.
+- The library page polled forever when it found no games; it stops after 10 s.
+- The right-click menu items are translated.
+
+Found in a signed-in test run on live Steam:
+- **The market price-history chart never drew.** Steam returns the series as
+  `prices`, not `price_history`; parsing is now in `SE.marketMath.historyPoints`
+  (tested).
+- **Steam's new inventory item pane** (React) has none of the old markup and
+  its tile images no longer carry item names, so "View on Market", quick sell,
+  tile prices, sorting, grouping, duplicate marking and the name filter all
+  found nothing. Tiles are matched to items by asset id now, the pane by its
+  visible `#iteminfo0/1` and `<h1>`, the game by the `#730` hash. The item list
+  also skips the empty grid placeholders Steam keeps in `m_rgAssets` (an
+  inventory of 1 item reported 36).
+- **Steam's "Market Beta" item page** (React) has no classic markup and no
+  order-book id. The tools that only need the URL (price chart, 24 h summary,
+  copy name, SteamDB) now appear in a floating panel there; instant sell says
+  the order book can't be read instead of "no buy orders".
+- **Market prices were in USD on pages without wallet info** (Market Beta);
+  every classic community page now records the wallet currency.
+- **"You receive ≈" appeared twice** on each market search row.
+- **Library on Steam's new games page**: the old toolbar found no games. It
+  now shows the game count and the value estimate (with currency) in a small
+  floating bar; Steam's page has its own sort and filter.
+- Charts in Hebrew had their edge labels cut off (RTL flipped the anchoring).
+- **Hebrew (and other RTL) UI**: the store-page panel, toolbars and floating
+  bars read left to right inside Steam's page, scrambling mixed text ("DLC
+  owned: 0 / 1" came out as "1 / 0"). With an RTL UI language they're now
+  right to left (`.se-ui-rtl`), spacing uses logical margins, "go on" arrows
+  point the right way (`SE.arrow`), and the discount in a Hebrew wishlist
+  alert stays "-40%" instead of "40%-".
+
+### Changed
+- **The "what's new" window** shows on the first Steam page after an update
+  (not only the store front page), never on checkout, sign-in, account or
+  trade pages. It lists the 1.5.0 features, points to the right settings
+  section (Prices & keys), and is right-to-left in Hebrew.
+- **Keyboard shortcuts** moved off Chrome's own: `Alt+Shift+S` (panel),
+  `Alt+Shift+W` (wishlist), `Alt+Shift+D` (IsThereAnyDeal). `Ctrl+Shift+W`
+  closes the window and `Ctrl+Shift+I` opens DevTools. Chrome applies
+  suggested shortcuts only on a new install, so people updating keep
+  whatever they had; the window points them to chrome://extensions/shortcuts.
+- **Background cache lost most writes** when requests ran in parallel. Each
+  entry now has its own storage key, pruned by an alarm.
+- Alarms are recreated on browser startup, not only on install.
+
+### Security and permissions
+- **No more injected page scripts.** Reading Steam's own page data (wallet,
+  inventory, trade items) and selling went through inline `<script>` tags
+  built from strings, which only worked because Steam's CSP allows inline
+  code. A fixed set of named operations in `src/content/page-bridge.js`
+  (a `"world": "MAIN"` content script, hence Chrome 111+) replaces them;
+  nothing is evaluated.
+- **No HTML from data.** `SE.el` no longer has an `innerHTML` option or
+  string `on…` handlers, so text from Steam or the APIs (game names, reviews,
+  item names) can only ever be text.
+- **Steam cookies go only to Steam.** The background sends your session
+  cookies only to `steampowered.com` / `steamcommunity.com` over https,
+  decided by the parsed host name, not by a substring of the URL.
+- **Fewer permissions.** Host access to `steamstatic.com`,
+  `isthereanydeal.com` (the website, not the API), `steamdb.info` and
+  `howlongtobeat.com` is gone (those are plain links), and so are the
+  `web_accessible_resources`.
+- **Gentler on Steam.** Market, store-details and ITAD requests are paced
+  per endpoint, a "too many requests" answer pauses that lane for a minute,
+  and identical requests in flight share one fetch.
+
+### Wishlist, rebuilt
+Steam's wishlist became a React app in late 2024 and none of 1.4.x's wishlist
+features found anything on it. The wishlist now gets a panel above Steam's list,
+built from Steam's own wishlist and store APIs (works on anyone's public
+wishlist, signed in or not):
+- One table: price, discount, Steam's historical low and how far above it you
+  are, review score, Steam Deck status, your alert price, date added.
+- Summary: total cost now vs at full price, how many are on sale, at their
+  historical low, or at your alert price.
+- Search, sort (your order, price, discount, closest to historical low,
+  reviews, recently added, release date, name), filters (on sale, at low, at
+  my target, max price), CSV/JSON export and copy of what's shown.
+- Alert prices set here, on a store page, or anywhere else are the same list,
+  and the background check now covers the whole wishlist (up to 500 games)
+  instead of the first 50.
+- Wishlist-deal notifications no longer repeat the same sale every hour; a deal
+  is announced once, and again only if it gets deeper.
+
+### New
+- **Price history chart** on store pages: Steam's price over three years
+  (ITAD history), hover for date/price/store, 3M / 1Y / All ranges, a line at
+  the lowest price. Without an ITAD key it charts the prices you've seen on
+  your own visits. The market price history and inventory value history use
+  the same chart.
+- **Regional prices in your currency**: every region converted to one
+  currency, cheapest first, with each region's difference from your price.
+- **Market Pro**: Quick sell (one cent under the cheapest listing) and
+  Instant sell (at the highest buy order) for the selected inventory item,
+  each with a buyer-pays / you-receive preview and a confirm click; on the
+  market home, check your listings (LOWEST / UNDERCUT by X), select the
+  undercut ones and remove a selection.
+- **Notification center**: every alert is kept in the toolbar popup with an
+  unread badge; clicking one opens the game; quiet hours keep alerts in the
+  popup without a system notification.
+- **New Options page**: search, side navigation, sections, saves as you go,
+  presets (Minimal / Deal hunter / Trader / Everything), full backup and
+  restore of everything you've made, masked API keys, fully translated.
+- **Steam Deck status** on store pages, and **your achievement progress**
+  for games you own (with your Steam Web API key).
+- **Custom CSS** from Options now actually applies (it never did).
+
+### Fixed (found while building the above)
+- Amounts formatted in a Hebrew/Arabic/Persian browser carried invisible
+  direction marks that scrambled the text around them.
+- The live review filter re-ran every 300 ms forever.
+- Options listed settings nothing used (cache TTL, currency hint); removed.
+
+### Added
+- `.github/workflows/ci.yml` and `scripts/check-manifest.js`: every PR runs the
+  unit tests, checks manifest file references and i18n keys, and verifies the
+  locale files match `scripts/gen-locales.js`.
+
 ## [1.4.1] — Store-readiness: trimmed permissions
 
 ### Changed

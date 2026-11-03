@@ -64,16 +64,15 @@
       });
     },
 
-    async itadOverview(itadId, country = 'us') {
-      const body = JSON.stringify([itadId]);
+    // Steam's price-change log (history/v2, shops=61). Without `since` ITAD
+    // returns only the last 3 months, so ask for three years.
+    async itadHistory(itadId, country = 'us') {
+      const since = new Date(Date.now() - 3 * 365 * 24 * 3600_000).toISOString();
       return SE.bg({
         type: 'fetchJson',
-        url: `https://api.isthereanydeal.com/games/overview/v2?country=${encodeURIComponent(country)}`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-        cacheKey: `itadov:${itadId}:${country}`,
-        ttl: 60
+        url: `https://api.isthereanydeal.com/games/history/v2?id=${encodeURIComponent(itadId)}&country=${encodeURIComponent(country)}&shops=61&since=${encodeURIComponent(since)}`,
+        cacheKey: `itadhist:${itadId}:${country}`,
+        ttl: 60 * 6
       });
     },
 
@@ -96,25 +95,54 @@
       });
     },
 
-    async achievementPercentages(appid) {
+    // Every achievement with its display name and global unlock percentage.
+    // (GetGlobalAchievementPercentagesForApp only has the internal names.)
+    async achievementPercentages(appid, language = 'english') {
       return SE.bg({
         type: 'fetchJson',
-        url: `https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/?gameid=${encodeURIComponent(appid)}`,
-        cacheKey: `achv:${appid}`,
+        url: `https://api.steampowered.com/IPlayerService/GetGameAchievements/v1/?appid=${encodeURIComponent(appid)}&language=${encodeURIComponent(language)}`,
+        cacheKey: `achv:${appid}:${language}`,
         ttl: 60 * 24
       });
     },
 
-    async marketPriceOverview(appid, market_hash_name, country = 'US', currency = 1) {
+    // Prices come back in `currency` (a Steam currency id). Defaults to the
+    // user's wallet currency, so values line up with what the market charges
+    // and pays out — see SE.walletCurrency in currency.js.
+    async marketPriceOverview(appid, market_hash_name, country = 'US', currency) {
+      if (currency == null) currency = (await SE.walletCurrency()).id;
       const url = `https://steamcommunity.com/market/priceoverview/?appid=${encodeURIComponent(appid)}&country=${encodeURIComponent(country)}&currency=${encodeURIComponent(currency)}&market_hash_name=${encodeURIComponent(market_hash_name)}`;
       return SE.bg({ type: 'fetchJson', url, cacheKey: `mkt:${appid}:${market_hash_name}:${currency}`, ttl: 30 });
     },
 
     // Order-book depth for a single listing (Valve's own market page calls this
     // via Market_LoadOrderSpread(item_nameid)). Short TTL: the book moves fast.
-    async itemOrdersHistogram(itemNameId, country = 'US', currency = 1) {
+    async itemOrdersHistogram(itemNameId, country = 'US', currency) {
+      if (currency == null) currency = (await SE.walletCurrency()).id;
       const url = `https://steamcommunity.com/market/itemordershistogram?country=${encodeURIComponent(country)}&language=english&currency=${encodeURIComponent(currency)}&item_nameid=${encodeURIComponent(itemNameId)}&two_factor=0`;
       return SE.bg({ type: 'fetchJson', url, cacheKey: `histogram:${itemNameId}:${currency}`, ttl: 2 });
+    },
+
+    // The order-book id a market item needs for itemOrdersHistogram. It's only
+    // on the item's listing page (and only when signed in), never changes, and
+    // the page is large — so the id itself is remembered, not the page.
+    async itemNameId(appid, market_hash_name) {
+      const KEY = 'se_item_nameids';
+      const k = `${appid}/${market_hash_name}`;
+      const known = (await new Promise((r) => chrome.storage.local.get([KEY], (d) => r(d[KEY] || {}))));
+      if (known[k]) return known[k];
+      const r = await SE.bg({
+        type: 'fetchJson',
+        url: `https://steamcommunity.com/market/listings/${encodeURIComponent(appid)}/${encodeURIComponent(market_hash_name)}`
+      });
+      const id = SE.marketMath.itemNameIdFromHtml(r?.data);
+      if (id) {
+        known[k] = id;
+        const keys = Object.keys(known);
+        if (keys.length > 2000) keys.slice(0, keys.length - 2000).forEach((x) => delete known[x]);
+        chrome.storage.local.set({ [KEY]: known });
+      }
+      return id;
     },
 
     // Full price-history graph for a market item. Verified live: returns 400
@@ -125,6 +153,30 @@
     async marketPriceHistory(appid, market_hash_name) {
       const url = `https://steamcommunity.com/market/pricehistory/?appid=${encodeURIComponent(appid)}&market_hash_name=${encodeURIComponent(market_hash_name)}`;
       return SE.bg({ type: 'fetchJson', url, cacheKey: `pricehist:${appid}:${market_hash_name}`, ttl: 120 });
+    },
+
+    // Anyone's public wishlist (appid, priority, date added). No key needed.
+    async wishlist(steamid64) {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/IWishlistService/GetWishlist/v1/?steamid=${encodeURIComponent(steamid64)}`,
+        cacheKey: `wishlist:${steamid64}`, ttl: 10
+      });
+    },
+
+    // Store details (name, price in the country's currency, discount, reviews,
+    // Steam Deck category) for up to 100 apps per call. No key needed.
+    async storeItems(appids, country = 'us', language = 'english') {
+      const input = {
+        ids: appids.map((appid) => ({ appid: Number(appid) })),
+        context: { language, country_code: String(country).toUpperCase() },
+        data_request: { include_reviews: true, include_platforms: true, include_release: true }
+      };
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/IStoreBrowseService/GetItems/v1/?input_json=${encodeURIComponent(JSON.stringify(input))}`,
+        cacheKey: `storeitems:${country}:${language}:${appids.join(',')}`, ttl: 60
+      });
     },
 
     async dynamicStore() {
@@ -138,17 +190,6 @@
         url: `https://www.protondb.com/api/v1/reports/summaries/${encodeURIComponent(appid)}.json`,
         cacheKey: `proton:${appid}`,
         ttl: 60 * 12
-      });
-    },
-
-    // Steam's own "specials" feed — includes 100%-off (free-for-a-limited-time)
-    // promos alongside regular discounts. Verified live: returns
-    // { specials: { items: [{ id, name, discount_percent, ... }] } }.
-    async featuredSpecials(country = 'us') {
-      return SE.bg({
-        type: 'fetchJson',
-        url: `https://store.steampowered.com/api/featuredcategories?cc=${encodeURIComponent(country)}&l=english`,
-        cacheKey: `featured:${country}`, ttl: 60
       });
     },
 
@@ -172,6 +213,15 @@
         cacheKey: `friends:${steamid64}`, ttl: 60 * 12
       });
     },
+    // Which achievements this user has unlocked. Needs their key; fails for
+    // private game details.
+    async playerAchievements(appid, steamid64, key) {
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?key=${encodeURIComponent(key)}&steamid=${encodeURIComponent(steamid64)}&appid=${encodeURIComponent(appid)}`,
+        cacheKey: `myachv:${steamid64}:${appid}`, ttl: 30
+      });
+    },
     async resolveVanityUrl(vanity, key) {
       return SE.bg({
         type: 'fetchJson',
@@ -184,19 +234,6 @@
         type: 'fetchJson',
         url: `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${encodeURIComponent(key)}&steamid=${encodeURIComponent(steamid64)}&include_appids=true&include_played_free_games=true`,
         cacheKey: `ownedgames:${steamid64}`, ttl: 60 * 6
-      });
-    },
-
-    async hltb(query) {
-      // HLTB search endpoint is anti-bot; fall back to a link if request fails.
-      return SE.bg({
-        type: 'fetchJson',
-        url: `https://howlongtobeat.com/api/search`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Referer': 'https://howlongtobeat.com/', 'Origin': 'https://howlongtobeat.com' },
-        body: JSON.stringify({ searchType: 'games', searchTerms: [query], searchPage: 1, size: 5 }),
-        cacheKey: `hltb:${query}`,
-        ttl: 60 * 24
       });
     }
   };

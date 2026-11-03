@@ -80,9 +80,6 @@
   "topTags": {
     "message": "תגיות מובילות:"
   },
-  "filterReviews": {
-    "message": "פילטרי ביקורות מהירים:"
-  },
   "exportCsv": {
     "message": "ייצא CSV"
   },
@@ -91,15 +88,6 @@
   },
   "copyAsText": {
     "message": "העתק כטקסט"
-  },
-  "openOnItad": {
-    "message": "פתח ב-ITAD"
-  },
-  "sortByDeal": {
-    "message": "מיון: הקרוב לשפל"
-  },
-  "sortByPrice": {
-    "message": "מיון: מחיר ↑"
   },
   "estimateValue": {
     "message": "אמוד שווי"
@@ -128,23 +116,8 @@
   "difference": {
     "message": "הפרש"
   },
-  "settings": {
-    "message": "הגדרות"
-  },
-  "save": {
-    "message": "שמור"
-  },
-  "reset": {
-    "message": "אפס לברירת מחדל"
-  },
   "clearCache": {
     "message": "נקה מטמון"
-  },
-  "exportSettings": {
-    "message": "ייצא הגדרות"
-  },
-  "importSettings": {
-    "message": "ייבא הגדרות"
   },
   "viewOnMarket": {
     "message": "צפה ב-Market"
@@ -185,30 +158,6 @@
   "allSettings": {
     "message": "כל ההגדרות…"
   },
-  "optSubtitle": {
-    "message": "כל ההגדרות. שינויים חלים בטעינת הדף הבאה."
-  },
-  "secRegion": {
-    "message": "אזור"
-  },
-  "secStore": {
-    "message": "דפי חנות"
-  },
-  "secSearch": {
-    "message": "חיפוש ורשימות"
-  },
-  "secMarket": {
-    "message": "Market, מלאי ועסקאות"
-  },
-  "secNotify": {
-    "message": "התראות"
-  },
-  "secAdvanced": {
-    "message": "מתקדם"
-  },
-  "importExportNote": {
-    "message": "ייצא או ייבא את כל ההגדרות, ההערות והחסימות כ-JSON."
-  },
   "checkingDeals": {
     "message": "בודק מבצעים…"
   },
@@ -219,7 +168,7 @@
     "message": "הוסף מפתח API חינמי של IsThereAnyDeal כדי לראות מחירים."
   },
   "openOptionsLink": {
-    "message": "פתח הגדרות →"
+    "message": "פתח הגדרות ←"
   },
   "setPricePerAlerts": {
     "message": "הגדר התראות לפי מחיר"
@@ -383,20 +332,11 @@
   "hideForeverTitle": {
     "message": "הסתר לצמיתות (רשימת חסימה של התוסף)"
   },
-  "visibleWord": {
-    "message": "מוצגות"
-  },
   "copiedToClipboard": {
     "message": "רשימת המשאלות הועתקה ללוח."
   },
-  "nothingToOpen": {
-    "message": "אין מה לפתוח."
-  },
   "vsLow": {
     "message": "מול השפל"
-  },
-  "targetWord": {
-    "message": "יעד"
   },
   "atTarget": {
     "message": "ביעד"
@@ -516,7 +456,7 @@
     "message": "לא שוחקו קודם"
   },
   "sortAZ": {
-    "message": "א → ת"
+    "message": "א ← ת"
   },
   "showUnplayedOnly": {
     "message": "הצג רק לא-משוחקים"
@@ -555,6 +495,753 @@
     "message": "תודה על העדכון!"
   },
   "changelogItadKey": {
-    "message": "חשוב: IsThereAnyDeal דורש כעת מפתח API חינמי לכל פיצ׳רי המחיר. קבלו אחד ב-isthereanydeal.com/apps/my/ והדביקו באפשרויות ← אזור."
+    "message": "חשוב: פיצ׳רי המחיר דורשים מפתח API חינמי של IsThereAnyDeal. קבלו אחד ב-isthereanydeal.com/apps/my/ והדביקו באפשרויות ← מחירים ומפתחות."
+  },
+  "netWord": {
+    "message": "תקבל"
+  },
+  "buyerPaysWord": {
+    "message": "הקונה משלם"
+  },
+  "youReceiveWord": {
+    "message": "אתה מקבל"
+  },
+  "walletUnknown": {
+    "message": "לא הצלחנו לקרוא את מטבע הארנק שלך ב-Steam בעמוד הזה, ולכן שום דבר לא יוצע למכירה. טען מחדש את עמוד המלאי כשאתה מחובר ונסה שוב."
+  },
+  "invSampling": {
+    "message": "דוגם את 25 הפריטים הסחירים הראשונים…"
+  },
+  "invReadFailed": {
+    "message": "לא הצלחנו לקרוא את המלאי."
+  },
+  "invValueResult": {
+    "message": "נדגמו {0}/25 · ממוצע ≈ {1} · {2} סחירים · הערכה ≈ {3}"
+  },
+  "invNoDuplicates": {
+    "message": "אין כפילויות."
+  },
+  "invMarkedDuplicates": {
+    "message": "סומנו {0} כפילויות בכתום."
+  },
+  "invNoCards": {
+    "message": "אין קלפי מסחר בתצוגת המלאי הנוכחית."
+  },
+  "invNoTiles": {
+    "message": "לא נמצאו פריטים במלאי."
+  },
+  "invPricingForSort": {
+    "message": "מתמחר פריטים למיון (60 הראשונים)…"
+  },
+  "invSorted": {
+    "message": "מוינו {0} פריטים לפי ערך משוער (מהגבוה לנמוך)."
+  },
+  "invGrouped": {
+    "message": "קובצו {0} פריטים ל-{1} סוגים: {2}"
+  },
+  "invNoRarity": {
+    "message": "לא נמצאו תגיות נדירות/איכות בפריטי המלאי הזה."
+  },
+  "invSelectionOn": {
+    "message": "מצב בחירה פעיל — {0} נבחרו"
+  },
+  "invNoneSelected": {
+    "message": "לא נבחרו פריטים. לחץ על \"בחר פריטים למכירה\" ואז סמן את הפריטים."
+  },
+  "invNoneMarketableSelected": {
+    "message": "אף אחד מהפריטים שנבחרו אינו סחיר."
+  },
+  "invFewSnapshots": {
+    "message": "רק {0} תמונות מצב עד עכשיו — לחץ על \"הערך שווי\" עוד כמה פעמים בימים הקרובים כדי לבנות מגמה."
+  },
+  "invSnapshotsRecorded": {
+    "message": "נרשמו {0} תמונות מצב מהלחיצות שלך על \"הערך שווי\" בעמוד הזה."
+  },
+  "invNoStickers": {
+    "message": "לא נראות מדבקות (פתח את מלאי ה-CS2 שלך)."
+  },
+  "invNoMarketable": {
+    "message": "אין פריטים סחירים בתצוגה הנוכחית."
+  },
+  "invDryRun": {
+    "message": "הרצת ניסיון — מתמחר {0} פריטים (שום דבר עוד לא הוצע למכירה)…"
+  },
+  "invNoMedian": {
+    "message": "לאף פריט לא היה מחיר חציוני שמיש."
+  },
+  "invConfirmMassList": {
+    "message": "⚠ אישור: להציע באמת את {0} הפריטים האלה למכירה"
+  },
+  "invCancelHint": {
+    "message": "אפשר לבטל כל הצעה מעמוד ה-Market. ההצעות עדיין דורשות אישור במאמת הנייד."
+  },
+  "invPricingSelected": {
+    "message": "מתמחר {0} פריטים שנבחרו — ערוך את המחירים למטה, שום דבר עוד לא הוצע."
+  },
+  "invConfirmSelected": {
+    "message": "⚠ אישור: להציע את {0} הפריטים שנבחרו"
+  },
+  "invListing": {
+    "message": "מציע למכירה…"
+  },
+  "invListedResult": {
+    "message": "הוצעו {0}/{1}. בדוק בעמוד ה-Market ואשר במאמת הנייד."
+  },
+  "medianWord": {
+    "message": "חציון"
+  },
+  "libTotalHours": {
+    "message": "סה\"כ: {0} שעות"
+  },
+  "libPricing": {
+    "message": "מתמחר {0}/{1} משחקים (מדגם)…"
+  },
+  "libValueResult": {
+    "message": "נדגמו {0}/{1} · ממוצע {2} · הערכה ≈ {3} לפי המחירים הנוכחיים עבור {4} משחקים (לא מה ששילמת — Steam לא חושף היסטוריית רכישות)"
+  },
+  "libValueFailed": {
+    "message": "לא הצלחנו לתמחר אף משחק מהמדגם (כולם חינמיים או לא זמינים ב-{0}?)."
+  },
+  "mktNoListing": {
+    "message": "לא נמצאה הצעה."
+  },
+  "mktLowestListing": {
+    "message": "ההצעה הזולה ביותר: {0}"
+  },
+  "mktUndercutRow": {
+    "message": "-{0} ← הצע ב-{1} (תקבל ~{2})"
+  },
+  "mktCopied": {
+    "message": "הועתק: {0}"
+  },
+  "mktFetching": {
+    "message": "טוען…"
+  },
+  "mktFetchFailed": {
+    "message": "הטעינה נכשלה."
+  },
+  "mktLowestListed": {
+    "message": "המחיר הנמוך המוצע: {0}"
+  },
+  "mktMedian24": {
+    "message": "חציון (24 שעות): {0}"
+  },
+  "mktVolume24": {
+    "message": "נפח (24 שעות): {0}"
+  },
+  "mktNoOrderBookId": {
+    "message": "לא נמצא בעמוד המזהה של ספר ההזמנות של הפריט."
+  },
+  "mktFetchingOrderBook": {
+    "message": "טוען את ספר ההזמנות…"
+  },
+  "mktOrderBookFailed": {
+    "message": "טעינת ספר ההזמנות נכשלה."
+  },
+  "mktHighestBuy": {
+    "message": "הזמנת הקנייה הגבוהה: {0} ({1} הזמנות)"
+  },
+  "mktLowestSell": {
+    "message": "הצעת המכירה הזולה: {0} ({1} הצעות)"
+  },
+  "mktSuggestedBuy": {
+    "message": "מומלץ: הזמנת קנייה ב-{0}"
+  },
+  "mktSuggestedBuyWhy": {
+    "message": " כדי לעקוף את התור הנוכחי בהפרש המינימלי."
+  },
+  "mktSpread": {
+    "message": "מרווח: {0}"
+  },
+  "mktConverting": {
+    "message": "ממיר…"
+  },
+  "mktConvertFailed": {
+    "message": "ההמרה נכשלה (אין שער)."
+  },
+  "tradePriorOffers": {
+    "message": "נראו {0} הצעות קודמות עם השותף הזה בדפדפן הזה · פער ערך ממוצע {1}%"
+  },
+  "tradeNone": {
+    "message": "{0}: (אין)"
+  },
+  "tradeUnmarketable": {
+    "message": "(פריט לא סחיר)"
+  },
+  "discNoReplyBox": {
+    "message": "לא נמצאה תיבת תגובה בעמוד הזה."
+  },
+  "changelog150Selling": {
+    "message": "מכירה מהמלאי משתמשת עכשיו במטבע הארנק שלך ומראה בדיוק כמה תקבל אחרי עמלות."
+  },
+  "changelog150Alerts": {
+    "message": "התראות על מבצעים ברשימת המשאלות ועל יעדי מחיר עובדות שוב, והשפל ההיסטורי וגרף המחירים חזרו."
+  },
+  "changelog150Country": {
+    "message": "המחירים עוקבים עכשיו אחרי המדינה ש-Steam מציג לך; אפשר לשנות אותה באפשרויות."
+  },
+  "changelogShortcuts": {
+    "message": "קיצורי מקלדת חדשים: Alt+Shift+S מציג/מסתיר את הפאנל, Alt+Shift+W פותח את רשימת המשאלות. אפשר לשנות אותם ב-chrome://extensions/shortcuts."
+  },
+  "changelog150Wishlist": {
+    "message": "לוח רשימת משאלות חדש ליד הרשימה של Steam: מיון וסינון לפי מחיר, הנחה ושפל היסטורי, התראת מחיר לכל משחק, וייצוא ל-CSV."
+  },
+  "changelog150Market": {
+    "message": "Market: מכירה מהירה ומיידית מהמלאי, בדיקה של ההצעות שלך (הזולה ביותר או שעקפו אותך, הסרה של כמה בבת אחת) וגרף היסטוריית מחירים."
+  },
+  "changelog150Options": {
+    "message": "דף הגדרות מעוצב מחדש עם חיפוש ופריסטים, והתראות אחרונות בחלון של אייקון התוסף, עם שעות שקטות לבחירה."
+  },
+  "obStep1Title": {
+    "message": "היכנסו לעמוד של משחק"
+  },
+  "obStep1Desc": {
+    "message": "המחיר הנמוך, השפל ההיסטורי, דירוג ProtonDB, בעלות על DLC ועוד מופיעים אוטומטית בפאנל."
+  },
+  "obStep2Title": {
+    "message": "סימון משחקים בבעלותכם וברשימת המשאלות"
+  },
+  "obStep2Desc": {
+    "message": "רשימות החיפוש והחנות מסמנות משחקים שבבעלותכם, ברשימת המשאלות או שהתעלמתם מהם — עם אפשרות להסתיר כל אחד מהם."
+  },
+  "obStep3Title": {
+    "message": "כלים ל-Market ולמלאי"
+  },
+  "obStep3Desc": {
+    "message": "פתחו את ה-Market או את המלאי ב-Steam לתמחור נטו אחרי עמלה, הערכות שווי, מיון וקיבוץ פריטים ועוד."
+  },
+  "obStep4Title": {
+    "message": "הכול ניתן להפעלה ולכיבוי"
+  },
+  "obStep4Desc": {
+    "message": "לחצו על התג הצף \"SE\" (בפינה הימנית התחתונה של כל עמוד Steam) כדי לפתוח את כל ההגדרות."
+  },
+  "wlPanelTitle": {
+    "message": "Steam Enhancer — רשימת משאלות"
+  },
+  "wlLoading": {
+    "message": "טוען את רשימת המשאלות…"
+  },
+  "wlLoadingDetails": {
+    "message": "טוען פרטי חנות {0}/{1}…"
+  },
+  "wlLoadingPrices": {
+    "message": "מחפש את השפל ההיסטורי…"
+  },
+  "wlPrivateOrEmpty": {
+    "message": "רשימת המשאלות הזו פרטית או ריקה."
+  },
+  "wlNoOwner": {
+    "message": "לא הצלחנו לזהות של מי רשימת המשאלות הזו."
+  },
+  "wlSummary": {
+    "message": "{0} משחקים · {1} עכשיו · {2} במחיר מלא"
+  },
+  "wlOnSale": {
+    "message": "{0} במבצע"
+  },
+  "wlAtLow": {
+    "message": "{0} בשפל היסטורי"
+  },
+  "wlAtTarget": {
+    "message": "{0} הגיעו ליעד שלך"
+  },
+  "wlSearch": {
+    "message": "חיפוש…"
+  },
+  "wlReverse": {
+    "message": "הפוך סדר"
+  },
+  "wlSortPriority": {
+    "message": "הסדר שלך"
+  },
+  "wlSortPrice": {
+    "message": "מחיר"
+  },
+  "wlSortDiscount": {
+    "message": "הנחה"
+  },
+  "wlSortVsLow": {
+    "message": "הכי קרוב לשפל ההיסטורי"
+  },
+  "wlSortReviews": {
+    "message": "ביקורות"
+  },
+  "wlSortAdded": {
+    "message": "נוספו לאחרונה"
+  },
+  "wlSortReleased": {
+    "message": "תאריך יציאה"
+  },
+  "wlSortName": {
+    "message": "שם"
+  },
+  "wlOnSaleOnly": {
+    "message": "במבצע"
+  },
+  "wlAtLowOnly": {
+    "message": "בשפל היסטורי"
+  },
+  "wlAtTargetOnly": {
+    "message": "הגיעו ליעד"
+  },
+  "wlMaxPrice": {
+    "message": "מחיר מקסימלי"
+  },
+  "wlColGame": {
+    "message": "משחק"
+  },
+  "wlColPrice": {
+    "message": "מחיר"
+  },
+  "wlColDiscount": {
+    "message": "הנחה"
+  },
+  "wlColLow": {
+    "message": "שפל היסטורי"
+  },
+  "wlColVsLow": {
+    "message": "מול השפל"
+  },
+  "wlColReviews": {
+    "message": "ביקורות"
+  },
+  "wlColDeck": {
+    "message": "Steam Deck"
+  },
+  "wlColTarget": {
+    "message": "התראה ב-"
+  },
+  "wlColAdded": {
+    "message": "נוסף"
+  },
+  "wlNoMatches": {
+    "message": "אין משחקים שמתאימים לסינון."
+  },
+  "wlShowing": {
+    "message": "מוצגים {0} מתוך {1}"
+  },
+  "wlShowMore": {
+    "message": "הצג עוד {0}"
+  },
+  "wlFree": {
+    "message": "חינם"
+  },
+  "wlLowNow": {
+    "message": "בשפל עכשיו"
+  },
+  "deckVerified": {
+    "message": "מאומת"
+  },
+  "deckPlayable": {
+    "message": "ניתן לשחק"
+  },
+  "deckUnsupported": {
+    "message": "לא נתמך"
+  },
+  "range3M": {
+    "message": "3 ח׳"
+  },
+  "range1Y": {
+    "message": "שנה"
+  },
+  "rangeALL": {
+    "message": "הכול"
+  },
+  "chartFromVisits": {
+    "message": "מהביקורים שלך בעמוד הזה (הוסף מפתח IsThereAnyDeal באפשרויות להיסטוריה מלאה)."
+  },
+  "regionYou": {
+    "message": "אתה"
+  },
+  "regionNote": {
+    "message": "הומר ל-{0} לפי שער היום. Steam בדרך כלל לא מאפשר לקנות מחנות של אזור אחר."
+  },
+  "quickSellBtn": {
+    "message": "מכירה מהירה"
+  },
+  "instantSellBtn": {
+    "message": "מכירה מיידית"
+  },
+  "qsNoListings": {
+    "message": "אף אחד לא מוכר את הפריט הזה כרגע, אז אין מה לעקוף."
+  },
+  "qsNoOrderBook": {
+    "message": "לא הצלחתי לקרוא את ספר ההזמנות של הפריט: עמוד ה-Market Beta של Steam לא כולל אותו. אפשר להשתמש במכירה מהירה, או ב-Market הקלאסי (Exit Market Beta)."
+  },
+  "mktBetaNote": {
+    "message": "עקיפת מחיר ועזרה בהזמנות קנייה דורשות את עמוד ה-Market הקלאסי (Exit Market Beta)."
+  },
+  "qsNoBuyOrders": {
+    "message": "אין הזמנות קנייה לפריט הזה (או שספר ההזמנות דורש התחברות)."
+  },
+  "qsSelectionChanged": {
+    "message": "הפריט שנבחר השתנה. שום דבר לא הוצע למכירה; בחר את הפריט ונסה שוב."
+  },
+  "perItemWord": {
+    "message": "ליחידה"
+  },
+  "ctxSearchItad": {
+    "message": "חפש את המחיר הנמוך ב-IsThereAnyDeal"
+  },
+  "ctxSearchSteamDb": {
+    "message": "חפש ב-SteamDB"
+  },
+  "ctxSearchProtonDb": {
+    "message": "בדוק דירוג ב-ProtonDB"
+  },
+  "qsConfirm": {
+    "message": "⚠ אישור: להציע למכירה"
+  },
+  "qsListed": {
+    "message": "הוצע למכירה."
+  },
+  "qsListedConfirm": {
+    "message": "הוצע — אשר באפליקציית Steam בנייד."
+  },
+  "qsFailed": {
+    "message": "Steam דחה את ההצעה: {0}"
+  },
+  "cancelWord": {
+    "message": "ביטול"
+  },
+  "myListingsTitle": {
+    "message": "ההצעות שלי:"
+  },
+  "checkListingsBtn": {
+    "message": "בדוק מחירים"
+  },
+  "selectUndercutBtn": {
+    "message": "סמן את מי שעקפו"
+  },
+  "selectNoneBtn": {
+    "message": "בטל סימון"
+  },
+  "removeSelectedBtn": {
+    "message": "הסר מסומנים"
+  },
+  "myListingsSummary": {
+    "message": "{0} הצעות · תקבל {1}"
+  },
+  "checkingListings": {
+    "message": "בודק {0}/{1}…"
+  },
+  "listingsChecked": {
+    "message": "נבדקו {0} הצעות · {1} נעקפו"
+  },
+  "listingLowest": {
+    "message": "הזול ביותר"
+  },
+  "listingUndercut": {
+    "message": "נעקף ב-{0}"
+  },
+  "noneSelectedListings": {
+    "message": "סמן קודם את ההצעות להסרה."
+  },
+  "confirmRemoveListings": {
+    "message": "להסיר {0} הצעות מה-Market?"
+  },
+  "removingListings": {
+    "message": "הוסרו {0}/{1}…"
+  },
+  "removedListings": {
+    "message": "הוסרו {0} מתוך {1}. טען מחדש את העמוד כדי לרענן את הרשימה של Steam."
+  },
+  "recentAlerts": {
+    "message": "התראות אחרונות"
+  },
+  "cacheCleared": {
+    "message": "נוקה!"
+  },
+  "notifWishlistDeal": {
+    "message": "מבצע ברשימת המשאלות: ⁦-{0}%⁩"
+  },
+  "notifFreePromo": {
+    "message": "בחינם לזמן מוגבל!"
+  },
+  "notifPriceAlert": {
+    "message": "הגיע ליעד המחיר"
+  },
+  "notifPriceAlertMsg": {
+    "message": "{0} ב-{1} (היעד שלך: {2})"
+  },
+  "optSearch": {
+    "message": "חיפוש בהגדרות…"
+  },
+  "optFooterUnofficial": {
+    "message": "Steam Enhancer הוא כלי לא רשמי. אין לו קשר ל-Valve או ל-Steam."
+  },
+  "optSourceLink": {
+    "message": "קוד המקור ב-GitHub"
+  },
+  "optSecPrices": {
+    "message": "מחירים ומפתחות"
+  },
+  "optSecStore": {
+    "message": "עמודי חנות"
+  },
+  "optSecLists": {
+    "message": "חיפוש, רשימות ורשימת משאלות"
+  },
+  "optSecMarket": {
+    "message": "Market, מלאי וטריידים"
+  },
+  "optSecCommunity": {
+    "message": "פרופילים וספרייה"
+  },
+  "optSecNotify": {
+    "message": "התראות"
+  },
+  "optSecAdvanced": {
+    "message": "מתקדם"
+  },
+  "optSecPresets": {
+    "message": "פרופילים מוכנים"
+  },
+  "optSecBackup": {
+    "message": "גיבוי ואיפוס"
+  },
+  "optItadKey": {
+    "message": "מפתח API של IsThereAnyDeal (נדרש למחירים)"
+  },
+  "optItadKeyHint": {
+    "message": "כל בדיקת מחיר (המחיר הנמוך, השפל ההיסטורי, היסטוריית המחירים, תגיות ברשימות ובחיפוש, התראות על מבצעים) דורשת מפתח חינמי מאז ש-IsThereAnyDeal שינו את ה-API שלהם. רשמו אפליקציה חינמית ב-[isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) והדביקו כאן את המפתח. הוא נשאר בדפדפן שלכם ונשלח רק ל-api.isthereanydeal.com."
+  },
+  "optItadKeyPlaceholder": {
+    "message": "הדביקו את מפתח ה-ITAD החינמי"
+  },
+  "optCountry": {
+    "message": "מדינה למחירים"
+  },
+  "optCountryHint": {
+    "message": "שתי אותיות, למשל IL או DE. השאירו ריק כדי להשתמש במדינה ש-Steam מציג לכם."
+  },
+  "optAuto": {
+    "message": "אוטומטי"
+  },
+  "optDisplayCurrency": {
+    "message": "מטבע תצוגה (לא חובה)"
+  },
+  "optDisplayCurrencyHint": {
+    "message": "שלוש אותיות, למשל ILS או EUR. המחירים יוצגו גם במטבע הזה, ומחירים אזוריים יושוו בו."
+  },
+  "optSteamKey": {
+    "message": "מפתח Steam Web API שלך (לא חובה)"
+  },
+  "optSteamKeyHint": {
+    "message": "רק בשביל \"כמה חברים שלך מחזיקים במשחק\". קבלו מפתח חינמי משלכם ב-[steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey). הוא נשאר בדפדפן ונשלח רק ל-api.steampowered.com."
+  },
+  "optDealThreshold": {
+    "message": "הנחה מינימלית להתראות על מבצעים (%)"
+  },
+  "optQuietFrom": {
+    "message": "שעות שקטות מ-"
+  },
+  "optQuietTo": {
+    "message": "שעות שקטות עד"
+  },
+  "optQuietHint": {
+    "message": "בשעות האלה ההתראות רק נאספות בחלון של הכפתור בסרגל, בלי התראת מערכת. השאירו ריק כדי לבטל."
+  },
+  "optCustomCss": {
+    "message": "CSS מותאם לעמודי Steam"
+  },
+  "optCustomCssHint": {
+    "message": "מתווסף לכל עמוד בחנות ובקהילה של Steam. נשמר רק בדפדפן הזה (לא מסונכרן)."
+  },
+  "optPresetsHint": {
+    "message": "פרופיל מוכן מדליק ומכבה את כל האפשרויות בבת אחת. מפתחות, מדינה וערכים אחרים לא משתנים."
+  },
+  "presetMinimal": {
+    "message": "מינימלי"
+  },
+  "presetDeals": {
+    "message": "צייד מבצעים"
+  },
+  "presetTrader": {
+    "message": "סוחר"
+  },
+  "presetEverything": {
+    "message": "הכול"
+  },
+  "optPresetConfirm": {
+    "message": "לעבור לפרופיל \"{0}\"? זה משנה אילו פיצ'רים פעילים."
+  },
+  "optBackupHint": {
+    "message": "קובץ הגיבוי כולל את ההגדרות, ההערות, מחירי ההתראות, המשחקים המוסתרים וההיסטוריות שהתוסף שומר. ייבוא שלו בדפדפן אחר משחזר את כולם."
+  },
+  "optExport": {
+    "message": "ייצוא גיבוי"
+  },
+  "optImport": {
+    "message": "ייבוא גיבוי"
+  },
+  "optClearCache": {
+    "message": "ניקוי מטמון"
+  },
+  "optClearBlocklist": {
+    "message": "הצג שוב משחקים מוסתרים"
+  },
+  "optReset": {
+    "message": "איפוס הגדרות"
+  },
+  "optShow": {
+    "message": "הצג"
+  },
+  "optHide": {
+    "message": "הסתר"
+  },
+  "optSaved": {
+    "message": "נשמר"
+  },
+  "optSaveFailed": {
+    "message": "השמירה נכשלה: {0}"
+  },
+  "optResetConfirm": {
+    "message": "לאפס את כל ההגדרות לברירת המחדל? מפתחות ה-API נשמרים."
+  },
+  "optResetDone": {
+    "message": "ההגדרות אופסו"
+  },
+  "optCacheCleared": {
+    "message": "המטמון נוקה"
+  },
+  "optClearBlocklistConfirm": {
+    "message": "להציג שוב את כל המשחקים שהסתרתם עם ✕ בחיפוש?"
+  },
+  "optBlocklistCleared": {
+    "message": "המשחקים המוסתרים מוצגים שוב"
+  },
+  "optExported": {
+    "message": "הגיבוי הורד"
+  },
+  "optNotABackup": {
+    "message": "זה לא קובץ גיבוי של Steam Enhancer."
+  },
+  "optImportConfirm": {
+    "message": "לייבא את הגיבוי? הוא מחליף את ההגדרות והנתונים השמורים הנוכחיים."
+  },
+  "optImported": {
+    "message": "יובא. טענו מחדש את לשוניות Steam כדי להחיל."
+  },
+  "optImportFailed": {
+    "message": "הייבוא נכשל: {0}"
+  },
+  "opt_showLowestPrice": {
+    "message": "המחיר הנמוך הנוכחי בכל החנויות"
+  },
+  "opt_showPriceHistory": {
+    "message": "שפל היסטורי וגרף היסטוריית מחירים"
+  },
+  "opt_showRegionalPricing": {
+    "message": "מחירים אזוריים, מומרים (איטי יותר)"
+  },
+  "opt_showStorePriceAlerts": {
+    "message": "שדה \"התרע לי ב-\" בעמודי חנות"
+  },
+  "opt_showBundleSavings": {
+    "message": "חבילה מול קנייה בנפרד"
+  },
+  "opt_showSteamDBLink": {
+    "message": "קישורים ל-SteamDB, Barter.vg, SteamCharts"
+  },
+  "opt_showProtonDB": {
+    "message": "דירוג ProtonDB (לינוקס / Steam Deck)"
+  },
+  "opt_showHowLongToBeat": {
+    "message": "קישור ל-HowLongToBeat"
+  },
+  "opt_showPlayersOnline": {
+    "message": "שחקנים מחוברים עכשיו"
+  },
+  "opt_showAchievementStats": {
+    "message": "סטטיסטיקות הישגים"
+  },
+  "opt_showDlcCheck": {
+    "message": "סימון DLC שבבעלותך"
+  },
+  "opt_showCardSetValue": {
+    "message": "קישורים לקלפי מסחר"
+  },
+  "opt_showReviewBreakdown": {
+    "message": "פירוט ביקורות (חיוביות / שליליות)"
+  },
+  "opt_showLiveReviewFilters": {
+    "message": "סרגל סינון ביקורות (שעות משחק, אורך)"
+  },
+  "opt_showBestReview": {
+    "message": "קטע מהביקורת המועילה ביותר"
+  },
+  "opt_showReviewBombDetector": {
+    "message": "סימון חשד להפצצת ביקורות"
+  },
+  "opt_highlightOwned": {
+    "message": "הדגשת משחקים שבבעלותך"
+  },
+  "opt_highlightWishlist": {
+    "message": "הדגשת משחקים ברשימת המשאלות"
+  },
+  "opt_highlightIgnored": {
+    "message": "הדגשת משחקים שהתעלמת מהם"
+  },
+  "opt_hideOwnedInSearch": {
+    "message": "הסתרת משחקים שבבעלותך בחיפוש"
+  },
+  "opt_hideIgnoredInSearch": {
+    "message": "הסתרת משחקים שהתעלמת מהם בחיפוש"
+  },
+  "opt_enableWishlistExport": {
+    "message": "פאנל רשימת המשאלות (טבלה, סינון, ייצוא)"
+  },
+  "opt_enableMarketTools": {
+    "message": "כלי Market (מחיר נטו, עקיפה, ההצעות שלי)"
+  },
+  "opt_showBuyOrderHelper": {
+    "message": "עזרה בהזמנות קנייה"
+  },
+  "opt_enableInventoryTools": {
+    "message": "כלי מלאי"
+  },
+  "opt_enableQuickSell": {
+    "message": "כפתורי מכירה מהירה / מיידית"
+  },
+  "opt_showTileSortGroup": {
+    "message": "מיון וקיבוץ פריטים במלאי"
+  },
+  "opt_enableTradeOfferTools": {
+    "message": "סיכום שווי בהצעות טרייד"
+  },
+  "opt_showTradeHistory": {
+    "message": "זכירת טריידים לפי שותף (בדפדפן הזה)"
+  },
+  "opt_showLibraryValue": {
+    "message": "הערכת שווי הספרייה (עמוד /games)"
+  },
+  "opt_showBadgeTracker": {
+    "message": "סיכום התקדמות תגים (עמוד /badges)"
+  },
+  "opt_showMediaShortcuts": {
+    "message": "קיצורי דרך לצילומי מסך ויצירות בפרופילים"
+  },
+  "opt_showFriendsOwnership": {
+    "message": "כמה חברים מחזיקים במשחק (דורש מפתח Steam שלך)"
+  },
+  "opt_notifyWishlistDeals": {
+    "message": "התראה על מבצעים ברשימת המשאלות (כל שעה)"
+  },
+  "opt_notifyStorePriceAlerts": {
+    "message": "התראה כשמחיר מגיע ליעד"
+  },
+  "opt_notifyFreePromos": {
+    "message": "התראה כשמשחק בחינם לזמן מוגבל"
+  },
+  "myAchievements": {
+    "message": "ההישגים שלך:"
+  },
+  "perfectGame": {
+    "message": "100%"
+  },
+  "opt_showDeckBadge": {
+    "message": "תאימות ל-Steam Deck"
   }
 }

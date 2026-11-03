@@ -80,9 +80,6 @@
   "topTags": {
     "message": "Top tags:"
   },
-  "filterReviews": {
-    "message": "Quick review filters:"
-  },
   "exportCsv": {
     "message": "Export CSV"
   },
@@ -91,15 +88,6 @@
   },
   "copyAsText": {
     "message": "Copy as text"
-  },
-  "openOnItad": {
-    "message": "Open on ITAD"
-  },
-  "sortByDeal": {
-    "message": "Sort: best deal vs low"
-  },
-  "sortByPrice": {
-    "message": "Sort: price ↑"
   },
   "estimateValue": {
     "message": "Estimate value"
@@ -128,23 +116,8 @@
   "difference": {
     "message": "Difference"
   },
-  "settings": {
-    "message": "Settings"
-  },
-  "save": {
-    "message": "Save"
-  },
-  "reset": {
-    "message": "Reset to defaults"
-  },
   "clearCache": {
     "message": "Clear cache"
-  },
-  "exportSettings": {
-    "message": "Export settings"
-  },
-  "importSettings": {
-    "message": "Import settings"
   },
   "viewOnMarket": {
     "message": "View on Market"
@@ -184,30 +157,6 @@
   },
   "allSettings": {
     "message": "All settings…"
-  },
-  "optSubtitle": {
-    "message": "All settings. Changes apply on next page load."
-  },
-  "secRegion": {
-    "message": "Region"
-  },
-  "secStore": {
-    "message": "Store pages"
-  },
-  "secSearch": {
-    "message": "Search & lists"
-  },
-  "secMarket": {
-    "message": "Market, Inventory, Trade"
-  },
-  "secNotify": {
-    "message": "Notifications"
-  },
-  "secAdvanced": {
-    "message": "Advanced"
-  },
-  "importExportNote": {
-    "message": "Export or import all settings, notes and blocklist as JSON."
   },
   "checkingDeals": {
     "message": "Checking deals…"
@@ -383,20 +332,11 @@
   "hideForeverTitle": {
     "message": "Hide forever (extension blocklist)"
   },
-  "visibleWord": {
-    "message": "visible"
-  },
   "copiedToClipboard": {
     "message": "Copied wishlist to clipboard."
   },
-  "nothingToOpen": {
-    "message": "Nothing to open."
-  },
   "vsLow": {
     "message": "vs low"
-  },
-  "targetWord": {
-    "message": "target"
   },
   "atTarget": {
     "message": "AT TARGET"
@@ -555,6 +495,753 @@
     "message": "Thanks for updating!"
   },
   "changelogItadKey": {
-    "message": "Important: IsThereAnyDeal now requires a free API key for all price features. Get one at isthereanydeal.com/apps/my/ and paste it into Options → Region."
+    "message": "Important: price features need a free IsThereAnyDeal API key. Get one at isthereanydeal.com/apps/my/ and paste it in Options → Prices & keys."
+  },
+  "netWord": {
+    "message": "you get"
+  },
+  "buyerPaysWord": {
+    "message": "buyer pays"
+  },
+  "youReceiveWord": {
+    "message": "you receive"
+  },
+  "walletUnknown": {
+    "message": "Could not read your Steam wallet currency on this page, so nothing will be listed. Reload the inventory page while signed in and try again."
+  },
+  "invSampling": {
+    "message": "Sampling first 25 marketable items…"
+  },
+  "invReadFailed": {
+    "message": "Could not read inventory."
+  },
+  "invValueResult": {
+    "message": "Sampled {0}/25 · avg ≈ {1} · {2} marketable · estimate ≈ {3}"
+  },
+  "invNoDuplicates": {
+    "message": "No duplicates."
+  },
+  "invMarkedDuplicates": {
+    "message": "Marked {0} duplicate tiles in amber."
+  },
+  "invNoCards": {
+    "message": "No trading cards in current inventory view."
+  },
+  "invNoTiles": {
+    "message": "No inventory tiles found."
+  },
+  "invPricingForSort": {
+    "message": "Pricing tiles for sort (first 60)…"
+  },
+  "invSorted": {
+    "message": "Sorted {0} tiles by estimated value (highest first)."
+  },
+  "invGrouped": {
+    "message": "Grouped {0} tiles into {1} type(s): {2}"
+  },
+  "invNoRarity": {
+    "message": "No rarity/quality tags found on items in this inventory."
+  },
+  "invSelectionOn": {
+    "message": "Selection mode on — {0} selected"
+  },
+  "invNoneSelected": {
+    "message": "No items selected. Click \"Select items to sell\", then click checkboxes on tiles."
+  },
+  "invNoneMarketableSelected": {
+    "message": "None of the selected items are marketable."
+  },
+  "invFewSnapshots": {
+    "message": "Only {0} snapshot(s) so far — click \"Estimate value\" a few more times over the coming days to build a trend."
+  },
+  "invSnapshotsRecorded": {
+    "message": "{0} snapshots recorded from your own \"Estimate value\" clicks on this page."
+  },
+  "invNoStickers": {
+    "message": "No stickers visible (open your CS2 inventory)."
+  },
+  "invNoMarketable": {
+    "message": "No marketable items in current view."
+  },
+  "invDryRun": {
+    "message": "Dry run — pricing {0} items (nothing listed yet)…"
+  },
+  "invNoMedian": {
+    "message": "No items had a usable median price."
+  },
+  "invConfirmMassList": {
+    "message": "⚠ Confirm: actually list these {0} items for sale"
+  },
+  "invCancelHint": {
+    "message": "You can cancel any listing from the Market page. Listings still need mobile-authenticator confirmation."
+  },
+  "invPricingSelected": {
+    "message": "Pricing {0} selected item(s) — edit prices below, nothing listed yet."
+  },
+  "invConfirmSelected": {
+    "message": "⚠ Confirm: list these {0} selected items"
+  },
+  "invListing": {
+    "message": "Listing…"
+  },
+  "invListedResult": {
+    "message": "Listed {0}/{1}. Check the Market page and confirm via mobile authenticator."
+  },
+  "medianWord": {
+    "message": "median"
+  },
+  "libTotalHours": {
+    "message": "Total: {0} hours"
+  },
+  "libPricing": {
+    "message": "Pricing {0}/{1} games (sampled)…"
+  },
+  "libValueResult": {
+    "message": "Sampled {0}/{1} · avg {2} · estimate ≈ {3} at CURRENT prices across {4} games (not what you paid — Steam doesn't expose purchase history)"
+  },
+  "libValueFailed": {
+    "message": "Could not price any sampled games (all free-to-play or unavailable in {0}?)."
+  },
+  "mktNoListing": {
+    "message": "No listing found."
+  },
+  "mktLowestListing": {
+    "message": "Lowest listing: {0}"
+  },
+  "mktUndercutRow": {
+    "message": "-{0} → list {1} (you get ~{2})"
+  },
+  "mktCopied": {
+    "message": "Copied: {0}"
+  },
+  "mktFetching": {
+    "message": "Fetching…"
+  },
+  "mktFetchFailed": {
+    "message": "Could not fetch."
+  },
+  "mktLowestListed": {
+    "message": "Lowest listed: {0}"
+  },
+  "mktMedian24": {
+    "message": "Median (24h): {0}"
+  },
+  "mktVolume24": {
+    "message": "Volume (24h): {0}"
+  },
+  "mktNoOrderBookId": {
+    "message": "Could not find this listing's order book id on the page."
+  },
+  "mktFetchingOrderBook": {
+    "message": "Fetching order book…"
+  },
+  "mktOrderBookFailed": {
+    "message": "Could not fetch order book."
+  },
+  "mktHighestBuy": {
+    "message": "Highest buy order: {0} ({1} orders)"
+  },
+  "mktLowestSell": {
+    "message": "Lowest sell listing: {0} ({1} listings)"
+  },
+  "mktSuggestedBuy": {
+    "message": "Suggested: place buy order at {0}"
+  },
+  "mktSuggestedBuyWhy": {
+    "message": " to lead the current queue by the minimum increment."
+  },
+  "mktSpread": {
+    "message": "Spread: {0}"
+  },
+  "mktConverting": {
+    "message": "Converting…"
+  },
+  "mktConvertFailed": {
+    "message": "Conversion failed (no rate)."
+  },
+  "tradePriorOffers": {
+    "message": "Seen {0} prior offer(s) with this partner in this browser · avg value gap {1}%"
+  },
+  "tradeNone": {
+    "message": "{0}: (none)"
+  },
+  "tradeUnmarketable": {
+    "message": "(unmarketable item)"
+  },
+  "discNoReplyBox": {
+    "message": "No reply box found on this page."
+  },
+  "changelog150Selling": {
+    "message": "Selling from your inventory now uses your wallet currency and shows exactly what you receive after fees."
+  },
+  "changelog150Alerts": {
+    "message": "Wishlist-deal and price-alert notifications work again, and the historical low and price chart are back."
+  },
+  "changelog150Country": {
+    "message": "Prices now follow the country Steam shows you; you can override it in Options."
+  },
+  "changelogShortcuts": {
+    "message": "New keyboard shortcuts: Alt+Shift+S shows/hides the panel, Alt+Shift+W opens your wishlist. Change them at chrome://extensions/shortcuts."
+  },
+  "changelog150Wishlist": {
+    "message": "A new wishlist dashboard beside Steam's wishlist: sort and filter by price, discount and historical low, set price alerts per game, export to CSV."
+  },
+  "changelog150Market": {
+    "message": "Market: quick and instant sell from the inventory, a check of your listings (lowest or undercut, remove several at once) and a price-history chart."
+  },
+  "changelog150Options": {
+    "message": "A redesigned settings page with search and presets, and recent alerts in the toolbar popup, with optional quiet hours."
+  },
+  "obStep1Title": {
+    "message": "Browse any game page"
+  },
+  "obStep1Desc": {
+    "message": "Lowest price, historical low, ProtonDB rating, DLC ownership and more show up automatically in a panel."
+  },
+  "obStep2Title": {
+    "message": "Highlight owned/wishlisted games"
+  },
+  "obStep2Desc": {
+    "message": "Search and store lists mark games you own, have wishlisted, or are ignoring — with an option to hide any of them."
+  },
+  "obStep3Title": {
+    "message": "Market & inventory tools"
+  },
+  "obStep3Desc": {
+    "message": "Open your Steam Market or Inventory page for net-after-fee pricing, value estimates, sort/group tiles, and more."
+  },
+  "obStep4Title": {
+    "message": "Everything is toggleable"
+  },
+  "obStep4Desc": {
+    "message": "Click the floating \"SE\" badge (bottom-right of any Steam page) any time to open full settings."
+  },
+  "wlPanelTitle": {
+    "message": "Steam Enhancer — Wishlist"
+  },
+  "wlLoading": {
+    "message": "Loading wishlist…"
+  },
+  "wlLoadingDetails": {
+    "message": "Loading store details {0}/{1}…"
+  },
+  "wlLoadingPrices": {
+    "message": "Looking up historical lows…"
+  },
+  "wlPrivateOrEmpty": {
+    "message": "This wishlist is private or empty."
+  },
+  "wlNoOwner": {
+    "message": "Couldn't tell whose wishlist this is."
+  },
+  "wlSummary": {
+    "message": "{0} games · {1} now · {2} at full price"
+  },
+  "wlOnSale": {
+    "message": "{0} on sale"
+  },
+  "wlAtLow": {
+    "message": "{0} at historical low"
+  },
+  "wlAtTarget": {
+    "message": "{0} at your target"
+  },
+  "wlSearch": {
+    "message": "Search…"
+  },
+  "wlReverse": {
+    "message": "Reverse order"
+  },
+  "wlSortPriority": {
+    "message": "Your order"
+  },
+  "wlSortPrice": {
+    "message": "Price"
+  },
+  "wlSortDiscount": {
+    "message": "Discount"
+  },
+  "wlSortVsLow": {
+    "message": "Closest to historical low"
+  },
+  "wlSortReviews": {
+    "message": "Reviews"
+  },
+  "wlSortAdded": {
+    "message": "Recently added"
+  },
+  "wlSortReleased": {
+    "message": "Release date"
+  },
+  "wlSortName": {
+    "message": "Name"
+  },
+  "wlOnSaleOnly": {
+    "message": "On sale"
+  },
+  "wlAtLowOnly": {
+    "message": "At historical low"
+  },
+  "wlAtTargetOnly": {
+    "message": "At my target"
+  },
+  "wlMaxPrice": {
+    "message": "Max price"
+  },
+  "wlColGame": {
+    "message": "Game"
+  },
+  "wlColPrice": {
+    "message": "Price"
+  },
+  "wlColDiscount": {
+    "message": "Discount"
+  },
+  "wlColLow": {
+    "message": "Historical low"
+  },
+  "wlColVsLow": {
+    "message": "vs low"
+  },
+  "wlColReviews": {
+    "message": "Reviews"
+  },
+  "wlColDeck": {
+    "message": "Steam Deck"
+  },
+  "wlColTarget": {
+    "message": "Alert at"
+  },
+  "wlColAdded": {
+    "message": "Added"
+  },
+  "wlNoMatches": {
+    "message": "No games match these filters."
+  },
+  "wlShowing": {
+    "message": "Showing {0} of {1}"
+  },
+  "wlShowMore": {
+    "message": "Show {0} more"
+  },
+  "wlFree": {
+    "message": "Free"
+  },
+  "wlLowNow": {
+    "message": "LOW NOW"
+  },
+  "deckVerified": {
+    "message": "Verified"
+  },
+  "deckPlayable": {
+    "message": "Playable"
+  },
+  "deckUnsupported": {
+    "message": "Unsupported"
+  },
+  "range3M": {
+    "message": "3M"
+  },
+  "range1Y": {
+    "message": "1Y"
+  },
+  "rangeALL": {
+    "message": "All"
+  },
+  "chartFromVisits": {
+    "message": "From your own visits to this page (add an IsThereAnyDeal key in Options for full history)."
+  },
+  "regionYou": {
+    "message": "you"
+  },
+  "regionNote": {
+    "message": "Converted to {0} at today's exchange rate. Buying from another region's store usually isn't allowed by Steam."
+  },
+  "quickSellBtn": {
+    "message": "Quick sell"
+  },
+  "instantSellBtn": {
+    "message": "Instant sell"
+  },
+  "qsNoListings": {
+    "message": "Nobody is selling this item right now, so there's nothing to undercut."
+  },
+  "qsNoOrderBook": {
+    "message": "Couldn't read this item's order book: Steam's Market Beta page doesn't include it. Use quick sell, or the classic market (Exit Market Beta)."
+  },
+  "mktBetaNote": {
+    "message": "Undercut and the buy-order helper need the classic market page (Exit Market Beta)."
+  },
+  "qsNoBuyOrders": {
+    "message": "No buy orders for this item (or the order book needs you to be signed in)."
+  },
+  "qsSelectionChanged": {
+    "message": "The selected item changed. Nothing was listed; pick the item and try again."
+  },
+  "perItemWord": {
+    "message": "each"
+  },
+  "ctxSearchItad": {
+    "message": "Find lowest price on IsThereAnyDeal"
+  },
+  "ctxSearchSteamDb": {
+    "message": "Search on SteamDB"
+  },
+  "ctxSearchProtonDb": {
+    "message": "Check ProtonDB rating"
+  },
+  "qsConfirm": {
+    "message": "⚠ Confirm: list it"
+  },
+  "qsListed": {
+    "message": "Listed."
+  },
+  "qsListedConfirm": {
+    "message": "Listed — confirm it in the Steam mobile app."
+  },
+  "qsFailed": {
+    "message": "Steam refused the listing: {0}"
+  },
+  "cancelWord": {
+    "message": "Cancel"
+  },
+  "myListingsTitle": {
+    "message": "My listings:"
+  },
+  "checkListingsBtn": {
+    "message": "Check prices"
+  },
+  "selectUndercutBtn": {
+    "message": "Select undercut"
+  },
+  "selectNoneBtn": {
+    "message": "Select none"
+  },
+  "removeSelectedBtn": {
+    "message": "Remove selected"
+  },
+  "myListingsSummary": {
+    "message": "{0} listings · you'd receive {1}"
+  },
+  "checkingListings": {
+    "message": "Checking {0}/{1}…"
+  },
+  "listingsChecked": {
+    "message": "Checked {0} listings · {1} undercut"
+  },
+  "listingLowest": {
+    "message": "LOWEST"
+  },
+  "listingUndercut": {
+    "message": "UNDERCUT by {0}"
+  },
+  "noneSelectedListings": {
+    "message": "Tick the listings to remove first."
+  },
+  "confirmRemoveListings": {
+    "message": "Remove {0} listing(s) from the market?"
+  },
+  "removingListings": {
+    "message": "Removed {0}/{1}…"
+  },
+  "removedListings": {
+    "message": "Removed {0} of {1}. Reload the page to refresh Steam's list."
+  },
+  "recentAlerts": {
+    "message": "Recent alerts"
+  },
+  "cacheCleared": {
+    "message": "Cleared!"
+  },
+  "notifWishlistDeal": {
+    "message": "Wishlist deal: -{0}%"
+  },
+  "notifFreePromo": {
+    "message": "Free for a limited time!"
+  },
+  "notifPriceAlert": {
+    "message": "Price alert hit"
+  },
+  "notifPriceAlertMsg": {
+    "message": "{0} at {1} (your target: {2})"
+  },
+  "optSearch": {
+    "message": "Search settings…"
+  },
+  "optFooterUnofficial": {
+    "message": "Steam Enhancer is an unofficial enhancement tool. Not affiliated with Valve or Steam."
+  },
+  "optSourceLink": {
+    "message": "Source on GitHub"
+  },
+  "optSecPrices": {
+    "message": "Prices & keys"
+  },
+  "optSecStore": {
+    "message": "Store pages"
+  },
+  "optSecLists": {
+    "message": "Search, lists & wishlist"
+  },
+  "optSecMarket": {
+    "message": "Market, inventory & trades"
+  },
+  "optSecCommunity": {
+    "message": "Profiles & library"
+  },
+  "optSecNotify": {
+    "message": "Notifications"
+  },
+  "optSecAdvanced": {
+    "message": "Advanced"
+  },
+  "optSecPresets": {
+    "message": "Presets"
+  },
+  "optSecBackup": {
+    "message": "Backup & reset"
+  },
+  "optItadKey": {
+    "message": "IsThereAnyDeal API key (needed for prices)"
+  },
+  "optItadKeyHint": {
+    "message": "Every price lookup (lowest price, historical low, price history, wishlist and search tags, deal alerts) needs a free key since IsThereAnyDeal changed their API. Register a free app at [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) and paste its key here. It stays in your browser and goes only to api.isthereanydeal.com."
+  },
+  "optItadKeyPlaceholder": {
+    "message": "paste your free ITAD app key"
+  },
+  "optCountry": {
+    "message": "Country for prices"
+  },
+  "optCountryHint": {
+    "message": "Two letters, e.g. IL or DE. Leave empty to use the country Steam shows you."
+  },
+  "optAuto": {
+    "message": "auto"
+  },
+  "optDisplayCurrency": {
+    "message": "Display currency (optional)"
+  },
+  "optDisplayCurrencyHint": {
+    "message": "Three letters, e.g. ILS or EUR. Prices also show converted into this currency, and regional prices are compared in it."
+  },
+  "optSteamKey": {
+    "message": "Your Steam Web API key (optional)"
+  },
+  "optSteamKeyHint": {
+    "message": "Only for \"how many friends own this game\". Get your own free key at [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey). It stays in your browser and goes only to api.steampowered.com."
+  },
+  "optDealThreshold": {
+    "message": "Minimum discount for wishlist deal alerts (%)"
+  },
+  "optQuietFrom": {
+    "message": "Quiet hours from"
+  },
+  "optQuietTo": {
+    "message": "Quiet hours until"
+  },
+  "optQuietHint": {
+    "message": "During these hours alerts only collect in the toolbar popup, without a system notification. Leave empty to turn off."
+  },
+  "optCustomCss": {
+    "message": "Custom CSS for Steam pages"
+  },
+  "optCustomCssHint": {
+    "message": "Added to every Steam store and community page. Kept in this browser only (not synced)."
+  },
+  "optPresetsHint": {
+    "message": "A preset switches the on/off options below in one go. Keys, country and other values aren't touched."
+  },
+  "presetMinimal": {
+    "message": "Minimal"
+  },
+  "presetDeals": {
+    "message": "Deal hunter"
+  },
+  "presetTrader": {
+    "message": "Trader"
+  },
+  "presetEverything": {
+    "message": "Everything"
+  },
+  "optPresetConfirm": {
+    "message": "Switch to the \"{0}\" preset? This changes which features are on."
+  },
+  "optBackupHint": {
+    "message": "The backup file holds your settings, notes, alert prices, hidden games and the histories this extension keeps. Importing it on another browser restores all of them."
+  },
+  "optExport": {
+    "message": "Export backup"
+  },
+  "optImport": {
+    "message": "Import backup"
+  },
+  "optClearCache": {
+    "message": "Clear cache"
+  },
+  "optClearBlocklist": {
+    "message": "Show hidden games again"
+  },
+  "optReset": {
+    "message": "Reset settings"
+  },
+  "optShow": {
+    "message": "Show"
+  },
+  "optHide": {
+    "message": "Hide"
+  },
+  "optSaved": {
+    "message": "Saved"
+  },
+  "optSaveFailed": {
+    "message": "Couldn't save: {0}"
+  },
+  "optResetConfirm": {
+    "message": "Reset all settings to their defaults? Your API keys are kept."
+  },
+  "optResetDone": {
+    "message": "Settings reset"
+  },
+  "optCacheCleared": {
+    "message": "Cache cleared"
+  },
+  "optClearBlocklistConfirm": {
+    "message": "Show all the games you hid with ✕ in search again?"
+  },
+  "optBlocklistCleared": {
+    "message": "Hidden games are visible again"
+  },
+  "optExported": {
+    "message": "Backup downloaded"
+  },
+  "optNotABackup": {
+    "message": "This isn't a Steam Enhancer backup file."
+  },
+  "optImportConfirm": {
+    "message": "Import this backup? It replaces your current settings and saved data."
+  },
+  "optImported": {
+    "message": "Imported. Reload Steam tabs to apply."
+  },
+  "optImportFailed": {
+    "message": "Import failed: {0}"
+  },
+  "opt_showLowestPrice": {
+    "message": "Lowest current price across stores"
+  },
+  "opt_showPriceHistory": {
+    "message": "Historical low and price-history chart"
+  },
+  "opt_showRegionalPricing": {
+    "message": "Regional prices, converted (slower)"
+  },
+  "opt_showStorePriceAlerts": {
+    "message": "\"Alert me at\" price field on store pages"
+  },
+  "opt_showBundleSavings": {
+    "message": "Bundle vs. buying separately"
+  },
+  "opt_showSteamDBLink": {
+    "message": "Links to SteamDB, Barter.vg, SteamCharts"
+  },
+  "opt_showProtonDB": {
+    "message": "ProtonDB rating (Linux / Steam Deck)"
+  },
+  "opt_showHowLongToBeat": {
+    "message": "HowLongToBeat link"
+  },
+  "opt_showPlayersOnline": {
+    "message": "Players online now"
+  },
+  "opt_showAchievementStats": {
+    "message": "Achievement stats"
+  },
+  "opt_showDlcCheck": {
+    "message": "Mark DLC you own"
+  },
+  "opt_showCardSetValue": {
+    "message": "Trading card links"
+  },
+  "opt_showReviewBreakdown": {
+    "message": "Review breakdown (positive / negative)"
+  },
+  "opt_showLiveReviewFilters": {
+    "message": "Review filter bar (hours played, length)"
+  },
+  "opt_showBestReview": {
+    "message": "Most helpful review snippet"
+  },
+  "opt_showReviewBombDetector": {
+    "message": "Flag possible review-bombing"
+  },
+  "opt_highlightOwned": {
+    "message": "Highlight games you own"
+  },
+  "opt_highlightWishlist": {
+    "message": "Highlight wishlisted games"
+  },
+  "opt_highlightIgnored": {
+    "message": "Highlight ignored games"
+  },
+  "opt_hideOwnedInSearch": {
+    "message": "Hide owned games in search"
+  },
+  "opt_hideIgnoredInSearch": {
+    "message": "Hide ignored games in search"
+  },
+  "opt_enableWishlistExport": {
+    "message": "Wishlist panel (table, filters, export)"
+  },
+  "opt_enableMarketTools": {
+    "message": "Market tools (net price, undercut, my listings)"
+  },
+  "opt_showBuyOrderHelper": {
+    "message": "Buy-order helper"
+  },
+  "opt_enableInventoryTools": {
+    "message": "Inventory tools"
+  },
+  "opt_enableQuickSell": {
+    "message": "Quick sell / instant sell buttons"
+  },
+  "opt_showTileSortGroup": {
+    "message": "Sort and group inventory items"
+  },
+  "opt_enableTradeOfferTools": {
+    "message": "Trade offer value summary"
+  },
+  "opt_showTradeHistory": {
+    "message": "Remember trades per partner (this browser)"
+  },
+  "opt_showLibraryValue": {
+    "message": "Library value estimate (/games page)"
+  },
+  "opt_showBadgeTracker": {
+    "message": "Badge progress summary (/badges page)"
+  },
+  "opt_showMediaShortcuts": {
+    "message": "Screenshots / artwork shortcuts on profiles"
+  },
+  "opt_showFriendsOwnership": {
+    "message": "How many friends own a game (needs your Steam key)"
+  },
+  "opt_notifyWishlistDeals": {
+    "message": "Notify about wishlist deals (hourly)"
+  },
+  "opt_notifyStorePriceAlerts": {
+    "message": "Notify when an alert price is reached"
+  },
+  "opt_notifyFreePromos": {
+    "message": "Notify when a game is free for a limited time"
+  },
+  "myAchievements": {
+    "message": "Your achievements:"
+  },
+  "perfectGame": {
+    "message": "100%"
+  },
+  "opt_showDeckBadge": {
+    "message": "Steam Deck compatibility"
   }
 }

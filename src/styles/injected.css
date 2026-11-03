@@ -27,7 +27,7 @@
 }
 .se-panel-body { display: flex; flex-direction: column; gap: 4px; }
 .se-row { display: block; }
-.se-label { color: #8f98a0; margin-right: 4px; }
+.se-label { color: #8f98a0; margin-inline-end: 4px; }
 .se-muted { color: #6c7480; }
 .se-link { color: #67c1f5 !important; text-decoration: none; }
 .se-link:hover { color: #fff !important; text-decoration: underline; }
@@ -39,7 +39,7 @@
 }
 
 .se-tag {
-  display: inline-block; padding: 1px 6px; margin-left: 6px;
+  display: inline-block; padding: 1px 6px; margin-inline-start: 6px;
   border-radius: 3px; font-size: 10px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.4px; vertical-align: middle;
 }
@@ -83,7 +83,7 @@
 .se-quicksell { margin-top: 8px; display: inline-block; }
 
 .se-notes {
-  width: 100%; background: #0d1620; color: #c7d5e0;
+  width: 100%; box-sizing: border-box; background: #0d1620; color: #c7d5e0;
   border: 1px solid #2a475e; border-radius: 2px; padding: 6px 8px;
   font: 12px/1.4 'Motiva Sans', Arial, sans-serif; resize: vertical; margin-top: 4px;
 }
@@ -124,15 +124,17 @@
   width: min(520px, 90vw); background: #1b2838; color: #c7d5e0;
   border: 1px solid #2a475e; border-radius: 4px; padding: 20px;
   font: 14px/1.5 'Motiva Sans', Arial, sans-serif;
+  max-height: 85vh; overflow: auto; /* the 1.5.0 list is long on small screens */
+  text-align: start; /* follows dir (Hebrew modals are rtl) */
 }
 .se-modal-h {
   color: #66c0f4; font-weight: 700; font-size: 18px;
   margin-bottom: 12px; border-bottom: 1px solid #2a475e; padding-bottom: 8px;
 }
 .se-modal-body p { margin: 0 0 8px; }
-.se-modal-body ul { margin: 0 0 12px; padding-left: 20px; }
+.se-modal-body ul { margin: 0 0 12px; padding-inline-start: 20px; }
 .se-modal-body li { margin-bottom: 4px; }
-.se-modal-foot { text-align: right; }
+.se-modal-foot { text-align: end; }
 
 .se-hold-overlay {
   display: inline-block; position: relative;
@@ -175,3 +177,76 @@
 .se-onboard-steps { display: flex; flex-direction: column; gap: 10px; margin: 8px 0; }
 .se-onboard-step { display: flex; gap: 8px; align-items: flex-start; }
 .se-onboard-step .se-onboard-icon { font-size: 18px; }
+
+/* Wishlist panel (1.5.0) */
+.se-wl-panel { max-width: 1100px; margin: 12px auto; }
+/* Market Beta item page: tools float beside the React page. */
+.se-market-float {
+  position: fixed; left: 16px; bottom: 16px; z-index: 9999; width: min(460px, calc(100vw - 100px));
+  max-height: 70vh; overflow: auto; box-shadow: 0 4px 14px rgba(0,0,0,.5);
+  background: #16202d; /* opaque: it floats over the page */
+}
+/* Library on Steam's React games page: floats beside the page, not inside it. */
+.se-library-float {
+  position: fixed; left: 16px; bottom: 16px; z-index: 9999; max-width: min(560px, calc(100vw - 100px));
+  background: #16202d; border: 1px solid #2a475e; border-radius: 4px; padding: 6px 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.5);
+}
+.se-wl-panel .se-panel-h { display: flex; align-items: center; gap: 6px; }
+.se-wl-toggle { padding: 0 6px; font-size: 11px; }
+.se-wl-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 4px 0; }
+.se-wl-status:empty { display: none; }
+.se-wl-check { display: inline-flex; align-items: center; gap: 2px; cursor: pointer; }
+.se-wl-table-wrap { max-height: 70vh; overflow: auto; }
+.se-wl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.se-wl-table th {
+  position: sticky; top: 0; background: #1b2838; color: #8f98a0;
+  text-align: start; font-weight: 600; padding: 4px 6px; border-bottom: 1px solid #2a475e;
+}
+.se-wl-table td { padding: 3px 6px; border-top: 1px solid #22394d; white-space: nowrap; }
+/* Numbers like +19% / -72% keep their sign on the right side in RTL UIs. */
+.se-wl-table td, .se-wl-table .se-tag, .se-wl-summary .se-tag { unicode-bidi: plaintext; }
+.se-wl-table td:first-child { white-space: normal; }
+.se-wl-table tr.se-wl-hit td { background: rgba(92, 126, 16, 0.18); }
+.se-wl-more { margin-top: 6px; }
+.se-wl-more:empty { display: none; }
+
+/* Price chart (1.5.0) */
+.se-chart { margin: 4px 0; max-width: 460px; }
+.se-chart-ranges { display: flex; gap: 4px; margin-bottom: 4px; }
+.se-chart-range { padding: 1px 8px; font-size: 11px; opacity: 0.7; }
+.se-chart-range.se-active { opacity: 1; }
+.se-chart-svg { width: 100%; height: auto; display: block; background: #0d1620; border-radius: 3px; }
+/* Axis labels are positioned for left-to-right; in an RTL panel (Hebrew)
+   text-anchor flips and the edge labels were cut off. */
+.se-chart-plot { direction: ltr; }
+
+/* Hebrew/Arabic/Persian UI (common.js sets .se-ui-rtl on <html>): our own
+   blocks read right to left. In Steam's LTR page, a Hebrew row like
+   "DLC בבעלותך: 0 / 1" otherwise came out as "DLC 1 / 0 :בבעלותך". */
+.se-ui-rtl .se-panel, .se-ui-rtl .se-toolbar, .se-ui-rtl .se-library-float { direction: rtl; text-align: start; }
+.se-chart-line { fill: none; stroke: #66c0f4; stroke-width: 1.5; }
+.se-chart-low { stroke: #a4d007; stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.8; }
+.se-chart-cross { stroke: #8f98a0; stroke-width: 1; }
+.se-chart-dot { fill: #fff; }
+.se-chart-axis { fill: #8f98a0; font-size: 9px; }
+.se-chart-tip { font-size: 11px; color: #c7d5e0; margin-top: 2px; unicode-bidi: plaintext; }
+.se-chart-note { font-size: 11px; }
+
+/* Regional prices (1.5.0) */
+.se-region-table { border-collapse: collapse; font-size: 12px; margin: 2px 0; }
+.se-region-table td { padding: 1px 8px 1px 0; white-space: nowrap; unicode-bidi: plaintext; }
+.se-region-table .se-tag { unicode-bidi: plaintext; }
+.se-region-mine td { color: #66c0f4; font-weight: 600; }
+
+/* Market Pro (1.5.0) */
+.se-btn-danger { background: linear-gradient(to bottom, #c25555 5%, #7a3434 95%); }
+.se-btn-danger:hover { background: linear-gradient(to bottom, #d46666 5%, #8c4040 95%); }
+.se-qs { margin-top: 6px; }
+.se-qs-out > div { margin: 4px 0; }
+.se-ml-check { margin: 0 6px 0 4px; vertical-align: middle; }
+.se-ml-tag { margin-inline-start: 6px; }
+
+/* Achievement progress bar (1.5.0) */
+.se-progress { display: inline-block; width: 90px; height: 6px; background: #0d1620; border-radius: 3px; vertical-align: middle; overflow: hidden; margin-inline-end: 4px; }
+.se-progress > span { display: block; height: 100%; background: #66c0f4; }

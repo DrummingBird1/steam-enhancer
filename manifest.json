@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "__MSG_extDesc__",
   "author": "Steam Enhancer Contributors",
   "default_locale": "en",
-  "minimum_chrome_version": "110",
+  "minimum_chrome_version": "111",
 
   "icons": {
     "16": "icons/icon16.png",
@@ -37,15 +37,15 @@
 
   "commands": {
     "toggle-panel": {
-      "suggested_key": { "default": "Ctrl+Shift+S" },
+      "suggested_key": { "default": "Alt+Shift+S" },
       "description": "Toggle Steam Enhancer panel on the current Steam tab"
     },
     "open-wishlist": {
-      "suggested_key": { "default": "Ctrl+Shift+W" },
+      "suggested_key": { "default": "Alt+Shift+W" },
       "description": "Open your Steam wishlist"
     },
     "open-itad": {
-      "suggested_key": { "default": "Ctrl+Shift+I" },
+      "suggested_key": { "default": "Alt+Shift+D" },
       "description": "Open IsThereAnyDeal lookup for the current app"
     }
   },
@@ -60,11 +60,7 @@
   "host_permissions": [
     "*://*.steampowered.com/*",
     "*://*.steamcommunity.com/*",
-    "*://*.steamstatic.com/*",
     "*://api.isthereanydeal.com/*",
-    "*://isthereanydeal.com/*",
-    "*://steamdb.info/*",
-    "*://*.howlongtobeat.com/*",
     "*://*.protondb.com/*",
     "*://api.steampowered.com/*",
     "*://open.er-api.com/*"
@@ -73,12 +69,21 @@
   "content_scripts": [
     {
       "matches": ["*://store.steampowered.com/*", "*://steamcommunity.com/*"],
+      "js": ["src/content/page-bridge.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://store.steampowered.com/*", "*://steamcommunity.com/*"],
       "js": [
         "src/lib/utils.js",
         "src/lib/storage.js",
         "src/lib/currency.js",
         "src/lib/api.js",
+        "src/lib/market.js",
+        "src/lib/itad.js",
         "src/lib/prices.js",
+        "src/lib/chart.js",
         "src/lib/notes.js",
         "src/lib/i18n.js",
         "src/content/common.js"
@@ -88,7 +93,14 @@
     },
     {
       "matches": ["*://store.steampowered.com/app/*", "*://store.steampowered.com/sub/*", "*://store.steampowered.com/bundle/*"],
-      "js": ["src/content/app.js"],
+      "js": [
+        "src/content/app/core.js",
+        "src/content/app/prices.js",
+        "src/content/app/info.js",
+        "src/content/app/reviews.js",
+        "src/content/app/friends.js",
+        "src/content/app.js"
+      ],
       "run_at": "document_idle"
     },
     {
@@ -98,7 +110,7 @@
     },
     {
       "matches": ["*://store.steampowered.com/wishlist/*", "*://store.steampowered.com/dynamicstore/*"],
-      "js": ["src/content/wishlist.js"],
+      "js": ["src/lib/wishlist.js", "src/content/wishlist.js"],
       "run_at": "document_idle"
     },
     {
@@ -155,13 +167,6 @@
       ],
       "js": ["src/content/tradeoffer.js"],
       "run_at": "document_idle"
-    }
-  ],
-
-  "web_accessible_resources": [
-    {
-      "resources": ["src/styles/injected.css", "icons/*.png"],
-      "matches": ["*://*.steampowered.com/*", "*://*.steamcommunity.com/*"]
     }
   ]
 }

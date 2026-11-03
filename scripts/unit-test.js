@@ -15,10 +15,15 @@ const vm = require('vm');
 // utils.js does `(function (global) { ... })(window)` and only touches
 // `document` inside function bodies we won't call here, so a bare object
 // stands in for `window` at load time.
-const sandbox = { window: {}, console };
+// itad.js attaches to globalThis (it's shared with the service worker), so
+// make the fake window the sandbox's own global.
+const sandbox = { console };
+sandbox.window = sandbox;
 vm.createContext(sandbox);
-const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', 'utils.js'), 'utf8');
-vm.runInContext(src, sandbox, { filename: 'utils.js' });
+for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js', 'market.js', 'alerts.js']) {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
+  vm.runInContext(src, sandbox, { filename: file });
+}
 const SE = sandbox.window.SteamEnhancer;
 assert.ok(SE, 'SteamEnhancer failed to load onto the fake window');
 
@@ -27,6 +32,9 @@ function t(name, fn) {
   try { fn(); passed++; console.log(`  OK  ${name}`); }
   catch (e) { failed++; console.log(`FAIL  ${name}`); console.log(`      ${e.message}`); }
 }
+
+// Real or doc-shaped API responses, see scripts/fixtures/.
+const fixture = (name) => JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', name), 'utf8'));
 
 console.log('SE.parsePrice');
 t('plain dollars', () => assert.strictEqual(SE.parsePrice('$19.99'), 19.99));
@@ -40,6 +48,241 @@ t('garbage input returns null', () => assert.strictEqual(SE.parsePrice('N/A'), n
 t('empty/null input returns null', () => {
   assert.strictEqual(SE.parsePrice(''), null);
   assert.strictEqual(SE.parsePrice(null), null);
+});
+// v1.5.0: a lone comma/dot followed by exactly 3 digits is a thousands separator.
+t('thousands without decimals (US style)', () => assert.strictEqual(SE.parsePrice('$1,234'), 1234));
+t('yen', () => assert.strictEqual(SE.parsePrice('¥ 1,980'), 1980));
+t('won', () => assert.strictEqual(SE.parsePrice('₩ 12,000'), 12000));
+t('dong (dot thousands)', () => assert.strictEqual(SE.parsePrice('12.000₫'), 12000));
+t('chilean peso', () => assert.strictEqual(SE.parsePrice('CLP$ 5.200'), 5200));
+t('rupiah with space thousands', () => assert.strictEqual(SE.parsePrice('Rp 150 000'), 150000));
+t('ruble with space thousands and trailing dot', () => assert.strictEqual(SE.parsePrice('1 234,56 руб.'), 1234.56));
+t('real (BRL)', () => assert.strictEqual(SE.parsePrice('R$ 1.299,90'), 1299.9));
+t('millions', () => assert.strictEqual(SE.parsePrice('₩ 1,234,000'), 1234000));
+t('kuwaiti dinar keeps 3 decimals', () => assert.strictEqual(SE.parsePrice('2.150 KD'), 2.15));
+t('"Free Weekend $19.99" is the price, not free', () => assert.strictEqual(SE.parsePrice('Free Weekend $19.99'), 19.99));
+t('"Free to Play" is 0', () => assert.strictEqual(SE.parsePrice('Free to Play'), 0));
+
+console.log('SE.marketFees');
+t('buyer pays receive + 5% + 10%, floored, 1-cent minimums', () => {
+  assert.strictEqual(SE.marketFees.buyerPays(100), 115);
+  assert.strictEqual(SE.marketFees.buyerPays(1), 3);
+  assert.strictEqual(SE.marketFees.buyerPays(19), 21);
+});
+t('sellerReceives inverts buyerPays', () => {
+  assert.strictEqual(SE.marketFees.sellerReceives(115), 100);
+  assert.strictEqual(SE.marketFees.sellerReceives(3), 1);
+  assert.strictEqual(SE.marketFees.sellerReceives(2), 0);
+  for (let b = 3; b < 5000; b++) {
+    const r = SE.marketFees.sellerReceives(b);
+    assert.ok(SE.marketFees.buyerPays(r) <= b, `buyer ${b}: pays ${SE.marketFees.buyerPays(r)} > ${b}`);
+    assert.ok(SE.marketFees.buyerPays(r + 1) > b, `buyer ${b}: ${r} is not the max`);
+  }
+});
+t('net is ~13% below the buyer price, not 15%', () => {
+  assert.strictEqual(SE.marketFees.sellerReceives(1000), 870);
+});
+
+console.log('SE.wishlistModel');
+const W = SE.wishlistModel;
+t('owner steamid from /profiles/ URL', () =>
+  assert.strictEqual(W.ownerSteamId('/wishlist/profiles/76561197960287930/', ''), '76561197960287930'));
+t('owner steamid from SSR state on a vanity URL (escaped JSON, as served)', () => {
+  const ssr = String.raw`[\"wishlistcategories\"],{\"error\":\"WishlistLoadFailed\",\"steamid\":\"76561197960287930\",\"sort\":\"order\",\"filter\":{}}`;
+  assert.strictEqual(W.ownerSteamId('/wishlist/id/gabelogannewell/', ssr), '76561197960287930');
+  assert.strictEqual(W.ownerSteamId('/wishlist/id/x/', 'nothing here'), null);
+});
+t('private/empty wishlist → null', () => {
+  assert.strictEqual(W.items({ response: {} }), null);
+  assert.strictEqual(W.items(undefined), null);
+});
+const wlItems = W.items(fixture('steam-getwishlist.json'));
+const storeMap = W.storeItems(fixture('steam-getitems.json'));
+t('wishlist items parsed', () => {
+  assert.strictEqual(wlItems.length, 3);
+  assert.strictEqual(wlItems[0].appid, '1326470');
+});
+t('store items: discounted, full price, and failed lookups', () => {
+  const sale = storeMap.get('1326470');
+  assert.strictEqual(sale.priceCents, 839);
+  assert.strictEqual(sale.regularCents, 2999);
+  assert.strictEqual(sale.discount, 72);
+  const full = storeMap.get('620');
+  assert.strictEqual(full.priceCents, 999);
+  assert.strictEqual(full.regularCents, 999);
+  assert.strictEqual(full.discount, 0);
+  assert.strictEqual(storeMap.has('999999999'), false);
+});
+const itadMap = new Map([['620', { historicalLow: { price: 1.99 }, currentLow: null }], ['1326470', { historicalLow: { price: 8.39 } }]]);
+const wlRows = W.buildRows(wlItems, storeMap, itadMap, { 620: 5 });
+t('rows: vs-low, at-low, targets, unknown app', () => {
+  const byId = Object.fromEntries(wlRows.map((r) => [r.appid, r]));
+  assert.strictEqual(byId['620'].vsLow, 402);
+  assert.strictEqual(byId['620'].atTarget, false);
+  assert.strictEqual(byId['1326470'].atLow, true);
+  assert.strictEqual(byId['999999999'].price, null);
+  assert.strictEqual(byId['999999999'].name, 'App 999999999');
+});
+t('summary', () => {
+  const s = W.summary(wlRows);
+  assert.strictEqual(s.count, 3);
+  assert.strictEqual(s.priced, 2);
+  assert.strictEqual(Math.round(s.total * 100), 1838);
+  assert.strictEqual(Math.round(s.totalRegular * 100), 3998);
+  assert.strictEqual(s.onSale, 1);
+  assert.strictEqual(s.atLow, 1);
+});
+t('sort: unknowns last in both directions', () => {
+  assert.strictEqual(W.sortRows(wlRows, 'price').map((r) => r.appid).join(','), ['1326470', '620', '999999999'].join(','));
+  assert.strictEqual(W.sortRows(wlRows, 'price', -1).map((r) => r.appid).join(','), ['620', '1326470', '999999999'].join(','));
+  assert.strictEqual(W.sortRows(wlRows, 'priority').map((r) => r.appid).join(','), ['620', '1326470', '999999999'].join(','));
+});
+t('filter', () => {
+  assert.strictEqual(W.filterRows(wlRows, { onSale: true }).map((r) => r.appid).join(','), ['1326470'].join(','));
+  assert.strictEqual(W.filterRows(wlRows, { text: 'portal' }).map((r) => r.appid).join(','), ['620'].join(','));
+  assert.strictEqual(W.filterRows(wlRows, { maxPrice: 9 }).map((r) => r.appid).join(','), ['1326470'].join(','));
+});
+t('csv escapes quotes and commas', () => {
+  const csv = W.toCsv([{ ...wlRows[0], name: 'A "quoted", name' }]);
+  assert.ok(csv.split('\n')[1].includes('"A ""quoted"", name"'));
+  assert.ok(csv.startsWith('appid,name,price'));
+});
+
+console.log('SE.parseReviewSummary');
+t('english tooltip + meta count', () => {
+  const r = SE.parseReviewSummary('98% of the 174,783 user reviews in your language are positive', '174783');
+  assert.strictEqual(r.pct, 98);
+  assert.strictEqual(r.total, 174783);
+});
+t('german tooltip, no meta: total from the tooltip', () => {
+  const r = SE.parseReviewSummary('99 % der 8.757 Nutzerrezensionen in Ihrer Sprache sind positiv.', null);
+  assert.strictEqual(r.pct, 99);
+  assert.strictEqual(r.total, 8757);
+});
+t('no percentage → null', () => assert.strictEqual(SE.parseReviewSummary('No user reviews', null), null));
+
+console.log('SE.marketMath');
+const MM = SE.marketMath;
+t('price history: Steam\'s `prices` rows → UTC points', () => {
+  const pts = MM.historyPoints({ success: true, price_prefix: '₪', prices: [['Dec 11 2014 01: +0', 1.13, '1249'], ['Jan 2 2026 13: +0', '2.5', '7'], ['garbage', 1, '1']] });
+  assert.strictEqual(pts.length, 2);
+  assert.strictEqual(pts[0].t, Date.UTC(2014, 11, 11, 1));
+  assert.strictEqual(pts[1].t, Date.UTC(2026, 0, 2, 13));
+  assert.strictEqual(pts[1].v, 2.5);
+  assert.strictEqual(MM.historyPoints(null).length, 0);
+  assert.strictEqual(MM.historyPoints({ success: false }).length, 0);
+});
+t('quick sell: one cent under the lowest, 3-cent floor', () => {
+  assert.strictEqual(MM.quickSellBuyerCents(125), 124);
+  assert.strictEqual(MM.quickSellBuyerCents(3), 3);
+  assert.strictEqual(MM.quickSellBuyerCents(null), null);
+});
+t('instant sell: exactly the highest buy order', () => {
+  assert.strictEqual(MM.instantSellBuyerCents('87'), 87);
+  assert.strictEqual(MM.instantSellBuyerCents(null), null);
+  assert.strictEqual(MM.instantSellBuyerCents('2'), null);
+});
+t('listing status', () => {
+  assert.deepStrictEqual({ ...MM.listingStatus(120, 120) }, { status: 'lowest', byCents: 0 });
+  assert.deepStrictEqual({ ...MM.listingStatus(120, 110) }, { status: 'undercut', byCents: 10 });
+  assert.strictEqual(MM.listingStatus(120, null).status, 'unknown');
+});
+t('my-listing price cell: buyer pays / you receive, US and EU formats', () => {
+  const us = MM.parseMyListingPrice('$1.15\n($1.00)');
+  assert.strictEqual(us.buyerCents, 115);
+  assert.strictEqual(us.receiveCents, 100);
+  const eu = MM.parseMyListingPrice('1,15€ (1,00€)');
+  assert.strictEqual(eu.buyerCents, 115);
+  assert.strictEqual(eu.receiveCents, 100);
+  assert.strictEqual(MM.parseMyListingPrice('₪3.40').receiveCents, null);
+});
+t('order-book id and listing URL parsing', () => {
+  assert.strictEqual(MM.itemNameIdFromHtml('<script>Market_LoadOrderSpread( 176096390 );</script>'), '176096390');
+  assert.strictEqual(MM.itemNameIdFromHtml('nothing'), null);
+  const l = MM.listingFromUrl('https://steamcommunity.com/market/listings/730/AK-47%20%7C%20Redline%20(Field-Tested)?filter=x');
+  assert.strictEqual(l.appid, '730');
+  assert.strictEqual(l.name, 'AK-47 | Redline (Field-Tested)');
+});
+
+console.log('SE.alerts');
+const A = SE.alerts;
+t('history: newest first, unread, capped at 50, input untouched', () => {
+  let list = [];
+  for (let i = 0; i < 55; i++) list = A.add(list, { title: `#${i}` }, 1000 + i);
+  assert.strictEqual(list.length, 50);
+  assert.strictEqual(list[0].title, '#54');
+  assert.strictEqual(A.unreadCount(list), 50);
+  const read = A.markAllRead(list);
+  assert.strictEqual(A.unreadCount(read), 0);
+  assert.strictEqual(A.unreadCount(list), 50);
+});
+t('quiet hours: same-day and overnight windows', () => {
+  const at = (h, m = 0) => new Date(2026, 0, 1, h, m);
+  assert.strictEqual(A.inQuietHours(at(23, 30), '23:00', '08:00'), true);
+  assert.strictEqual(A.inQuietHours(at(7, 59), '23:00', '08:00'), true);
+  assert.strictEqual(A.inQuietHours(at(8, 0), '23:00', '08:00'), false);
+  assert.strictEqual(A.inQuietHours(at(13), '12:00', '14:00'), true);
+  assert.strictEqual(A.inQuietHours(at(15), '12:00', '14:00'), false);
+  assert.strictEqual(A.inQuietHours(at(3), '', '08:00'), false);
+  assert.strictEqual(A.inQuietHours(at(3), '25:00', '08:00'), false);
+});
+t('age labels', () => {
+  assert.strictEqual(A.age(0, 5 * 60000), '5m');
+  assert.strictEqual(A.age(0, 3 * 3600000), '3h');
+  assert.strictEqual(A.age(0, 3 * 86400000), '3d');
+});
+
+console.log('SE.currency');
+t('steam currency ids', () => {
+  assert.strictEqual(SE.currency.isoForSteamId(35), 'ILS');
+  assert.strictEqual(SE.currency.isoForSteamId(1), 'USD');
+  assert.strictEqual(SE.currency.isoForSteamId(999), null);
+  assert.strictEqual(SE.currency.steamIdForIso('eur'), 3);
+});
+t('effectiveCountry: override > detected > us', () => {
+  assert.strictEqual(SE.effectiveCountry({ countryOverride: 'DE' }, 'il'), 'de');
+  assert.strictEqual(SE.effectiveCountry({ countryOverride: '' }, 'il'), 'il');
+  assert.strictEqual(SE.effectiveCountry({}, null), 'us');
+});
+
+t('compareRegions: cheapest first, % vs mine, unsold dropped', () => {
+  const r = SE.compareRegions([
+    { cc: 'il', amount: 50 }, { cc: 'us', amount: 60 }, { cc: 'tr', amount: 20 }, { cc: 'ru', amount: null }
+  ], 'il');
+  assert.strictEqual(r.map((x) => x.cc).join(','), 'tr,il,us');
+  assert.strictEqual(r[0].pct, -60);
+  assert.strictEqual(r[1].mine, true);
+  assert.strictEqual(r[2].pct, 20);
+  assert.strictEqual(SE.compareRegions([{ cc: 'us', amount: 5 }], 'il')[0].pct, null);
+});
+
+console.log('SE.itad (response parsers)');
+const GAME = '018d937f-1234-7000-9000-000000000001';
+t('lookup: found / not found', () => {
+  const g = SE.itad.gameFromLookup(fixture('itad-lookup.json'));
+  assert.strictEqual(g.id, GAME);
+  assert.strictEqual(g.slug, 'portal-2');
+  assert.strictEqual(g.title, 'Portal 2');
+  assert.strictEqual(SE.itad.gameFromLookup({ found: false }), null);
+  assert.strictEqual(SE.itad.gameFromLookup(undefined), null);
+});
+t('prices: picks the cheapest deal regardless of order', () => {
+  const d = SE.itad.bestDeal(fixture('itad-prices.json'), GAME);
+  assert.strictEqual(d.price, 1.99);
+  assert.strictEqual(d.shop, 'GOG');
+  assert.strictEqual(d.currency, 'USD');
+  assert.strictEqual(SE.itad.bestDeal(fixture('itad-prices.json'), 'missing'), null);
+});
+t('storelow: reads lows[] (v1.4 read .low and never showed a historical low)', () => {
+  const l = SE.itad.storeLow(fixture('itad-storelow.json'), GAME);
+  assert.strictEqual(l.price, 0.99);
+  assert.strictEqual(l.shop, 'Steam');
+});
+t('history: sorted points, bad rows dropped', () => {
+  const pts = SE.itad.historyPoints(fixture('itad-history.json'));
+  assert.strictEqual(pts.length, 3);
+  assert.ok(pts[0].t < pts[1].t && pts[1].t < pts[2].t);
+  assert.strictEqual(pts[0].v, 9.99);
 });
 
 console.log('SE.fmtPercent');
@@ -55,26 +298,52 @@ console.log('SE.formatMoney');
 t('USD', () => assert.strictEqual(SE.formatMoney(19.99, 'USD', 'en-US'), '$19.99'));
 t('null amount renders em-dash', () => assert.strictEqual(SE.formatMoney(null, 'USD'), '—'));
 t('NaN amount renders em-dash', () => assert.strictEqual(SE.formatMoney(NaN, 'USD'), '—'));
+t('RTL locales: no direction marks (they reorder LTR text around the amount)', () => {
+  for (const loc of ['he-IL', 'ar-EG', 'fa-IR']) {
+    assert.ok(!/[\u200e\u200f\u061c]/.test(SE.formatMoney(29.99, 'USD', loc)), loc);
+  }
+});
 
-console.log('SE.sparklineSvg');
-t('too few points returns empty string', () => {
-  assert.strictEqual(SE.sparklineSvg([], {}), '');
-  assert.strictEqual(SE.sparklineSvg([{ t: 1, v: 1 }], {}), '');
+console.log('SE.chartModel / chartPointAt / chartSince');
+const stepPts = [{ t: 0, v: 10 }, { t: 1000, v: 5 }, { t: 3000, v: 8 }];
+t('fewer than 2 points → null', () => {
+  assert.strictEqual(SE.chartModel([], {}), null);
+  assert.strictEqual(SE.chartModel([{ t: 1, v: 1 }], {}), null);
 });
-t('two points produces a valid SVG with an M and L path command', () => {
-  const svg = SE.sparklineSvg([{ t: 0, v: 1 }, { t: 1000, v: 2 }], {});
-  assert.ok(svg.startsWith('<svg'), 'should start with <svg');
-  assert.ok(/<path d="M[\d.]+,[\d.]+ L[\d.]+,[\d.]+"/.test(svg), 'path should have one M and one L command');
+t('step path uses H/V segments and finds the low', () => {
+  const m = SE.chartModel(stepPts, { w: 100, h: 50, padL: 0, padR: 0, padT: 0, padB: 0 });
+  assert.ok(/^M0\.0,0\.0 H33\.3 V50\.0 H100\.0 V20\.0$/.test(m.d), m.d);
+  assert.strictEqual(m.low.v, 5);
 });
-t('flat series (all same value) does not divide by zero into NaN/Infinity', () => {
-  const svg = SE.sparklineSvg([{ t: 0, v: 5 }, { t: 1000, v: 5 }, { t: 2000, v: 5 }], {});
-  assert.ok(!svg.includes('NaN'), 'flat series should not produce NaN coordinates');
-  assert.ok(!svg.includes('Infinity'), 'flat series should not produce Infinity coordinates');
+t('line mode uses L segments; unsorted input is sorted', () => {
+  const m = SE.chartModel([stepPts[2], stepPts[0], stepPts[1]], { step: false });
+  assert.ok(m.d.includes(' L') && !m.d.includes(' H'));
 });
-t('custom labels are used verbatim', () => {
-  const svg = SE.sparklineSvg([{ t: 0, v: 1 }, { t: 1000, v: 2 }], { labelLeft: 'low 1.00', labelRight: 'today' });
-  assert.ok(svg.includes('>low 1.00<'), 'labelLeft should appear in output');
-  assert.ok(svg.includes('>today<'), 'labelRight should appear in output');
+t('flat or all-zero series never yields NaN/Infinity', () => {
+  for (const v of [5, 0]) {
+    const m = SE.chartModel([{ t: 0, v }, { t: 10, v }], {});
+    assert.ok(!/NaN|Infinity/.test(m.d), m.d);
+  }
+});
+t('pointAt is the price in effect (step semantics)', () => {
+  assert.strictEqual(SE.chartPointAt(stepPts, 999).v, 10);
+  assert.strictEqual(SE.chartPointAt(stepPts, 1000).v, 5);
+  assert.strictEqual(SE.chartPointAt(stepPts, 99999).v, 8);
+});
+t('chartSince carries in the price already in effect', () => {
+  const r = SE.chartSince(stepPts, 2000);
+  assert.strictEqual(r.length, 2);
+  assert.strictEqual(r[0].t, 2000);
+  assert.strictEqual(r[0].v, 5);
+});
+
+console.log('SE.steamLanguage');
+t('page language → Steam API language', () => {
+  assert.strictEqual(SE.steamLanguage('de'), 'german');
+  assert.strictEqual(SE.steamLanguage('pt-BR'), 'brazilian');
+  assert.strictEqual(SE.steamLanguage('zh-TW'), 'tchinese');
+  assert.strictEqual(SE.steamLanguage('he'), 'english');
+  assert.strictEqual(SE.steamLanguage(''), 'english');
 });
 
 console.log('SE.profileKeyFromPath');
@@ -94,11 +363,31 @@ t('SE.el(tag, null, ...) does not throw', () => {
     createElement: (tag) => ({
       tagName: tag, style: {}, dataset: {}, children: [],
       setAttribute() {}, appendChild(c) { this.children.push(c); },
+      // Like ParentNode.append(): strings become text nodes.
+      append(...xs) { for (const x of xs) this.children.push(typeof x === 'string' ? { nodeType: 3, textContent: x } : x); },
       addEventListener() {}
     }),
     createTextNode: (text) => ({ nodeType: 3, textContent: text })
   };
   assert.doesNotThrow(() => SE.el('div', null, 'hello'));
+});
+t('SE.el never writes HTML: no html prop, no string on* handlers, text stays text', () => {
+  const made = [];
+  sandbox.document.createElement = (tag) => {
+    const n = { tagName: tag, style: {}, dataset: {}, children: [], attrs: {}, listeners: [],
+      setAttribute(k, v) { this.attrs[k] = v; }, appendChild(c) { this.children.push(c); },
+      // Like ParentNode.append(): strings become text nodes.
+      append(...xs) { for (const x of xs) this.children.push(typeof x === 'string' ? { nodeType: 3, textContent: x } : x); },
+      addEventListener(k) { this.listeners.push(k); } };
+    Object.defineProperty(n, 'innerHTML', { set() { throw new Error('innerHTML was set'); } });
+    made.push(n);
+    return n;
+  };
+  const n = SE.el('a', { html: '<img src=x onerror=alert(1)>', onclick: 'alert(1)', onmouseover: () => {} }, '<b>name</b>');
+  assert.strictEqual(n.attrs.html, '<img src=x onerror=alert(1)>', 'html is just an inert attribute now');
+  assert.ok(!('onclick' in n.attrs), 'string handler must not become an attribute');
+  assert.deepStrictEqual([...n.listeners], ['mouseover']);
+  assert.strictEqual(n.children[0].textContent, '<b>name</b>');
 });
 
 console.log(`\n${passed}/${passed + failed} tests passed.`);

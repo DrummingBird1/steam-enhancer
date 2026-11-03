@@ -80,9 +80,6 @@
   "topTags": {
     "message": "Популярные теги:"
   },
-  "filterReviews": {
-    "message": "Быстрые фильтры обзоров:"
-  },
   "exportCsv": {
     "message": "Экспорт в CSV"
   },
@@ -91,15 +88,6 @@
   },
   "copyAsText": {
     "message": "Копировать как текст"
-  },
-  "openOnItad": {
-    "message": "Открыть на ITAD"
-  },
-  "sortByDeal": {
-    "message": "Сортировка: близость к минимуму"
-  },
-  "sortByPrice": {
-    "message": "Сортировка: цена ↑"
   },
   "estimateValue": {
     "message": "Оценить стоимость"
@@ -128,23 +116,8 @@
   "difference": {
     "message": "Разница"
   },
-  "settings": {
-    "message": "Настройки"
-  },
-  "save": {
-    "message": "Сохранить"
-  },
-  "reset": {
-    "message": "Сбросить настройки"
-  },
   "clearCache": {
     "message": "Очистить кэш"
-  },
-  "exportSettings": {
-    "message": "Экспорт настроек"
-  },
-  "importSettings": {
-    "message": "Импорт настроек"
   },
   "viewOnMarket": {
     "message": "Открыть на площадке"
@@ -184,30 +157,6 @@
   },
   "allSettings": {
     "message": "Все настройки…"
-  },
-  "optSubtitle": {
-    "message": "Все настройки. Изменения вступят в силу при следующей загрузке страницы."
-  },
-  "secRegion": {
-    "message": "Регион"
-  },
-  "secStore": {
-    "message": "Страницы магазина"
-  },
-  "secSearch": {
-    "message": "Поиск и списки"
-  },
-  "secMarket": {
-    "message": "Площадка, инвентарь, обмен"
-  },
-  "secNotify": {
-    "message": "Уведомления"
-  },
-  "secAdvanced": {
-    "message": "Дополнительно"
-  },
-  "importExportNote": {
-    "message": "Экспорт или импорт всех настроек, заметок и чёрного списка в формате JSON."
   },
   "checkingDeals": {
     "message": "Проверка предложений…"
@@ -383,20 +332,11 @@
   "hideForeverTitle": {
     "message": "Скрыть навсегда (чёрный список расширения)"
   },
-  "visibleWord": {
-    "message": "видно"
-  },
   "copiedToClipboard": {
     "message": "Список желаемого скопирован в буфер обмена."
   },
-  "nothingToOpen": {
-    "message": "Нечего открывать."
-  },
   "vsLow": {
     "message": "от минимума"
-  },
-  "targetWord": {
-    "message": "цель"
   },
   "atTarget": {
     "message": "ЦЕЛЬ ДОСТИГНУТА"
@@ -555,6 +495,753 @@
     "message": "Спасибо за обновление!"
   },
   "changelogItadKey": {
-    "message": "Важно: IsThereAnyDeal теперь требует бесплатный API-ключ для всех функций цен. Получите его на isthereanydeal.com/apps/my/ и вставьте в Настройки → Регион."
+    "message": "Важно: для функций цен нужен бесплатный API-ключ IsThereAnyDeal. Получите его на isthereanydeal.com/apps/my/ и вставьте в Настройки → Цены и ключи."
+  },
+  "netWord": {
+    "message": "вы получите"
+  },
+  "buyerPaysWord": {
+    "message": "покупатель платит"
+  },
+  "youReceiveWord": {
+    "message": "вы получите"
+  },
+  "walletUnknown": {
+    "message": "Не удалось определить валюту вашего кошелька Steam на этой странице, поэтому ничего не будет выставлено. Перезагрузите инвентарь, войдя в аккаунт, и попробуйте снова."
+  },
+  "invSampling": {
+    "message": "Оцениваем первые 25 продаваемых предметов…"
+  },
+  "invReadFailed": {
+    "message": "Не удалось прочитать инвентарь."
+  },
+  "invValueResult": {
+    "message": "Оценено {0}/25 · в среднем ≈ {1} · продаваемых: {2} · итого ≈ {3}"
+  },
+  "invNoDuplicates": {
+    "message": "Дубликатов нет."
+  },
+  "invMarkedDuplicates": {
+    "message": "Отмечено дубликатов: {0} (янтарным)."
+  },
+  "invNoCards": {
+    "message": "В текущем инвентаре нет коллекционных карточек."
+  },
+  "invNoTiles": {
+    "message": "Предметы инвентаря не найдены."
+  },
+  "invPricingForSort": {
+    "message": "Оцениваем предметы для сортировки (первые 60)…"
+  },
+  "invSorted": {
+    "message": "Отсортировано предметов: {0} по оценочной стоимости (сначала дорогие)."
+  },
+  "invGrouped": {
+    "message": "Сгруппировано предметов: {0}, типов: {1}: {2}"
+  },
+  "invNoRarity": {
+    "message": "У предметов этого инвентаря нет меток редкости/качества."
+  },
+  "invSelectionOn": {
+    "message": "Режим выбора — выбрано: {0}"
+  },
+  "invNoneSelected": {
+    "message": "Ничего не выбрано. Нажмите «Выбрать предметы для продажи» и отметьте предметы."
+  },
+  "invNoneMarketableSelected": {
+    "message": "Ни один из выбранных предметов нельзя продать."
+  },
+  "invFewSnapshots": {
+    "message": "Пока снимков: {0} — нажмите «Оценить стоимость» ещё несколько раз в ближайшие дни, чтобы построить график."
+  },
+  "invSnapshotsRecorded": {
+    "message": "Снимков записано: {0} — по вашим нажатиям «Оценить стоимость» на этой странице."
+  },
+  "invNoStickers": {
+    "message": "Наклейки не видны (откройте инвентарь CS2)."
+  },
+  "invNoMarketable": {
+    "message": "В текущем виде нет продаваемых предметов."
+  },
+  "invDryRun": {
+    "message": "Пробный прогон — оцениваем предметов: {0} (ничего не выставлено)…"
+  },
+  "invNoMedian": {
+    "message": "Ни у одного предмета нет подходящей медианной цены."
+  },
+  "invConfirmMassList": {
+    "message": "⚠ Подтвердить: выставить на продажу предметов: {0}"
+  },
+  "invCancelHint": {
+    "message": "Любой лот можно снять на странице торговой площадки. Лоты всё равно нужно подтвердить в мобильном аутентификаторе."
+  },
+  "invPricingSelected": {
+    "message": "Оцениваем выбранные предметы: {0} — исправьте цены ниже, пока ничего не выставлено."
+  },
+  "invConfirmSelected": {
+    "message": "⚠ Подтвердить: выставить выбранные предметы ({0})"
+  },
+  "invListing": {
+    "message": "Выставляем…"
+  },
+  "invListedResult": {
+    "message": "Выставлено {0}/{1}. Проверьте торговую площадку и подтвердите в мобильном аутентификаторе."
+  },
+  "medianWord": {
+    "message": "медиана"
+  },
+  "libTotalHours": {
+    "message": "Всего: {0} ч"
+  },
+  "libPricing": {
+    "message": "Оцениваем игр: {0}/{1} (выборка)…"
+  },
+  "libValueResult": {
+    "message": "Оценено {0}/{1} · в среднем {2} · итого ≈ {3} по ТЕКУЩИМ ценам для {4} игр (не то, что вы заплатили — Steam не раскрывает историю покупок)"
+  },
+  "libValueFailed": {
+    "message": "Не удалось оценить ни одной игры из выборки (все бесплатные или недоступны в {0}?)."
+  },
+  "mktNoListing": {
+    "message": "Лоты не найдены."
+  },
+  "mktLowestListing": {
+    "message": "Самый дешёвый лот: {0}"
+  },
+  "mktUndercutRow": {
+    "message": "-{0} → выставить за {1} (вы получите ~{2})"
+  },
+  "mktCopied": {
+    "message": "Скопировано: {0}"
+  },
+  "mktFetching": {
+    "message": "Загрузка…"
+  },
+  "mktFetchFailed": {
+    "message": "Не удалось загрузить."
+  },
+  "mktLowestListed": {
+    "message": "Минимальная цена: {0}"
+  },
+  "mktMedian24": {
+    "message": "Медиана (24 ч): {0}"
+  },
+  "mktVolume24": {
+    "message": "Объём (24 ч): {0}"
+  },
+  "mktNoOrderBookId": {
+    "message": "Не удалось найти на странице идентификатор книги заказов."
+  },
+  "mktFetchingOrderBook": {
+    "message": "Загружаем книгу заказов…"
+  },
+  "mktOrderBookFailed": {
+    "message": "Не удалось загрузить книгу заказов."
+  },
+  "mktHighestBuy": {
+    "message": "Лучший запрос на покупку: {0} (запросов: {1})"
+  },
+  "mktLowestSell": {
+    "message": "Самый дешёвый лот: {0} (лотов: {1})"
+  },
+  "mktSuggestedBuy": {
+    "message": "Совет: запрос на покупку по {0}"
+  },
+  "mktSuggestedBuyWhy": {
+    "message": " — так вы опередите очередь на минимальный шаг."
+  },
+  "mktSpread": {
+    "message": "Спред: {0}"
+  },
+  "mktConverting": {
+    "message": "Конвертируем…"
+  },
+  "mktConvertFailed": {
+    "message": "Не удалось конвертировать (нет курса)."
+  },
+  "tradePriorOffers": {
+    "message": "Предыдущих предложений с этим партнёром в этом браузере: {0} · средняя разница в стоимости {1}%"
+  },
+  "tradeNone": {
+    "message": "{0}: (нет)"
+  },
+  "tradeUnmarketable": {
+    "message": "(непродаваемый предмет)"
+  },
+  "discNoReplyBox": {
+    "message": "На этой странице нет поля для ответа."
+  },
+  "changelog150Selling": {
+    "message": "Продажа из инвентаря теперь идёт в валюте вашего кошелька и показывает точную сумму после комиссии."
+  },
+  "changelog150Alerts": {
+    "message": "Уведомления о скидках из списка желаемого и о целевых ценах снова работают, вернулись исторический минимум и график цен."
+  },
+  "changelog150Country": {
+    "message": "Цены теперь соответствуют стране, которую показывает Steam; её можно изменить в настройках."
+  },
+  "changelogShortcuts": {
+    "message": "Новые сочетания клавиш: Alt+Shift+S — показать/скрыть панель, Alt+Shift+W — список желаемого. Изменить их можно на chrome://extensions/shortcuts."
+  },
+  "changelog150Wishlist": {
+    "message": "Новая панель списка желаемого рядом со списком Steam: сортировка и фильтры по цене, скидке и историческому минимуму, ценовые уведомления, экспорт в CSV."
+  },
+  "changelog150Market": {
+    "message": "Торговая площадка: быстрая и мгновенная продажа из инвентаря, проверка ваших лотов (самый дешёвый или перебит, снятие нескольких сразу) и график истории цен."
+  },
+  "changelog150Options": {
+    "message": "Обновлённая страница настроек с поиском и пресетами, последние уведомления во всплывающем окне значка и тихие часы по желанию."
+  },
+  "obStep1Title": {
+    "message": "Откройте страницу игры"
+  },
+  "obStep1Desc": {
+    "message": "Минимальная цена, исторический минимум, рейтинг ProtonDB, наличие DLC и многое другое появятся на панели автоматически."
+  },
+  "obStep2Title": {
+    "message": "Подсветка купленных и желаемых игр"
+  },
+  "obStep2Desc": {
+    "message": "В поиске и списках магазина отмечаются купленные, желаемые и игнорируемые игры — любые из них можно скрыть."
+  },
+  "obStep3Title": {
+    "message": "Инструменты для рынка и инвентаря"
+  },
+  "obStep3Desc": {
+    "message": "Откройте торговую площадку или инвентарь Steam: цены после комиссии, оценка стоимости, сортировка и группировка и многое другое."
+  },
+  "obStep4Title": {
+    "message": "Всё можно отключить"
+  },
+  "obStep4Desc": {
+    "message": "Нажмите плавающий значок «SE» (внизу справа на любой странице Steam), чтобы открыть все настройки."
+  },
+  "wlPanelTitle": {
+    "message": "Steam Enhancer — список желаемого"
+  },
+  "wlLoading": {
+    "message": "Загружаем список желаемого…"
+  },
+  "wlLoadingDetails": {
+    "message": "Загружаем данные магазина {0}/{1}…"
+  },
+  "wlLoadingPrices": {
+    "message": "Ищем исторические минимумы…"
+  },
+  "wlPrivateOrEmpty": {
+    "message": "Этот список желаемого скрыт или пуст."
+  },
+  "wlNoOwner": {
+    "message": "Не удалось определить, чей это список желаемого."
+  },
+  "wlSummary": {
+    "message": "Игр: {0} · сейчас {1} · без скидок {2}"
+  },
+  "wlOnSale": {
+    "message": "со скидкой: {0}"
+  },
+  "wlAtLow": {
+    "message": "на историческом минимуме: {0}"
+  },
+  "wlAtTarget": {
+    "message": "достигли вашей цели: {0}"
+  },
+  "wlSearch": {
+    "message": "Поиск…"
+  },
+  "wlReverse": {
+    "message": "Обратный порядок"
+  },
+  "wlSortPriority": {
+    "message": "Ваш порядок"
+  },
+  "wlSortPrice": {
+    "message": "Цена"
+  },
+  "wlSortDiscount": {
+    "message": "Скидка"
+  },
+  "wlSortVsLow": {
+    "message": "Ближе всего к минимуму"
+  },
+  "wlSortReviews": {
+    "message": "Обзоры"
+  },
+  "wlSortAdded": {
+    "message": "Недавно добавленные"
+  },
+  "wlSortReleased": {
+    "message": "Дата выхода"
+  },
+  "wlSortName": {
+    "message": "Название"
+  },
+  "wlOnSaleOnly": {
+    "message": "Со скидкой"
+  },
+  "wlAtLowOnly": {
+    "message": "На минимуме"
+  },
+  "wlAtTargetOnly": {
+    "message": "Достигли цели"
+  },
+  "wlMaxPrice": {
+    "message": "Макс. цена"
+  },
+  "wlColGame": {
+    "message": "Игра"
+  },
+  "wlColPrice": {
+    "message": "Цена"
+  },
+  "wlColDiscount": {
+    "message": "Скидка"
+  },
+  "wlColLow": {
+    "message": "Минимум"
+  },
+  "wlColVsLow": {
+    "message": "к минимуму"
+  },
+  "wlColReviews": {
+    "message": "Обзоры"
+  },
+  "wlColDeck": {
+    "message": "Steam Deck"
+  },
+  "wlColTarget": {
+    "message": "Уведомить при"
+  },
+  "wlColAdded": {
+    "message": "Добавлено"
+  },
+  "wlNoMatches": {
+    "message": "Нет игр, подходящих под фильтры."
+  },
+  "wlShowing": {
+    "message": "Показано {0} из {1}"
+  },
+  "wlShowMore": {
+    "message": "Показать ещё {0}"
+  },
+  "wlFree": {
+    "message": "Бесплатно"
+  },
+  "wlLowNow": {
+    "message": "МИНИМУМ"
+  },
+  "deckVerified": {
+    "message": "Проверено"
+  },
+  "deckPlayable": {
+    "message": "Играбельно"
+  },
+  "deckUnsupported": {
+    "message": "Не поддерживается"
+  },
+  "range3M": {
+    "message": "3 мес."
+  },
+  "range1Y": {
+    "message": "1 год"
+  },
+  "rangeALL": {
+    "message": "Всё"
+  },
+  "chartFromVisits": {
+    "message": "По вашим посещениям этой страницы (добавьте ключ IsThereAnyDeal в настройках для полной истории)."
+  },
+  "regionYou": {
+    "message": "вы"
+  },
+  "regionNote": {
+    "message": "Пересчитано в {0} по сегодняшнему курсу. Покупать в магазине другого региона Steam обычно не разрешает."
+  },
+  "quickSellBtn": {
+    "message": "Быстрая продажа"
+  },
+  "instantSellBtn": {
+    "message": "Мгновенная продажа"
+  },
+  "qsNoListings": {
+    "message": "Сейчас этот предмет никто не продаёт — некого опережать."
+  },
+  "qsNoOrderBook": {
+    "message": "Не удалось прочитать книгу заказов: страница Market Beta её не содержит. Используйте быструю продажу или классическую торговую площадку (Exit Market Beta)."
+  },
+  "mktBetaNote": {
+    "message": "Подрезка цены и помощник по заказам работают только на классической странице (Exit Market Beta)."
+  },
+  "qsNoBuyOrders": {
+    "message": "На этот предмет нет запросов на покупку (или для книги заказов нужно войти)."
+  },
+  "qsSelectionChanged": {
+    "message": "Выбранный предмет изменился. Ничего не выставлено; выберите предмет и попробуйте снова."
+  },
+  "perItemWord": {
+    "message": "за штуку"
+  },
+  "ctxSearchItad": {
+    "message": "Найти лучшую цену на IsThereAnyDeal"
+  },
+  "ctxSearchSteamDb": {
+    "message": "Искать на SteamDB"
+  },
+  "ctxSearchProtonDb": {
+    "message": "Проверить рейтинг ProtonDB"
+  },
+  "qsConfirm": {
+    "message": "⚠ Подтвердить: выставить"
+  },
+  "qsListed": {
+    "message": "Выставлено."
+  },
+  "qsListedConfirm": {
+    "message": "Выставлено — подтвердите в мобильном приложении Steam."
+  },
+  "qsFailed": {
+    "message": "Steam отклонил лот: {0}"
+  },
+  "cancelWord": {
+    "message": "Отмена"
+  },
+  "myListingsTitle": {
+    "message": "Мои лоты:"
+  },
+  "checkListingsBtn": {
+    "message": "Проверить цены"
+  },
+  "selectUndercutBtn": {
+    "message": "Выбрать перебитые"
+  },
+  "selectNoneBtn": {
+    "message": "Снять выбор"
+  },
+  "removeSelectedBtn": {
+    "message": "Снять выбранные"
+  },
+  "myListingsSummary": {
+    "message": "Лотов: {0} · вы получите {1}"
+  },
+  "checkingListings": {
+    "message": "Проверка {0}/{1}…"
+  },
+  "listingsChecked": {
+    "message": "Проверено лотов: {0} · перебито: {1}"
+  },
+  "listingLowest": {
+    "message": "САМЫЙ ДЕШЁВЫЙ"
+  },
+  "listingUndercut": {
+    "message": "ПЕРЕБИТ на {0}"
+  },
+  "noneSelectedListings": {
+    "message": "Сначала отметьте лоты, которые нужно снять."
+  },
+  "confirmRemoveListings": {
+    "message": "Снять с продажи лотов: {0}?"
+  },
+  "removingListings": {
+    "message": "Снято {0}/{1}…"
+  },
+  "removedListings": {
+    "message": "Снято {0} из {1}. Перезагрузите страницу, чтобы обновить список Steam."
+  },
+  "recentAlerts": {
+    "message": "Последние уведомления"
+  },
+  "cacheCleared": {
+    "message": "Очищено!"
+  },
+  "notifWishlistDeal": {
+    "message": "Скидка из списка желаемого: -{0}%"
+  },
+  "notifFreePromo": {
+    "message": "Бесплатно ограниченное время!"
+  },
+  "notifPriceAlert": {
+    "message": "Цель по цене достигнута"
+  },
+  "notifPriceAlertMsg": {
+    "message": "{0} в {1} (ваша цель: {2})"
+  },
+  "optSearch": {
+    "message": "Поиск по настройкам…"
+  },
+  "optFooterUnofficial": {
+    "message": "Steam Enhancer — неофициальное дополнение. Не связано с Valve или Steam."
+  },
+  "optSourceLink": {
+    "message": "Исходный код на GitHub"
+  },
+  "optSecPrices": {
+    "message": "Цены и ключи"
+  },
+  "optSecStore": {
+    "message": "Страницы магазина"
+  },
+  "optSecLists": {
+    "message": "Поиск, списки и желаемое"
+  },
+  "optSecMarket": {
+    "message": "Рынок, инвентарь и обмены"
+  },
+  "optSecCommunity": {
+    "message": "Профили и библиотека"
+  },
+  "optSecNotify": {
+    "message": "Уведомления"
+  },
+  "optSecAdvanced": {
+    "message": "Дополнительно"
+  },
+  "optSecPresets": {
+    "message": "Наборы настроек"
+  },
+  "optSecBackup": {
+    "message": "Резервная копия и сброс"
+  },
+  "optItadKey": {
+    "message": "API-ключ IsThereAnyDeal (нужен для цен)"
+  },
+  "optItadKeyHint": {
+    "message": "С тех пор как IsThereAnyDeal изменил API, для любых цен (минимальная цена, исторический минимум, история цен, метки в списках и поиске, уведомления о скидках) нужен бесплатный ключ. Зарегистрируйте бесплатное приложение на [isthereanydeal.com/apps/my/](https://isthereanydeal.com/apps/my/) и вставьте ключ сюда. Он остаётся в вашем браузере и отправляется только на api.isthereanydeal.com."
+  },
+  "optItadKeyPlaceholder": {
+    "message": "вставьте бесплатный ключ ITAD"
+  },
+  "optCountry": {
+    "message": "Страна для цен"
+  },
+  "optCountryHint": {
+    "message": "Две буквы, например IL или DE. Оставьте пустым, чтобы использовать страну, которую показывает Steam."
+  },
+  "optAuto": {
+    "message": "авто"
+  },
+  "optDisplayCurrency": {
+    "message": "Валюта отображения (необязательно)"
+  },
+  "optDisplayCurrencyHint": {
+    "message": "Три буквы, например ILS или EUR. Цены будут также показаны в этой валюте, и в ней же сравниваются региональные цены."
+  },
+  "optSteamKey": {
+    "message": "Ваш ключ Steam Web API (необязательно)"
+  },
+  "optSteamKeyHint": {
+    "message": "Только для «сколько друзей владеют игрой». Получите бесплатный ключ на [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey). Он остаётся в браузере и отправляется только на api.steampowered.com."
+  },
+  "optDealThreshold": {
+    "message": "Минимальная скидка для уведомлений (%)"
+  },
+  "optQuietFrom": {
+    "message": "Тихие часы с"
+  },
+  "optQuietTo": {
+    "message": "Тихие часы до"
+  },
+  "optQuietHint": {
+    "message": "В эти часы уведомления только собираются во всплывающем окне значка, без системных уведомлений. Оставьте пустым, чтобы отключить."
+  },
+  "optCustomCss": {
+    "message": "Свой CSS для страниц Steam"
+  },
+  "optCustomCssHint": {
+    "message": "Добавляется на все страницы магазина и сообщества Steam. Хранится только в этом браузере (не синхронизируется)."
+  },
+  "optPresetsHint": {
+    "message": "Набор сразу включает и выключает переключатели. Ключи, страна и другие значения не меняются."
+  },
+  "presetMinimal": {
+    "message": "Минимум"
+  },
+  "presetDeals": {
+    "message": "Охотник за скидками"
+  },
+  "presetTrader": {
+    "message": "Трейдер"
+  },
+  "presetEverything": {
+    "message": "Всё"
+  },
+  "optPresetConfirm": {
+    "message": "Переключиться на набор «{0}»? Это изменит, какие функции включены."
+  },
+  "optBackupHint": {
+    "message": "Резервная копия содержит настройки, заметки, целевые цены, скрытые игры и истории, которые ведёт расширение. Импорт в другом браузере восстановит всё это."
+  },
+  "optExport": {
+    "message": "Экспорт копии"
+  },
+  "optImport": {
+    "message": "Импорт копии"
+  },
+  "optClearCache": {
+    "message": "Очистить кэш"
+  },
+  "optClearBlocklist": {
+    "message": "Снова показать скрытые игры"
+  },
+  "optReset": {
+    "message": "Сбросить настройки"
+  },
+  "optShow": {
+    "message": "Показать"
+  },
+  "optHide": {
+    "message": "Скрыть"
+  },
+  "optSaved": {
+    "message": "Сохранено"
+  },
+  "optSaveFailed": {
+    "message": "Не удалось сохранить: {0}"
+  },
+  "optResetConfirm": {
+    "message": "Сбросить все настройки по умолчанию? API-ключи сохранятся."
+  },
+  "optResetDone": {
+    "message": "Настройки сброшены"
+  },
+  "optCacheCleared": {
+    "message": "Кэш очищен"
+  },
+  "optClearBlocklistConfirm": {
+    "message": "Снова показывать все игры, скрытые кнопкой ✕ в поиске?"
+  },
+  "optBlocklistCleared": {
+    "message": "Скрытые игры снова видны"
+  },
+  "optExported": {
+    "message": "Копия загружена"
+  },
+  "optNotABackup": {
+    "message": "Это не резервная копия Steam Enhancer."
+  },
+  "optImportConfirm": {
+    "message": "Импортировать копию? Она заменит текущие настройки и сохранённые данные."
+  },
+  "optImported": {
+    "message": "Импортировано. Перезагрузите вкладки Steam."
+  },
+  "optImportFailed": {
+    "message": "Ошибка импорта: {0}"
+  },
+  "opt_showLowestPrice": {
+    "message": "Самая низкая цена по магазинам"
+  },
+  "opt_showPriceHistory": {
+    "message": "Исторический минимум и график цен"
+  },
+  "opt_showRegionalPricing": {
+    "message": "Региональные цены с пересчётом (медленнее)"
+  },
+  "opt_showStorePriceAlerts": {
+    "message": "Поле «уведомить при цене» на страницах игр"
+  },
+  "opt_showBundleSavings": {
+    "message": "Набор или по отдельности"
+  },
+  "opt_showSteamDBLink": {
+    "message": "Ссылки на SteamDB, Barter.vg, SteamCharts"
+  },
+  "opt_showProtonDB": {
+    "message": "Оценка ProtonDB (Linux / Steam Deck)"
+  },
+  "opt_showHowLongToBeat": {
+    "message": "Ссылка на HowLongToBeat"
+  },
+  "opt_showPlayersOnline": {
+    "message": "Игроков сейчас"
+  },
+  "opt_showAchievementStats": {
+    "message": "Статистика достижений"
+  },
+  "opt_showDlcCheck": {
+    "message": "Отмечать купленные DLC"
+  },
+  "opt_showCardSetValue": {
+    "message": "Ссылки на карточки"
+  },
+  "opt_showReviewBreakdown": {
+    "message": "Разбивка обзоров (положительные / отрицательные)"
+  },
+  "opt_showLiveReviewFilters": {
+    "message": "Фильтр обзоров (часы в игре, длина)"
+  },
+  "opt_showBestReview": {
+    "message": "Фрагмент самого полезного обзора"
+  },
+  "opt_showReviewBombDetector": {
+    "message": "Отмечать возможный ревью-бомбинг"
+  },
+  "opt_highlightOwned": {
+    "message": "Подсвечивать купленные игры"
+  },
+  "opt_highlightWishlist": {
+    "message": "Подсвечивать желаемые игры"
+  },
+  "opt_highlightIgnored": {
+    "message": "Подсвечивать игнорируемые игры"
+  },
+  "opt_hideOwnedInSearch": {
+    "message": "Скрывать купленные игры в поиске"
+  },
+  "opt_hideIgnoredInSearch": {
+    "message": "Скрывать игнорируемые игры в поиске"
+  },
+  "opt_enableWishlistExport": {
+    "message": "Панель списка желаемого (таблица, фильтры, экспорт)"
+  },
+  "opt_enableMarketTools": {
+    "message": "Инструменты рынка (цена после комиссии, перебить, мои лоты)"
+  },
+  "opt_showBuyOrderHelper": {
+    "message": "Помощник запросов на покупку"
+  },
+  "opt_enableInventoryTools": {
+    "message": "Инструменты инвентаря"
+  },
+  "opt_enableQuickSell": {
+    "message": "Кнопки быстрой / мгновенной продажи"
+  },
+  "opt_showTileSortGroup": {
+    "message": "Сортировка и группировка предметов"
+  },
+  "opt_enableTradeOfferTools": {
+    "message": "Сводка стоимости в обменах"
+  },
+  "opt_showTradeHistory": {
+    "message": "Запоминать обмены с партнёрами (в этом браузере)"
+  },
+  "opt_showLibraryValue": {
+    "message": "Оценка стоимости библиотеки (страница /games)"
+  },
+  "opt_showBadgeTracker": {
+    "message": "Сводка по значкам (страница /badges)"
+  },
+  "opt_showMediaShortcuts": {
+    "message": "Ссылки на скриншоты и иллюстрации в профилях"
+  },
+  "opt_showFriendsOwnership": {
+    "message": "Сколько друзей владеют игрой (нужен ваш ключ Steam)"
+  },
+  "opt_notifyWishlistDeals": {
+    "message": "Уведомлять о скидках из желаемого (ежечасно)"
+  },
+  "opt_notifyStorePriceAlerts": {
+    "message": "Уведомлять, когда цена достигла цели"
+  },
+  "opt_notifyFreePromos": {
+    "message": "Уведомлять о временно бесплатных играх"
+  },
+  "myAchievements": {
+    "message": "Ваши достижения:"
+  },
+  "perfectGame": {
+    "message": "100%"
+  },
+  "opt_showDeckBadge": {
+    "message": "Совместимость со Steam Deck"
   }
 }

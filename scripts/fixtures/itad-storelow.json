@@ -1,0 +1,8 @@
+[
+  {
+    "id": "018d937f-1234-7000-9000-000000000001",
+    "lows": [
+      { "shop": { "id": 61, "name": "Steam" }, "price": { "amount": 0.99, "amountInt": 99, "currency": "USD" }, "regular": { "amount": 9.99, "amountInt": 999, "currency": "USD" }, "cut": 90, "timestamp": "2024-06-27T17:00:00+02:00" }
+    ]
+  }
+]

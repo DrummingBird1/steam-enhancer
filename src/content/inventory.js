@@ -5,6 +5,7 @@
   SE.onReady(() => init());
 
   let cachedItems = null;
+  let cachedFor = null;
   let cachedOwnerId = null;
 
   async function init() {
@@ -43,10 +44,12 @@
       SE.el('span', { id: 'se-inv-out', class: 'se-muted' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);
-    SE.$('#se-inv-filter').addEventListener('input', SE.debounce((e) => {
+    SE.$('#se-inv-filter').addEventListener('input', SE.debounce(async (e) => {
       const q = e.target.value.toLowerCase().trim();
-      for (const tile of SE.$$('.itemHolder, .inventory_item_link')) {
-        const name = (tile.querySelector('.hover_item_name')?.textContent || tile.innerText || '').toLowerCase();
+      const items = q ? await getItems() : null;
+      for (const tile of SE.$$('.itemHolder')) {
+        if (!assetIdFromTile(tile)) continue; // empty slot
+        const name = ((items && itemForTile(tile, items)?.name) || '').toLowerCase();
         tile.style.display = (!q || name.includes(q)) ? '' : 'none';
       }
     }, 150));
@@ -58,33 +61,40 @@
   }
 
   function assetIdFromTile(tile) {
-    // Steam inventory tile ids look like "160_2_10995123456" (appid_contextid_assetid).
-    const m = (tile.id || '').match(/(\d+)_(\d+)_(\d+)$/);
+    // Steam inventory tile ids look like "160_2_10995123456" (appid_contextid_assetid),
+    // on the tile itself or on the .item inside an .itemHolder.
+    const id = tile.id || tile.querySelector('.item')?.id || '';
+    const m = id.match(/(\d+)_(\d+)_(\d+)$/);
     return m ? m[3] : null;
   }
 
+  // The item behind a tile, by asset id. (Tile images used to carry the item
+  // name as alt text; they don't any more, so names can't be matched.)
+  function itemForTile(tile, items) {
+    const id = assetIdFromTile(tile);
+    return id ? items.find((i) => String(i.id) === id) || null : null;
+  }
+
+  // The item-detail pane Steam is showing: it alternates between #iteminfo0
+  // and #iteminfo1 and hides the other one. The pane's content is now React,
+  // with the item name in its <h1>.
+  function visibleInfoPane() {
+    return [SE.$('#iteminfo0'), SE.$('#iteminfo1')].find((p) => p && p.offsetParent !== null)
+      || SE.$('.inventory_iteminfo.activeInfo');
+  }
+  const paneItemName = (pane) =>
+    (pane.querySelector('h1')?.textContent || pane.querySelector('.hover_item_name')?.textContent || '').trim();
+
   async function getItems(force = false) {
-    if (cachedItems && !force) return cachedItems;
-    const r = await SE.injectPage(() => {
-      try {
-        const inv = window.g_ActiveInventory;
-        if (!inv?.rgInventory) return null;
-        const items = Object.values(inv.rgInventory).map(it => {
-          const d = inv.rgDescriptions[it.classid + '_' + it.instanceid] || {};
-          return {
-            id: it.id, classid: it.classid, instanceid: it.instanceid,
-            amount: it.amount, appid: inv.appid,
-            market_hash_name: d.market_hash_name, name: d.name,
-            tradable: d.tradable, marketable: d.marketable,
-            tags: (d.tags || []).map(t => ({ category: t.category, name: t.localized_tag_name || t.name })),
-            actions: d.actions || []
-          };
-        });
-        return { items, owner: inv.m_owner && inv.m_owner.strSteamId };
-      } catch { return null; }
-    });
+    // Switching games (#730 → #753) is only a hash change: the items read
+    // before belong to the previous game's inventory.
+    if (cachedItems && !force && cachedFor === location.hash) return cachedItems;
+    // Each item carries its own contextid (Steam items are context 6, not 2) —
+    // see inventoryItems in page-bridge.js.
+    const r = await SE.pageCall('inventoryItems');
     if (r?.ok && r.result) {
       cachedItems = r.result.items;
+      cachedFor = location.hash;
       cachedOwnerId = r.result.owner || cachedOwnerId;
     } else {
       cachedItems = null;
@@ -94,9 +104,9 @@
 
   async function showValue() {
     const out = SE.$('#se-inv-out');
-    out.textContent = 'Sampling first 25 marketable items…';
+    out.textContent = SE.t('invSampling');
     const items = await getItems(true);
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const marketable = items.filter(i => i.marketable);
     let total = 0, counted = 0;
     for (const it of marketable.slice(0, 25)) {
@@ -106,7 +116,7 @@
     }
     const avg = counted ? total / counted : 0;
     const estimate = avg * marketable.length;
-    out.textContent = `Sampled ${counted}/25 · avg ≈ ${avg.toFixed(2)} · ${marketable.length} marketable · estimate ≈ ${estimate.toFixed(2)}`;
+    out.textContent = SE.t('invValueResult', counted, avg.toFixed(2), marketable.length, estimate.toFixed(2));
     if (counted) SE.safe('inv:valueSnapshot', () => recordValueSnapshot(estimate));
   }
 
@@ -122,7 +132,7 @@
     const dups = [...map.entries()].filter(([, n]) => n > 1).sort((a, b) => b[1] - a[1]).slice(0, 25);
     const out = SE.$('#se-inv-out');
     out.innerHTML = '';
-    if (!dups.length) { out.textContent = 'No duplicates.'; return; }
+    if (!dups.length) { out.textContent = SE.t('invNoDuplicates'); return; }
     dups.forEach(([k, n]) => out.appendChild(SE.el('div', null, `${n}× ${k}`)));
   }
 
@@ -135,16 +145,15 @@
       if (k) counts.set(k, (counts.get(k) || 0) + 1);
     });
     let marked = 0;
-    for (const tile of SE.$$('.itemHolder, .inventory_item_link')) {
-      const name = tile.querySelector('.hover_item_name')?.textContent
-                 || tile.querySelector('img')?.alt
-                 || '';
+    for (const tile of SE.$$('.itemHolder')) {
+      const it = itemForTile(tile, items);
+      const name = it && (it.market_hash_name || it.name);
       if (name && counts.get(name) > 1) {
         tile.style.outline = '2px solid #b07a1f';
         marked++;
       }
     }
-    SE.$('#se-inv-out').textContent = `Marked ${marked} duplicate tiles in amber.`;
+    SE.$('#se-inv-out').textContent = SE.t('invMarkedDuplicates', marked);
   }
 
   async function cardSetProgress() {
@@ -161,7 +170,7 @@
     }
     const out = SE.$('#se-inv-out');
     out.innerHTML = '';
-    if (!byGame.size) { out.textContent = 'No trading cards in current inventory view.'; return; }
+    if (!byGame.size) { out.textContent = SE.t('invNoCards'); return; }
     [...byGame.entries()].slice(0, 12).forEach(([game, info]) => {
       out.appendChild(SE.el('div', null, `${game}: ${info.unique.size} unique (${info.total} total)`));
     });
@@ -172,17 +181,14 @@
   async function sortTilesByValue() {
     const out = SE.$('#se-inv-out');
     const container = tileContainer();
-    if (!container) { out.textContent = 'No inventory tiles found.'; return; }
+    if (!container) { out.textContent = SE.t('invNoTiles'); return; }
     const items = await getItems();
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
-    const byName = new Map(items.map(i => [i.name, i]));
-
-    out.textContent = 'Pricing tiles for sort (first 60)…';
-    const tiles = SE.$$('.itemHolder, .inventory_item_link').slice(0, 60);
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
+    out.textContent = SE.t('invPricingForSort');
+    const tiles = SE.$$('.itemHolder').filter((t) => assetIdFromTile(t)).slice(0, 60);
     const valueCache = new Map();
     for (const tile of tiles) {
-      const name = tile.querySelector('img')?.alt || tile.querySelector('.hover_item_name')?.textContent;
-      const it = name && byName.get(name);
+      const it = itemForTile(tile, items);
       let val = 0;
       if (it?.marketable && it.market_hash_name) {
         const key = it.appid + ':' + it.market_hash_name;
@@ -197,31 +203,28 @@
     }
     const sorted = tiles.slice().sort((a, b) => (+b.dataset.seValue || 0) - (+a.dataset.seValue || 0));
     sorted.forEach(t => container.appendChild(t));
-    out.textContent = `Sorted ${sorted.length} tiles by estimated value (highest first).`;
+    out.textContent = SE.t('invSorted', sorted.length);
   }
 
   async function groupTilesByType() {
     const out = SE.$('#se-inv-out');
     const container = tileContainer();
-    if (!container) { out.textContent = 'No inventory tiles found.'; return; }
+    if (!container) { out.textContent = SE.t('invNoTiles'); return; }
     const items = await getItems();
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
-    const byName = new Map(items.map(i => [i.name, i]));
-
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const groupOf = (it) => it?.tags?.find(t => t.category === 'Type')?.name
       || it?.tags?.[0]?.name
       || 'Other';
 
-    const tiles = SE.$$('.itemHolder, .inventory_item_link');
+    const tiles = SE.$$('.itemHolder').filter((t) => assetIdFromTile(t));
     const groups = new Map();
     for (const tile of tiles) {
-      const name = tile.querySelector('img')?.alt || tile.querySelector('.hover_item_name')?.textContent;
-      const group = groupOf(byName.get(name));
+      const group = groupOf(itemForTile(tile, items));
       if (!groups.has(group)) groups.set(group, []);
       groups.get(group).push(tile);
     }
     [...groups.keys()].sort().forEach(g => groups.get(g).forEach(t => container.appendChild(t)));
-    out.textContent = `Grouped ${tiles.length} tiles into ${groups.size} type(s): ${[...groups.keys()].slice(0, 6).join(', ')}${groups.size > 6 ? '…' : ''}`;
+    out.textContent = SE.t('invGrouped', tiles.length, groups.size, [...groups.keys()].slice(0, 6).join(', ') + (groups.size > 6 ? '…' : ''));
   }
 
   // Report-only (doesn't reorder tiles): counts items by Rarity/Quality tag
@@ -229,14 +232,14 @@
   async function rarityBreakdown() {
     const out = SE.$('#se-inv-out');
     const items = await getItems();
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const counts = new Map();
     for (const it of items) {
       const tier = it.tags?.find(t => t.category === 'Rarity' || t.category === 'Quality')?.name || 'Unknown';
       counts.set(tier, (counts.get(tier) || 0) + (it.amount || 1));
     }
     out.innerHTML = '';
-    if (!counts.size) { out.textContent = 'No rarity/quality tags found on items in this inventory.'; return; }
+    if (!counts.size) { out.textContent = SE.t('invNoRarity'); return; }
     [...counts.entries()].sort((a, b) => b[1] - a[1]).forEach(([tier, n]) => {
       out.appendChild(SE.el('div', null, `${tier}: ${n}`));
     });
@@ -253,7 +256,7 @@
     if (btn) btn.textContent = selectMode ? SE.t('selectingBtn') : SE.t('selectItemsBtn');
     if (!selectMode) SE.$$('.se-select-checkbox').forEach(cb => cb.remove());
     else renderSelectionOverlays();
-    SE.$('#se-inv-out').textContent = selectMode ? `Selection mode on — ${selectedIds.size} selected` : '';
+    SE.$('#se-inv-out').textContent = selectMode ? SE.t('invSelectionOn', selectedIds.size) : '';
   }
 
   function renderSelectionOverlays() {
@@ -270,7 +273,7 @@
           e.stopPropagation();
           if (e.target.checked) selectedIds.add(assetid); else selectedIds.delete(assetid);
           const out = SE.$('#se-inv-out');
-          if (out) out.textContent = `Selection mode on — ${selectedIds.size} selected`;
+          if (out) out.textContent = SE.t('invSelectionOn', selectedIds.size);
         }
       }));
     }
@@ -278,26 +281,34 @@
 
   async function prepareSelectedListing() {
     const out = SE.$('#se-inv-out');
-    if (!selectedIds.size) { out.textContent = 'No items selected. Click "Select items to sell", then click checkboxes on tiles.'; return; }
+    if (!selectedIds.size) { out.textContent = SE.t('invNoneSelected'); return; }
     const items = await getItems(true);
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const chosen = items.filter(i => selectedIds.has(String(i.id)) && i.marketable && i.market_hash_name);
-    if (!chosen.length) { out.textContent = 'None of the selected items are marketable.'; return; }
+    if (!chosen.length) { out.textContent = SE.t('invNoneMarketableSelected'); return; }
+    const wallet = await requireWallet(out);
+    if (!wallet) return;
 
     out.innerHTML = '';
-    out.appendChild(SE.el('div', { class: 'se-label' }, `Pricing ${chosen.length} selected item(s) — edit prices below, nothing listed yet.`));
+    out.appendChild(SE.el('div', { class: 'se-label' }, SE.t('invPricingSelected', chosen.length)));
 
     const plan = [];
     for (const it of chosen) {
-      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
+      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name, 'US', wallet.id);
       const med = SE.parsePrice(p?.data?.median_price) || SE.parsePrice(p?.data?.lowest_price) || 0;
+      // The input is the buyer price, like every price on the market; the
+      // label next to it shows what you'd actually receive.
       const priceInput = SE.el('input', {
         type: 'number', step: '0.01', min: '0.03', class: 'se-input', style: { width: '70px' },
         value: med > 0.03 ? (med - 0.01).toFixed(2) : '0.03'
       });
+      const receive = SE.el('span', { class: 'se-muted' });
+      const update = () => { receive.textContent = ' ' + receiveLabel(Math.round((parseFloat(priceInput.value) || 0) * 100), wallet.iso); };
+      priceInput.addEventListener('input', update);
+      update();
       plan.push({ it, priceInput });
       out.appendChild(SE.el('div', { class: 'se-row' },
-        `${it.market_hash_name} (median ${med ? med.toFixed(2) : '—'}) → `, priceInput
+        `${it.market_hash_name} (${SE.t('medianWord')} ${med ? SE.formatMoney(med, wallet.iso) : '—'}) → `, priceInput, receive
       ));
     }
 
@@ -309,7 +320,7 @@
           e.target.disabled = true;
           const finalPlan = plan.map(p => ({
             it: p.it,
-            priceCents: Math.max(3, Math.round((parseFloat(p.priceInput.value) || 0) * 100))
+            buyerCents: Math.max(3, Math.round((parseFloat(p.priceInput.value) || 0) * 100))
           }));
           executeListing(finalPlan, out);
           selectedIds.clear();
@@ -318,7 +329,7 @@
           const btn = SE.$('#se-inv-selmode');
           if (btn) btn.textContent = SE.t('selectItemsBtn');
         }
-      }, `⚠ Confirm: list these ${plan.length} selected items`)
+      }, SE.t('invConfirmSelected', plan.length))
     ));
   }
 
@@ -340,19 +351,20 @@
     const all = await new Promise((r) => chrome.storage.local.get([VALUE_HISTORY_KEY], (d) => r(d[VALUE_HISTORY_KEY] || {})));
     const list = all[key] || [];
     out.innerHTML = '';
-    if (list.length < 2) { out.textContent = `Only ${list.length} snapshot(s) so far — click "Estimate value" a few more times over the coming days to build a trend.`; return; }
-    const svg = SE.sparklineSvg(list.map(p => ({ t: p.ts, v: p.v })), { labelLeft: `${list[0].v.toFixed(2)}` });
-    out.appendChild(SE.el('div', { html: svg }));
-    out.appendChild(SE.el('div', { class: 'se-muted' }, `${list.length} snapshots recorded from your own "Estimate value" clicks on this page.`));
+    if (list.length < 2) { out.textContent = SE.t('invFewSnapshots', list.length); return; }
+    const wallet = await SE.walletCurrency();
+    out.appendChild(SE.priceChart(list.map(p => ({ t: p.ts, v: p.v })), { currency: wallet.iso, step: false }));
+    out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('invSnapshotsRecorded', list.length)));
   }
 
   function openBoosterCreator() {
     window.open('https://steamcommunity.com/tradingcards/boostercreator/', '_blank');
   }
-  function stickerHelper() {
-    const items = SE.$$('.itemHolder img').map(i => i.alt).filter(n => /\bSticker\b/i.test(n));
+  async function stickerHelper() {
+    const items = [...new Set((await getItems() || []).map((i) => i.market_hash_name || i.name)
+      .filter((n) => n && /\bSticker\b/i.test(n)))];
     const out = SE.$('#se-inv-out');
-    if (!items.length) { out.textContent = 'No stickers visible (open your CS2 inventory).'; return; }
+    if (!items.length) { out.textContent = SE.t('invNoStickers'); return; }
     out.innerHTML = '';
     items.slice(0, 12).forEach(name => {
       out.appendChild(SE.el('div', null,
@@ -368,74 +380,158 @@
   async function massListMedian() {
     const out = SE.$('#se-inv-out');
     const items = await getItems(true);
-    if (!items) { out.textContent = 'Could not read inventory.'; return; }
-    const marketable = items.filter(i => i.marketable && i.market_hash_name && i.id);
+    if (!items) { out.textContent = SE.t('invReadFailed'); return; }
+    const marketable = items.filter(i => i.marketable && i.market_hash_name && i.id && i.contextid);
     const candidates = marketable.slice(0, 10);
-    if (!candidates.length) { out.textContent = 'No marketable items in current view.'; return; }
+    if (!candidates.length) { out.textContent = SE.t('invNoMarketable'); return; }
+    const wallet = await requireWallet(out);
+    if (!wallet) return;
 
     out.innerHTML = '';
-    out.appendChild(SE.el('div', { class: 'se-label' }, `Dry run — pricing ${candidates.length} items (nothing listed yet)…`));
+    out.appendChild(SE.el('div', { class: 'se-label' }, SE.t('invDryRun', candidates.length)));
 
     const plan = [];
     for (const it of candidates) {
-      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
+      // Median in the wallet currency (marketPriceOverview defaults to it).
+      const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name, 'US', wallet.id);
       const med = SE.parsePrice(p?.data?.median_price);
       if (med == null || med <= 0.03) continue;
-      const priceCents = Math.max(3, Math.round((med - 0.01) * 100));
-      plan.push({ it, med, priceCents });
+      // One cent under the median, as the buyer sees it.
+      const buyerCents = Math.max(3, Math.round(med * 100) - 1);
+      plan.push({ it, buyerCents });
       out.appendChild(SE.el('div', null,
-        `• ${it.market_hash_name} (app ${it.appid}, asset ${it.id}) → list at ${(priceCents / 100).toFixed(2)} (median ${med.toFixed(2)})`
+        `• ${it.amount > 1 ? `${it.amount}× ` : ''}${it.market_hash_name} (${SE.t('medianWord')} ${SE.formatMoney(med, wallet.iso)}) → ${receiveLabel(buyerCents, wallet.iso)}${it.amount > 1 ? ` ${SE.t('perItemWord')}` : ''}`
       ));
     }
 
-    if (!plan.length) { out.appendChild(SE.el('div', { class: 'se-muted' }, 'No items had a usable median price.')); return; }
+    if (!plan.length) { out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('invNoMedian'))); return; }
 
     out.appendChild(SE.el('div', { class: 'se-row' },
       SE.el('button', {
         class: 'se-btn',
         style: { background: 'linear-gradient(to bottom,#c25555 5%,#7a3434 95%)' },
         onclick: (e) => { e.target.disabled = true; executeListing(plan, out); }
-      }, `⚠ Confirm: actually list these ${plan.length} items for sale`)
+      }, SE.t('invConfirmMassList', plan.length))
     ));
-    out.appendChild(SE.el('div', { class: 'se-muted' }, 'You can cancel any listing from the Market page. Listings still need mobile-authenticator confirmation.'));
+    out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('invCancelHint')));
   }
 
+  // Quick sell (one cent under the cheapest listing) and instant sell (at the
+  // highest buy order, which fills right away) for the item open in the detail
+  // pane. Each shows "buyer pays / you receive" and needs a second click.
+  async function addQuickSell(sel) {
+    const r = await SE.pageCall('selectedItem');
+    const it = r?.ok ? r.result : null;
+    if (!it?.marketable || !it.market_hash_name || !it.contextid) return;
+    if (sel.querySelector('.se-qs')) return;
+    const out = SE.el('div', { class: 'se-qs-out se-muted' });
+    const box = SE.el('div', { class: 'se-qs se-inv-added' },
+      SE.el('button', { class: 'se-btn', onclick: () => prepare('quick') }, SE.t('quickSellBtn')),
+      ' ',
+      SE.el('button', { class: 'se-btn', onclick: () => prepare('instant') }, SE.t('instantSellBtn')),
+      out);
+    sel.appendChild(box);
+
+    async function prepare(kind) {
+      out.textContent = SE.t('mktFetching');
+      const wallet = await requireWallet(out);
+      if (!wallet) return;
+      let buyerCents = null;
+      if (kind === 'quick') {
+        const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name, 'US', wallet.id);
+        buyerCents = SE.marketMath.quickSellBuyerCents(SE.marketMath.cents(SE.parsePrice(p?.data?.lowest_price)));
+      } else {
+        const nameId = await SE.api.itemNameId(it.appid, it.market_hash_name);
+        // Steam's Market Beta item page doesn't carry the order-book id.
+        if (!nameId) { out.textContent = SE.t('qsNoOrderBook'); return; }
+        const h = await SE.api.itemOrdersHistogram(nameId, 'US', wallet.id);
+        buyerCents = SE.marketMath.instantSellBuyerCents(h?.data?.highest_buy_order);
+      }
+      if (buyerCents == null) { out.textContent = SE.t(kind === 'quick' ? 'qsNoListings' : 'qsNoBuyOrders'); return; }
+      out.textContent = '';
+      const confirm = SE.el('button', { class: 'se-btn se-btn-danger' }, SE.t('qsConfirm'));
+      confirm.addEventListener('click', async () => {
+        confirm.disabled = true;
+        // Sell what's selected now — another copy of the same item is fine (the
+        // price is per item), anything else means the selection moved on.
+        const cur = (await SE.pageCall('selectedItem'))?.result;
+        if (!cur || cur.market_hash_name !== it.market_hash_name || cur.appid !== it.appid || cur.contextid !== it.contextid) {
+          out.textContent = SE.t('qsSelectionChanged');
+          return;
+        }
+        const res = await SE.pageCall('sellItem', {
+          appid: cur.appid, contextid: cur.contextid, assetid: cur.id, amount: 1,
+          price: SE.marketFees.sellerReceives(buyerCents)
+        });
+        out.textContent = res?.result?.success
+          ? SE.t(res.result.requires_confirmation ? 'qsListedConfirm' : 'qsListed')
+          : SE.t('qsFailed', res?.result?.message || res?.error || '?');
+      });
+      out.append(
+        SE.el('div', null, `${it.name || it.market_hash_name}: ${receiveLabel(buyerCents, wallet.iso)}`),
+        confirm, ' ',
+        SE.el('button', { class: 'se-btn', onclick: () => { out.textContent = ''; } }, SE.t('cancelWord'))
+      );
+    }
+  }
+
+  // Selling moves real money, so refuse outright unless we've actually seen the
+  // wallet currency (g_rgWalletInfo) — never list using a guessed currency.
+  async function requireWallet(out) {
+    const wallet = await SE.walletCurrency();
+    if (!wallet.known) { out.textContent = SE.t('walletUnknown'); return null; }
+    return wallet;
+  }
+
+  function receiveLabel(buyerCents, iso) {
+    const receive = SE.marketFees.sellerReceives(buyerCents);
+    return `${SE.t('buyerPaysWord')} ${SE.formatMoney(buyerCents / 100, iso)} · ${SE.t('youReceiveWord')} ${SE.formatMoney(receive / 100, iso)}`;
+  }
+
+  // Plan entries carry the price the BUYER pays (what the market shows). The
+  // sellitem endpoint takes what the SELLER receives, after fees — 1.4.x sent
+  // the buyer price there, listing everything ~15% above what was shown.
   async function executeListing(plan, out) {
     let listed = 0;
-    const status = SE.el('div', null, 'Listing…');
+    const status = SE.el('div', null, SE.t('invListing'));
     out.appendChild(status);
-    for (const { it, priceCents } of plan) {
-      const r = await SE.injectPage((appid, contextid, assetid, amount, price) => {
-        return fetch('/market/sellitem/', {
-          method: 'POST', credentials: 'include',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-          body: `sessionid=${encodeURIComponent(g_sessionID)}&appid=${appid}&contextid=${contextid}&assetid=${assetid}&amount=${amount}&price=${price}`
-        }).then(r => r.json()).catch(e => ({ error: String(e) }));
-      }, [it.appid, 2, it.id, it.amount || 1, priceCents]);
+    for (const { it, buyerCents } of plan) {
+      const receiveCents = SE.marketFees.sellerReceives(buyerCents);
+      if (receiveCents < 1 || !it.contextid) continue;
+      const r = await SE.pageCall('sellItem', {
+        appid: it.appid, contextid: it.contextid, assetid: it.id, amount: it.amount || 1, price: receiveCents
+      });
       if (r?.result?.success) listed++;
       await SE.sleep(1500); // rate-limit-friendly
     }
-    status.textContent = `Listed ${listed}/${plan.length}. Check the Market page and confirm via mobile authenticator.`;
+    status.textContent = SE.t('invListedResult', listed, plan.length);
   }
 
   async function exportInventory() {
     const items = await getItems(true);
-    if (!items) return alert('Could not read inventory.');
+    if (!items) return alert(SE.t('invReadFailed'));
     const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = 'steam-inventory.json'; a.click();
   }
 
+  let tilesBusy = false;
   async function decorateTiles() {
-    // Throttle: only do a few uncached lookups per pass.
-    const tiles = SE.$$('.itemHolder:not([data-se-priced])').slice(0, 6);
+    if (tilesBusy) return;
+    // Only tiles on the visible page, a few per pass. The market endpoint
+    // allows one request every 2.5 s (service worker), so pricing every tile
+    // of a big inventory would queue minutes of requests ahead of a quick sell.
+    const tiles = SE.$$('.itemHolder:not([data-se-priced])').filter((t) => t.offsetParent !== null).slice(0, 6);
     if (!tiles.length) return;
+    tilesBusy = true;
+    try { await priceTiles(tiles); } finally { tilesBusy = false; }
+  }
+  async function priceTiles(tiles) {
     const items = await getItems();
     if (!items) return;
     for (const tile of tiles) {
       tile.setAttribute('data-se-priced', '1');
-      const name = tile.querySelector('img')?.alt;
-      const it = items.find(x => x.name === name);
+      const it = itemForTile(tile, items);
       if (!it?.marketable) continue;
       const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name);
       const v = p?.data?.median_price || p?.data?.lowest_price;
@@ -448,45 +544,59 @@
   }
 
   async function decorateSelected() {
-    const sel = SE.$('.inventory_iteminfo.activeInfo, #iteminfo1, #iteminfo0');
+    const sel = visibleInfoPane();
     if (!sel) return;
-    const stamp = sel.id + (sel.querySelector('.hover_item_name')?.textContent || '');
+    const stamp = sel.id + paneItemName(sel);
     if (sel.dataset.seDone === stamp) return;
     sel.dataset.seDone = stamp;
+    // Steam alternates between two info panes and refills them in place, so
+    // the buttons added for the item shown here before are still in it — and
+    // the quick-sell box would sell THAT item. Start clean.
+    sel.querySelectorAll('.se-inv-added').forEach((n) => n.remove());
 
-    const name = sel.querySelector('.hover_item_name')?.textContent?.trim();
+    const name = paneItemName(sel);
     if (!name) return;
-    const appidMatch = location.hash.match(/inventory_[^_]+_(\d+)/)
+    // The hash is "#730" or "#753_6" (game, context), and empty on first load,
+    // when the selected game tab says it; older pages used
+    // "#inventory_<steamid>_<appid>".
+    const appidMatch = location.hash.match(/^#(\d+)/)
+      || location.hash.match(/inventory_[^_]+_(\d+)/)
+      || SE.$('.games_list_tab.active')?.id.match(/inventory_link_(\d+)/)
       || sel.querySelector('a[href*="/market/listings/"]')?.href.match(/listings\/(\d+)\//);
     const appid = appidMatch?.[1];
     if (!appid) return;
-    if (sel.querySelector('.se-quicksell')) return;
-
+    // The market page is keyed by market_hash_name, which can differ from the
+    // display name (CS2 wear, item renames).
+    const selected = (await SE.pageCall('selectedItem'))?.result;
+    const hashName = (selected?.name === name && selected.market_hash_name) || name;
     sel.appendChild(SE.el('a', {
-      class: 'se-btn se-quicksell',
-      href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(name)}`,
+      class: 'se-btn se-quicksell se-inv-added',
+      href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(hashName)}`,
       target: '_blank', rel: 'noopener'
     }, SE.t('viewOnMarket')));
+    if (SE.ctx?.settings.enableQuickSell) SE.safe('inv:quickSell', () => addQuickSell(sel));
 
     // CSGO-specific inspect link / float lookup helper. Prefer the exact
     // per-item inspect link (Steam embeds one per asset) so CSFloat opens the
     // precise item rather than a generic name search.
     if (appid === '730') {
+      // The selected asset itself — several items can share a name.
+      const selected = (await SE.pageCall('selectedItem'))?.result;
       const items = await getItems();
-      const it = items?.find(x => x.name === name);
+      const it = items?.find(x => String(x.id) === String(selected?.id)) || items?.find(x => x.name === name);
       const inspectAction = it?.actions?.find(a => /inspect/i.test(a.name || ''));
       if (inspectAction?.link && cachedOwnerId && it?.id) {
         const inspectLink = inspectAction.link
           .replace('%owner_steamid%', cachedOwnerId)
           .replace('%assetid%', it.id);
         sel.appendChild(SE.el('a', {
-          class: 'se-btn',
+          class: 'se-btn se-inv-added',
           href: `https://csfloat.com/checkout/inspect?url=${encodeURIComponent(inspectLink)}`,
           target: '_blank', rel: 'noopener'
         }, 'CSFloat (this exact item)'));
       } else {
         sel.appendChild(SE.el('a', {
-          class: 'se-btn',
+          class: 'se-btn se-inv-added',
           href: `https://csfloat.com/search?market_hash_name=${encodeURIComponent(name)}`,
           target: '_blank', rel: 'noopener'
         }, 'CSFloat'));
@@ -496,7 +606,7 @@
     // Backpack.tf for TF2.
     if (appid === '440') {
       sel.appendChild(SE.el('a', {
-        class: 'se-btn',
+        class: 'se-btn se-inv-added',
         href: `https://backpack.tf/stats/Unique/${encodeURIComponent(name)}/Tradable/Craftable`,
         target: '_blank', rel: 'noopener'
       }, 'Backpack.tf'));

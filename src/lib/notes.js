@@ -46,20 +46,34 @@
     }
   };
 
-  // Track last-seen price per app to detect price drops between visits.
+  // Per-app Steam price seen on each store-page visit: the last one (for the
+  // "price drop since last visit" tag) plus a series of changes (the chart's
+  // fallback when there's no ITAD key). Stored as
+  // { price, currency, ts, series: [[ts, price], …] }. Prices in different
+  // currencies (another store country, travel) aren't comparable, so a
+  // currency change starts the series over. Entries from before 1.5.0 have no
+  // currency and are taken to be in the current one.
+  const SERIES_MAX = 120;
+  const sameCurrency = (entry, currency) => !entry?.currency || !currency || entry.currency === currency;
   SE.priceHistory = {
-    async record(appid, price) {
+    // Returns the previous entry, or null if there's none in this currency.
+    async record(appid, price, currency) {
       if (!appid || price == null) return null;
       return new Promise((r) => chrome.storage.local.get([PRICEHIST_KEY], (d) => {
         const all = d[PRICEHIST_KEY] || {};
-        const prev = all[appid];
-        all[appid] = { price, ts: Date.now() };
-        chrome.storage.local.set({ [PRICEHIST_KEY]: all }, () => r(prev));
+        const prev = sameCurrency(all[appid], currency) ? all[appid] : null;
+        const now = Date.now();
+        const series = prev?.series || (prev ? [[prev.ts, prev.price]] : []);
+        // Only changes are interesting; a step chart holds the price in between.
+        if (!series.length || series[series.length - 1][1] !== price) series.push([now, price]);
+        all[appid] = { price, currency: currency || prev?.currency || null, ts: now, series: series.slice(-SERIES_MAX) };
+        chrome.storage.local.set({ [PRICEHIST_KEY]: all }, () => r(prev || null));
       }));
     },
-    async get(appid) {
+    async get(appid, currency) {
       return new Promise((r) => chrome.storage.local.get([PRICEHIST_KEY], (d) => {
-        r((d[PRICEHIST_KEY] || {})[appid] || null);
+        const entry = (d[PRICEHIST_KEY] || {})[appid] || null;
+        r(sameCurrency(entry, currency) ? entry : null);
       }));
     }
   };

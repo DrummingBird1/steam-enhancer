@@ -65,7 +65,7 @@
       }
     }
 
-    if (pending.length) SE.safe('search:prices', () => decoratePrices(pending, settings.country || 'us'));
+    if (pending.length) SE.safe('search:prices', () => decoratePrices(pending, SE.ctx.country));
   }
 
   // Batched: one ITAD prices call + one storelow call for every visible,

@@ -1,169 +1,242 @@
+// Wishlist page panel. Steam's wishlist is a React app (since late 2024) with
+// none of the markup 1.4.x decorated, so this reads the data from Steam's own
+// APIs instead — the wishlist (IWishlistService) and store details
+// (IStoreBrowseService) — joins in ITAD's historical lows, and renders one
+// sortable, filterable table above Steam's list. Parsing, sorting and export
+// live in src/lib/wishlist.js (unit-tested).
 (function () {
   'use strict';
   const SE = window.SteamEnhancer;
+  const W = SE.wishlistModel;
+  const PAGE_SIZE = 100;
+  const COLLAPSED_KEY = 'se_wl_collapsed';
 
-  SE.onReady(() => init());
+  // Steam's language names for the store API, from the page's <html lang>.
+  const state = {
+    steamid: null, items: null, store: new Map(), itad: new Map(), targets: {},
+    rows: [], sort: 'priority', dir: 1, shown: PAGE_SIZE,
+    filter: { text: '', onSale: false, atLow: false, atTarget: false, maxPrice: null }
+  };
+  let els = null;
 
-  let keyNoticeShown = false;
+  SE.onReady(() => SE.safe('wl:init', init));
 
   async function init() {
-    if (!/\/wishlist\//.test(location.pathname)) return;
-    SE.safe('wl:toolbar', insertToolbar);
-    if (SE.once('wl:rows')) SE.safe('wl:rows', decorateRowsLoop);
+    if (!/^\/wishlist\//.test(location.pathname)) return;
+    if (!SE.ctx?.settings.enableWishlistExport) return;
+    const ssr = document.getElementById('valve-ssr-data')?.textContent || '';
+    const steamid = W.ownerSteamId(location.pathname, ssr);
+    if (state.steamid === steamid && SE.$('#se-wl-panel')) return;
+    state.steamid = steamid;
+
+    insertPanel();
+    if (!steamid) { setStatus(SE.t('wlNoOwner')); return; }
+
+    setStatus(SE.t('wlLoading'));
+    const wl = await SE.api.wishlist(steamid);
+    state.items = W.items(wl?.ok ? wl.data : null);
+    if (!state.items) { setStatus(SE.t('wlPrivateOrEmpty')); return; }
+
+    const appids = state.items.map((i) => i.appid);
+    for (let i = 0; i < appids.length; i += 100) {
+      setStatus(SE.t('wlLoadingDetails', Math.min(i + 100, appids.length), appids.length));
+      const r = await SE.api.storeItems(appids.slice(i, i + 100), SE.ctx.country, SE.steamLanguage());
+      W.storeItems(r?.ok ? r.data : null).forEach((v, k) => state.store.set(k, v));
+    }
+    state.targets = await getTargets();
+    rebuild();
+
+    // Historical lows come second: they need an ITAD key and can take a while
+    // on a big wishlist the first time (each lookup is then cached for a day).
+    if (SE.ctx.settings.showLowestPrice) {
+      setStatus(SE.t('wlLoadingPrices'));
+      try {
+        const sums = await SE.priceSummaryBatch(appids, SE.ctx.country);
+        if (sums === 'needsItadKey') showKeyNotice();
+        else if (sums instanceof Map) { state.itad = sums; rebuild(); }
+      } catch (e) {
+        SE.warn('wishlist: historical lows failed', e); // the table is still useful without them
+      }
+    }
+    setStatus('');
   }
 
-  function insertToolbar() {
-    if (SE.$('#se-wishlist-toolbar')) return;
-    const anchor = SE.$('#wishlist_ctn') || SE.$('.wishlist_content') || document.body;
-    const bar = SE.el('div', { id: 'se-wishlist-toolbar', class: 'se-toolbar' },
-      SE.el('button', { class: 'se-btn', onclick: exportCSV }, SE.t('exportCsv')),
-      SE.el('button', { class: 'se-btn', onclick: exportJSON }, SE.t('exportJson')),
-      SE.el('button', { class: 'se-btn', onclick: exportText }, SE.t('copyAsText')),
-      SE.el('button', { class: 'se-btn', onclick: openAllOnITAD }, SE.t('openOnItad')),
-      SE.el('button', { class: 'se-btn', onclick: sortByDealVsLow }, SE.t('sortByDeal')),
-      SE.el('button', { class: 'se-btn', onclick: sortByPrice }, SE.t('sortByPrice')),
-      SE.el('span', { id: 'se-wishlist-count', class: 'se-muted' }, '')
+  function rebuild() {
+    state.rows = W.buildRows(state.items, state.store, state.itad, state.targets);
+    render();
+  }
+
+  // ---- DOM -----------------------------------------------------------------
+
+  function insertPanel() {
+    SE.$('#se-wl-panel')?.remove();
+    const anchor = SE.$('#StoreTemplate') || document.body;
+    const collapsed = localStorageGet(COLLAPSED_KEY) === '1';
+
+    const search = SE.el('input', { type: 'search', class: 'se-input', placeholder: SE.t('wlSearch') });
+    search.addEventListener('input', SE.debounce(() => { state.filter.text = search.value; state.shown = PAGE_SIZE; render(); }, 150));
+
+    const sortSel = SE.el('select', { class: 'se-input' },
+      ...[['priority', 'wlSortPriority'], ['price', 'wlSortPrice'], ['discount', 'wlSortDiscount'],
+        ['vsLow', 'wlSortVsLow'], ['reviews', 'wlSortReviews'], ['added', 'wlSortAdded'],
+        ['released', 'wlSortReleased'], ['name', 'wlSortName']]
+        .map(([v, k]) => SE.el('option', { value: v }, SE.t(k))));
+    sortSel.addEventListener('change', () => { state.sort = sortSel.value; render(); });
+    const dirBtn = SE.el('button', { class: 'se-btn', title: SE.t('wlReverse'), onclick: () => { state.dir *= -1; render(); } }, '⇅');
+
+    const check = (key, label) => {
+      const cb = SE.el('input', { type: 'checkbox' });
+      cb.addEventListener('change', () => { state.filter[key] = cb.checked; state.shown = PAGE_SIZE; render(); });
+      return SE.el('label', { class: 'se-wl-check' }, cb, ' ', SE.t(label));
+    };
+    const maxPrice = SE.el('input', { type: 'number', min: '0', step: '1', class: 'se-input', style: { width: '80px' }, placeholder: SE.t('wlMaxPrice') });
+    maxPrice.addEventListener('input', SE.debounce(() => {
+      const v = parseFloat(maxPrice.value);
+      state.filter.maxPrice = Number.isFinite(v) ? v : null;
+      state.shown = PAGE_SIZE; render();
+    }, 200));
+
+    const body = SE.el('div', { class: 'se-wl-body', style: { display: collapsed ? 'none' : '' } },
+      SE.el('div', { class: 'se-toolbar' },
+        search, sortSel, dirBtn,
+        check('onSale', 'wlOnSaleOnly'), check('atLow', 'wlAtLowOnly'), check('atTarget', 'wlAtTargetOnly'), maxPrice,
+        SE.el('button', { class: 'se-btn', onclick: exportCsv }, SE.t('exportCsv')),
+        SE.el('button', { class: 'se-btn', onclick: exportJson }, SE.t('exportJson')),
+        SE.el('button', { class: 'se-btn', onclick: copyList }, SE.t('copyAsText'))
+      ),
+      SE.el('div', { class: 'se-wl-table-wrap' }, SE.el('table', { class: 'se-wl-table' })),
+      SE.el('div', { class: 'se-wl-more' })
     );
-    anchor.parentElement?.insertBefore(bar, anchor);
-    new MutationObserver(SE.throttle(refreshCount, 250)).observe(document.body, { childList: true, subtree: true });
-    refreshCount();
-  }
-
-  const rows = () => SE.$$('.wishlist_row');
-  function refreshCount() {
-    const el = SE.$('#se-wishlist-count');
-    if (el) el.textContent = `${rows().length} ${SE.t('visibleWord')}`;
-  }
-
-  function collect() {
-    return rows().map((r) => {
-      const appid = r.getAttribute('data-app-key') || r.id?.replace(/[^\d]/g, '');
-      const title = r.querySelector('.title')?.textContent?.trim() || '';
-      const price = r.querySelector('.discount_final_price, .price')?.textContent?.trim() || '';
-      const discount = r.querySelector('.discount_pct')?.textContent?.trim() || '';
-      const added = r.querySelector('.added_on')?.textContent?.trim().replace(/^Added on\s*/i, '') || '';
-      return { appid, title, price, discount, added };
+    const toggle = SE.el('button', { class: 'se-btn se-wl-toggle' }, collapsed ? '▸' : '▾');
+    toggle.addEventListener('click', () => {
+      const hide = body.style.display !== 'none';
+      body.style.display = hide ? 'none' : '';
+      toggle.textContent = hide ? '▸' : '▾';
+      localStorageSet(COLLAPSED_KEY, hide ? '1' : '0');
     });
+
+    const panel = SE.el('div', { id: 'se-wl-panel', class: 'se-panel se-wl-panel' },
+      SE.el('div', { class: 'se-panel-h' }, toggle, ' ', SE.t('wlPanelTitle')),
+      SE.el('div', { class: 'se-wl-summary' }),
+      SE.el('div', { class: 'se-wl-status se-muted' }),
+      body
+    );
+    // Beside the React tree, never inside it: React owns its children and
+    // would drop (or fail to hydrate around) a foreign node.
+    if (anchor === document.body) anchor.prepend(panel);
+    else anchor.parentElement.insertBefore(panel, anchor);
+    els = {
+      panel, body,
+      summary: panel.querySelector('.se-wl-summary'),
+      status: panel.querySelector('.se-wl-status'),
+      table: panel.querySelector('.se-wl-table'),
+      more: panel.querySelector('.se-wl-more')
+    };
   }
 
-  function download(name, content, mime = 'text/plain') {
-    const blob = new Blob([content], { type: mime });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = name; a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  }
-  function exportCSV() {
-    const rs = collect();
-    const csv = 'appid,title,price,discount,added\n' + rs.map(r =>
-      [r.appid, JSON.stringify(r.title), JSON.stringify(r.price), JSON.stringify(r.discount), JSON.stringify(r.added)].join(',')
-    ).join('\n');
-    download('steam-wishlist.csv', csv, 'text/csv');
-  }
-  function exportJSON() { download('steam-wishlist.json', JSON.stringify(collect(), null, 2), 'application/json'); }
-  function exportText() {
-    navigator.clipboard.writeText(collect().map(r => `- ${r.title} (${r.price})`).join('\n'))
-      .then(() => alert(SE.t('copiedToClipboard')));
-  }
-  function openAllOnITAD() {
-    const ids = collect().map(r => r.appid).filter(Boolean).slice(0, 30);
-    if (!ids.length) return alert(SE.t('nothingToOpen'));
-    window.open(`https://isthereanydeal.com/search/?q=${encodeURIComponent(ids.join(','))}`, '_blank');
-  }
+  function setStatus(text) { if (els) els.status.textContent = text; }
 
-  async function decorateRowsLoop() {
-    const observer = new MutationObserver(SE.throttle(decorate, 200));
-    observer.observe(document.body, { childList: true, subtree: true });
-    decorate();
-  }
+  const currency = () => SE.currency.forCountry(SE.ctx.country);
+  const money = (v) => (v == null ? '—' : SE.formatMoney(v, currency()));
 
-  // Batched: one ITAD prices call + one storelow call for every not-yet-decorated
-  // row, instead of one pair of calls per row.
-  async function decorate() {
-    const { settings } = SE.ctx;
-    const country = settings.country || 'us';
-    const pending = rows().filter((r) => !r.dataset.seDone);
-    if (!pending.length) return;
-    pending.forEach((r) => { r.dataset.seDone = '1'; });
+  function render() {
+    if (!els) return;
+    const s = W.summary(state.rows);
+    els.summary.textContent = '';
+    els.summary.append(
+      SE.t('wlSummary', s.count, money(s.total), money(s.totalRegular)),
+      ' · ', SE.tag(SE.t('wlOnSale', s.onSale), 'wish'),
+      ' ', SE.tag(SE.t('wlAtLow', s.atLow), 'good'),
+      s.atTarget ? ' ' : '', s.atTarget ? SE.tag(SE.t('wlAtTarget', s.atTarget), 'good') : ''
+    );
 
-    const withAppid = pending.map((r) => ({ row: r, appid: r.getAttribute('data-app-key') })).filter((x) => x.appid);
-    const summaries = await SE.priceSummaryBatch(withAppid.map((x) => x.appid), country);
-    const noKey = summaries === 'needsItadKey';
-    if (noKey && !keyNoticeShown) { keyNoticeShown = true; showKeyNotice(); }
+    const visible = W.sortRows(W.filterRows(state.rows, state.filter), state.sort, state.dir);
+    const table = els.table;
+    table.textContent = '';
+    table.appendChild(SE.el('tr', null,
+      ...['wlColGame', 'wlColPrice', 'wlColDiscount', 'wlColLow', 'wlColVsLow', 'wlColReviews', 'wlColDeck', 'wlColTarget', 'wlColAdded']
+        .map((k) => SE.el('th', null, SE.t(k)))));
+    for (const r of visible.slice(0, state.shown)) table.appendChild(renderRow(r));
+    if (!visible.length) table.appendChild(SE.el('tr', null, SE.el('td', { colspan: '9', class: 'se-muted' }, SE.t('wlNoMatches'))));
 
-    const targets = await getTargets();
-
-    for (const r of pending) {
-      const appid = r.getAttribute('data-app-key');
-      const priceEl = r.querySelector('.discount_final_price, .price');
-      const cur = priceEl ? SE.parsePrice(priceEl.textContent) : null;
-      const sum = !noKey && appid ? summaries.get(appid) : null;
-      const low = sum?.historicalLow?.price;
-      const diff = (cur != null && low != null) ? Math.round(((cur - low) / Math.max(low, 0.01)) * 100) : null;
-
-      if (!noKey) {
-        const tag = SE.el('div', { class: 'se-row-tag' },
-          low != null ? `${SE.t('lowWord')}: ${low.toFixed(2)}${diff != null ? ` · ${diff >= 0 ? '+' : ''}${diff}% ${SE.t('vsLow')}` : ''}` : '—'
-        );
-        if (diff != null && diff <= 5) tag.classList.add('se-row-tag-match');
-        (r.querySelector('.discount_block, .price') || r).appendChild(tag);
-      }
-      r.dataset.seDiff = diff != null ? String(diff) : '9999';
-      r.dataset.sePrice = cur != null ? String(cur) : '9999';
-
-      if (!appid) continue;
-
-      // Per-app price-target input.
-      const tgt = targets[appid];
-      const input = SE.el('input', {
-        type: 'number', step: '0.01', min: '0', placeholder: SE.t('alertMeAtPlaceholder'),
-        class: 'se-input', style: { width: '90px' }
-      });
-      input.value = tgt != null ? String(tgt) : '';
-      input.addEventListener('change', () => {
-        const v = parseFloat(input.value);
-        setTarget(appid, isFinite(v) && v > 0 ? v : null);
-      });
-      const wrap = SE.el('div', { class: 'se-row-tag' }, `${SE.t('targetWord')}: `, input);
-      (r.querySelector('.discount_block, .price') || r).appendChild(wrap);
-
-      if (tgt != null && cur != null && cur <= tgt) {
-        r.style.outline = '2px solid #a4d007';
-        r.appendChild(SE.tag(SE.t('atTarget'), 'good'));
-      }
+    els.more.textContent = '';
+    if (visible.length > state.shown) {
+      els.more.append(
+        SE.el('span', { class: 'se-muted' }, SE.t('wlShowing', state.shown, visible.length) + ' '),
+        SE.el('button', { class: 'se-btn', onclick: () => { state.shown += PAGE_SIZE; render(); } },
+          SE.t('wlShowMore', Math.min(PAGE_SIZE, visible.length - state.shown)))
+      );
     }
   }
 
+  function renderRow(r) {
+    const deck = SE.deckLabel(r.deck);
+    const target = SE.el('input', {
+      type: 'number', step: '0.01', min: '0', class: 'se-input', style: { width: '80px' },
+      placeholder: SE.t('alertMeAtPlaceholder')
+    });
+    target.value = r.target != null ? String(r.target) : '';
+    target.addEventListener('change', async () => {
+      const v = parseFloat(target.value);
+      state.targets = await setTarget(r.appid, Number.isFinite(v) && v > 0 ? v : null);
+      rebuild();
+    });
+    const tr = SE.el('tr', { class: r.atTarget ? 'se-wl-hit' : '' },
+      SE.el('td', null, SE.el('a', { href: r.url, class: 'se-link' }, r.name)),
+      SE.el('td', null, r.price == null ? '—' : (r.price === 0 ? SE.t('wlFree') : money(r.price))),
+      SE.el('td', null, r.discount ? SE.tag(`-${r.discount}%`, 'good') : ''),
+      SE.el('td', null, money(r.low)),
+      SE.el('td', null, r.vsLow == null ? '—' : (r.atLow ? SE.tag(SE.t('wlLowNow'), 'good') : `+${r.vsLow}%`)),
+      SE.el('td', null, r.reviewPct == null ? '—' : `${r.reviewPct}%`),
+      SE.el('td', null, deck ? SE.tag(SE.t(deck[0]), deck[1]) : ''),
+      SE.el('td', null, target),
+      SE.el('td', null, r.added ? new Date(r.added * 1000).toISOString().slice(0, 10) : '')
+    );
+    return tr;
+  }
+
   function showKeyNotice() {
-    const anchor = SE.$('#se-wishlist-toolbar');
-    if (!anchor || SE.$('#se-itad-key-notice')) return;
-    anchor.parentElement?.insertBefore(SE.el('div', { id: 'se-itad-key-notice', class: 'se-toolbar' },
+    if (!els || els.panel.querySelector('#se-itad-key-notice')) return;
+    els.status.after(SE.el('div', { id: 'se-itad-key-notice', class: 'se-row' },
       SE.el('span', { class: 'se-muted' }, SE.t('needsItadKeyMsg') + ' '),
       SE.el('a', {
         href: 'javascript:void 0', class: 'se-link',
         onclick: (e) => { e.preventDefault(); SE.bg({ type: 'openOptions' }); }
       }, SE.t('openOptionsLink'))
-    ), anchor.nextSibling);
+    ));
   }
 
-  async function getTargets() {
+  // ---- export --------------------------------------------------------------
+
+  const currentRows = () => W.sortRows(W.filterRows(state.rows, state.filter), state.sort, state.dir);
+
+  function download(name, content, mime) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([content], { type: mime }));
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  function exportCsv() { download('steam-wishlist.csv', W.toCsv(currentRows()), 'text/csv'); }
+  function exportJson() { download('steam-wishlist.json', JSON.stringify(currentRows(), null, 2), 'application/json'); }
+  function copyList() {
+    const text = currentRows().map((r) => `- ${r.name} (${r.price == null ? '—' : money(r.price)})`).join('\n');
+    navigator.clipboard.writeText(text).then(() => setStatus(SE.t('copiedToClipboard')));
+  }
+
+  // ---- storage -------------------------------------------------------------
+
+  // Shared with the store-page "alert me at" field and the background price-alert alarm.
+  function getTargets() {
     return new Promise((r) => chrome.storage.local.get(['se_wishlist_targets'], (d) => r(d.se_wishlist_targets || {})));
   }
   async function setTarget(appid, v) {
     const cur = await getTargets();
     if (v == null) delete cur[appid]; else cur[appid] = v;
-    chrome.storage.local.set({ se_wishlist_targets: cur });
+    await new Promise((r) => chrome.storage.local.set({ se_wishlist_targets: cur }, r));
+    return cur;
   }
 
-  function sortByDealVsLow() {
-    const container = SE.$('#wishlist_ctn');
-    if (!container) return;
-    const sorted = rows().sort((a, b) => (+a.dataset.seDiff || 9999) - (+b.dataset.seDiff || 9999));
-    sorted.forEach(r => container.appendChild(r));
-  }
-  function sortByPrice() {
-    const container = SE.$('#wishlist_ctn');
-    if (!container) return;
-    const sorted = rows().sort((a, b) => (+a.dataset.sePrice || 9999) - (+b.dataset.sePrice || 9999));
-    sorted.forEach(r => container.appendChild(r));
-  }
+  function localStorageGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+  function localStorageSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
 })();

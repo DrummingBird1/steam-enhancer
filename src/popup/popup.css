@@ -24,5 +24,17 @@ button:hover { background: linear-gradient(to bottom, #79cdff 5%, #4f8bb1 95%); 
 .toggles label { display: flex; gap: 8px; align-items: center; cursor: pointer; font-size: 12px; }
 .toggles input { accent-color: #67c1f5; }
 
+.alerts h2 { margin: 0 0 6px; font-size: 11px; color: #8f98a0; text-transform: uppercase; letter-spacing: 0.5px; }
+.alerts ul { list-style: none; margin: 0; padding: 0; max-height: 180px; overflow: auto; }
+.alerts li { display: flex; gap: 6px; padding: 4px 2px; border-bottom: 1px solid #22394d; cursor: default; }
+.alerts li.link { cursor: pointer; }
+.alerts li.link:hover { background: #22394d; }
+.alerts li.unread .a-title { color: #a4d007; }
+.alerts .a-body { flex: 1; min-width: 0; }
+.alerts .a-title { font-weight: 600; font-size: 12px; }
+.alerts .a-msg { font-size: 11px; color: #8f98a0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.alerts .a-title, .alerts .a-msg { unicode-bidi: plaintext; text-align: start; }
+.alerts .a-age { font-size: 11px; color: #8f98a0; white-space: nowrap; }
+
 footer { display: flex; gap: 6px; padding: 10px 12px; }
 footer button { flex: 1; }

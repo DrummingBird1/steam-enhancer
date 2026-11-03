@@ -20,15 +20,18 @@
       if (k === 'class') node.className = v;
       else if (k === 'style' && typeof v === 'object') Object.assign(node.style, v);
       else if (k === 'dataset' && typeof v === 'object') Object.assign(node.dataset, v);
-      else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2).toLowerCase(), v);
-      else if (k === 'html') node.innerHTML = v;
+      // Handlers only as functions: a string "on…" attribute would be inline
+      // script. There is deliberately no way to set innerHTML here — text
+      // (Steam names, API data) always goes in as text nodes below.
+      else if (k.startsWith('on')) { if (typeof v === 'function') node.addEventListener(k.slice(2).toLowerCase(), v); }
       else if (v === true) node.setAttribute(k, '');
       else if (v !== false && v != null) node.setAttribute(k, v);
     }
-    for (const c of children.flat()) {
-      if (c == null || c === false) continue;
-      node.appendChild(c instanceof Node ? c : document.createTextNode(String(c)));
-    }
+    // ParentNode.append() inserts nodes as-is and turns every string into a
+    // text node — strings (Steam names, review text, API data) can never
+    // become markup here.
+    const kids = children.flat().filter((c) => c != null && c !== false);
+    node.append(...kids.map((c) => (c instanceof Node ? c : String(c))));
     return node;
   };
 
@@ -67,31 +70,85 @@
   SE.parsePrice = (raw) => {
     if (!raw) return null;
     const s = String(raw).trim();
-    if (/free|kostenlos|gratis|gratuito|gratuit|חינם/i.test(s)) return 0;
-    // Capture the WHOLE contiguous digits/separators run (not just one
-    // separator group) so thousands + decimal together — "$1,234.56" — don't
-    // get truncated to "1,234" before the dot/comma disambiguation below runs.
-    // (Regression covered by scripts/unit-test.js — this silently mis-parsed
-    // any four-figure-plus price from v1.0.0 through v1.3.0.)
-    const m = s.replace(/[^\d.,-]/g, '').match(/-?[\d.,]+/);
+    // "Free" only when there's no number at all — "Free Weekend $19.99" is 19.99.
+    if (!/\d/.test(s)) return /free|kostenlos|gratis|gratuito|gratuit|бесплатно|חינם/i.test(s) ? 0 : null;
+    // Capture the first run of digits/separators (spaces between digit groups
+    // allowed, as in "1 234,56 руб." or "Rp 150 000") as one number, so
+    // thousands + decimal together — "$1,234.56" — aren't truncated before the
+    // separator logic below runs. Trailing separators ("руб.") are dropped.
+    const m = s.match(/-?\d[\d.,\s  ']*/);
     if (!m) return null;
-    let n = m[0];
-    // Heuristic: if string has both . and , the last is the decimal separator.
+    let n = m[0].replace(/[\s  ']/g, '').replace(/[.,]+$/, '');
     const hasDot = n.includes('.'), hasComma = n.includes(',');
     if (hasDot && hasComma) {
+      // Both present: the last one is the decimal separator.
       if (n.lastIndexOf('.') > n.lastIndexOf(',')) n = n.replace(/,/g, '');
       else n = n.replace(/\./g, '').replace(',', '.');
-    } else if (hasComma && !hasDot) {
-      n = n.replace(',', '.');
+    } else if (hasComma || hasDot) {
+      const sep = hasComma ? ',' : '.';
+      const parts = n.split(sep);
+      // One separator followed by exactly 3 digits is a thousands separator
+      // ("$1,234", "¥ 1,980", "12.000₫") — no Steam currency uses 3 decimals,
+      // except the dinar-style ones, which only ever use a dot.
+      const threeDecimals = /\b(KD|KWD|BHD|OMR|JOD)\b/i.test(s);
+      const isThousands = parts.length > 2
+        || (parts[1].length === 3 && !(sep === '.' && threeDecimals));
+      n = isThousands ? parts.join('') : parts.join('.');
     }
     const v = parseFloat(n);
     return Number.isFinite(v) ? v : null;
   };
 
+  // Steam Deck compatibility category (store API / page data) → [i18n key, tag kind].
+  const DECK = { 1: ['deckUnsupported', 'ignored'], 2: ['deckPlayable', 'wish'], 3: ['deckVerified', 'good'] };
+  SE.deckLabel = (category) => DECK[category] || null;
+
+  // Steam's review-summary tooltip, in any UI language → { pct, total }.
+  // `countMeta` is the page's meta[itemprop=reviewCount] content, preferred
+  // for the total; otherwise the largest other number in the tooltip.
+  SE.parseReviewSummary = (tooltip, countMeta) => {
+    const pctMatch = String(tooltip || '').match(/(\d{1,3})\s*%/);
+    if (!pctMatch) return null;
+    const pct = Number(pctMatch[1]);
+    let total = Number(countMeta);
+    if (!(total > 0)) {
+      const nums = String(tooltip).replace(pctMatch[0], '').match(/\d[\d.,\s  ]*\d|\d/g) || [];
+      total = Math.max(0, ...nums.map((n) => Number(n.replace(/[.,\s  ]/g, ''))));
+    }
+    return total > 0 && pct <= 100 ? { pct, total } : null;
+  };
+
+  // Steam Community Market fees, in integer cents of the wallet currency.
+  // The seller sets what they receive; the buyer pays that plus a 5% Steam fee
+  // and a (usually 10%) publisher fee, each rounded down with a 1-cent minimum.
+  // Mirrors how the market's own sell dialog computes it.
+  SE.marketFees = {
+    buyerPays(receiveCents, publisherFee = 0.10) {
+      const r = Math.max(1, Math.floor(receiveCents));
+      const steam = Math.max(1, Math.floor(r * 0.05));
+      const pub = publisherFee > 0 ? Math.max(1, Math.floor(r * publisherFee)) : 0;
+      return r + steam + pub;
+    },
+    // Largest amount the seller can receive while the buyer pays at most `buyerCents`.
+    sellerReceives(buyerCents, publisherFee = 0.10) {
+      const b = Math.floor(buyerCents);
+      if (b < 3) return 0;
+      let r = Math.max(1, Math.floor(b / (1.05 + publisherFee)));
+      while (SE.marketFees.buyerPays(r + 1, publisherFee) <= b) r++;
+      while (r > 1 && SE.marketFees.buyerPays(r, publisherFee) > b) r--;
+      return SE.marketFees.buyerPays(r, publisherFee) <= b ? r : 0;
+    }
+  };
+
   SE.formatMoney = (amount, currency = 'USD', locale = undefined) => {
     if (amount == null || !Number.isFinite(amount)) return '—';
     try {
-      return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount);
+      // RTL locales (he, ar, fa) wrap the parts in direction marks (U+200F…),
+      // which scramble the order once the amount sits inside LTR text
+      // ("Low: $29.99 · date" rendered as "Low: date · $29.99"). Drop them;
+      // CSS unicode-bidi isolation handles RTL panels.
+      return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount)
+        .replace(/[\u200e\u200f\u061c]/g, '');
     } catch {
       return `${currency} ${amount.toFixed(2)}`;
     }
@@ -110,30 +167,21 @@
     }
   });
 
-  // Inject a <script> into the page to run in the page context (for Steam globals like g_AccountID, g_sessionID).
-  SE.injectPage = (fnOrCode, argsArr = []) => new Promise((resolve) => {
-    const id = 'se-inject-' + Math.random().toString(36).slice(2);
-    const code = typeof fnOrCode === 'function'
-      ? `(${fnOrCode.toString()}).apply(null, ${JSON.stringify(argsArr)});`
-      : String(fnOrCode);
-    const script = document.createElement('script');
-    script.textContent = `
-      try {
-        const __se_result = (function(){ ${code} })();
-        Promise.resolve(__se_result).then(r => {
-          window.postMessage({ __se_id: ${JSON.stringify(id)}, ok: true, result: r }, '*');
-        }).catch(e => window.postMessage({ __se_id: ${JSON.stringify(id)}, ok: false, error: String(e) }, '*'));
-      } catch (e) { window.postMessage({ __se_id: ${JSON.stringify(id)}, ok: false, error: String(e) }, '*'); }
-    `;
+  // Call a named operation in src/content/page-bridge.js, which runs in the
+  // page's own JS world where Steam's globals (g_sessionID, g_ActiveInventory,
+  // …) live. Resolves { ok, result } or { ok: false, error }.
+  SE.pageCall = (op, args = {}) => new Promise((resolve) => {
+    const id = 'se-call-' + Math.random().toString(36).slice(2);
+    let timer = null;
     const onMsg = (ev) => {
       if (ev.source !== window || !ev.data || ev.data.__se_id !== id) return;
       window.removeEventListener('message', onMsg);
+      clearTimeout(timer);
       resolve(ev.data);
     };
     window.addEventListener('message', onMsg);
-    (document.head || document.documentElement).appendChild(script);
-    script.remove();
-    setTimeout(() => { window.removeEventListener('message', onMsg); resolve({ ok: false, error: 'timeout' }); }, 8000);
+    window.postMessage({ __se_req: id, op, args }, location.origin);
+    timer = setTimeout(() => { window.removeEventListener('message', onMsg); resolve({ ok: false, error: 'timeout' }); }, 8000);
   });
 
   SE.onUrlChange = (cb) => {
@@ -164,6 +212,19 @@
     return m ? m[1] : null;
   };
 
+  // Steam's API language name for the page's language ("german", "brazilian"…),
+  // used for localized store/achievement names. English for anything Steam
+  // doesn't have.
+  const STEAM_LANG = {
+    de: 'german', fr: 'french', es: 'spanish', it: 'italian', ru: 'russian', pl: 'polish',
+    'pt-br': 'brazilian', pt: 'portuguese', tr: 'turkish', ja: 'japanese', ko: 'koreana',
+    'zh-cn': 'schinese', 'zh-tw': 'tchinese', uk: 'ukrainian', nl: 'dutch', sv: 'swedish'
+  };
+  SE.steamLanguage = (lang = document.documentElement.lang) => {
+    const l = String(lang || 'en').toLowerCase();
+    return STEAM_LANG[l] || STEAM_LANG[l.split('-')[0]] || 'english';
+  };
+
   SE.fmtPercent = (a, b) => {
     if (!a || !b || a <= 0) return null;
     return Math.round((1 - b / a) * 100);
@@ -171,27 +232,6 @@
 
   SE.tag = (text, kind = 'info') =>
     SE.el('span', { class: `se-tag se-tag-${kind}` }, text);
-
-  // Small inline SVG sparkline for {t: timestamp, v: value} point series.
-  // Shared by the store-page price-history chart and the inventory value-over-time chart.
-  SE.sparklineSvg = (points, opts = {}) => {
-    if (!points || points.length < 2) return '';
-    const { w = 240, h = 60, pad = 4, color = '#66c0f4', bg = '#0d1620' } = opts;
-    const minV = Math.min(...points.map(p => p.v));
-    const maxV = Math.max(...points.map(p => p.v));
-    const minT = points[0].t, maxT = points[points.length - 1].t;
-    const x = (t) => pad + (w - 2 * pad) * (t - minT) / Math.max(1, maxT - minT);
-    const y = (v) => h - pad - (h - 2 * pad) * (v - minV) / Math.max(0.01, maxV - minV);
-    const d = points.map((p, i) => (i ? 'L' : 'M') + x(p.t).toFixed(1) + ',' + y(p.v).toFixed(1)).join(' ');
-    const left = opts.labelLeft != null ? opts.labelLeft : minV.toFixed(2);
-    const right = opts.labelRight != null ? opts.labelRight : new Date(maxT).toISOString().slice(0, 10);
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
-      <rect width="${w}" height="${h}" fill="${bg}" />
-      <path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" />
-      <text x="${pad}" y="12" fill="#8f98a0" font-size="10">${left}</text>
-      <text x="${w - pad}" y="12" fill="#8f98a0" font-size="10" text-anchor="end">${right}</text>
-    </svg>`;
-  };
 
   // Run a feature in try/catch so one broken selector can't kill the whole script.
   // Works for sync fns and promise-returning fns. Returns undefined on failure.
