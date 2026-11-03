@@ -183,7 +183,7 @@
       const drop = SE.fmtPercent(prev.price, cur);
       panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
         SE.tag(`${SE.t('priceDrop')} -${drop}%`, 'good'),
-        ` ${SE.t('sinceLastVisit')} (${prev.price.toFixed(2)} → ${cur.toFixed(2)})`
+        ` ${SE.t('sinceLastVisit')} (${prev.price.toFixed(2)} ${SE.arrow()} ${cur.toFixed(2)})`
       ));
     }
   }

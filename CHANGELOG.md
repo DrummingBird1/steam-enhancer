@@ -95,6 +95,12 @@ Found in a signed-in test run on live Steam:
   now shows the game count and the value estimate (with currency) in a small
   floating bar; Steam's page has its own sort and filter.
 - Charts in Hebrew had their edge labels cut off (RTL flipped the anchoring).
+- **Hebrew (and other RTL) UI**: the store-page panel, toolbars and floating
+  bars read left to right inside Steam's page, scrambling mixed text ("DLC
+  owned: 0 / 1" came out as "1 / 0"). With an RTL UI language they're now
+  right to left (`.se-ui-rtl`), spacing uses logical margins, "go on" arrows
+  point the right way (`SE.arrow`), and the discount in a Hebrew wishlist
+  alert stays "-40%" instead of "40%-".
 
 ### Changed
 - **The "what's new" window** shows on the first Steam page after an update

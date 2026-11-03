@@ -168,7 +168,7 @@
     "message": "הוסף מפתח API חינמי של IsThereAnyDeal כדי לראות מחירים."
   },
   "openOptionsLink": {
-    "message": "פתח הגדרות →"
+    "message": "פתח הגדרות ←"
   },
   "setPricePerAlerts": {
     "message": "הגדר התראות לפי מחיר"
@@ -456,7 +456,7 @@
     "message": "לא שוחקו קודם"
   },
   "sortAZ": {
-    "message": "א → ת"
+    "message": "א ← ת"
   },
   "showUnplayedOnly": {
     "message": "הצג רק לא-משוחקים"
@@ -954,7 +954,7 @@
     "message": "נוקה!"
   },
   "notifWishlistDeal": {
-    "message": "מבצע ברשימת המשאלות: -{0}%"
+    "message": "מבצע ברשימת המשאלות: ⁦-{0}%⁩"
   },
   "notifFreePromo": {
     "message": "בחינם לזמן מוגבל!"

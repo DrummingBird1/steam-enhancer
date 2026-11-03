@@ -53,6 +53,9 @@
     const country = SE.effectiveCountry(settings, await detectCountry());
 
     SE.ctx = { settings, colls, country };
+    // Hebrew/Arabic/Persian UI: our own panels read right to left (CSS keys
+    // off this class); Steam's page itself is left as it is.
+    document.documentElement.classList.toggle('se-ui-rtl', SE.uiDir() === 'rtl');
     // Pages with g_rgWalletInfo (inventory, market home…) record the wallet
     // currency; the Market Beta item page has none and relies on it.
     if (location.hostname === 'steamcommunity.com') SE.safe('wallet', () => SE.walletCurrency());

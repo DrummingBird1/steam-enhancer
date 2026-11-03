@@ -16,6 +16,12 @@ Everything needed to fill in the Chrome Web Store Developer Dashboard.
 
 Captured from 1.5.0 on live Steam pages (Hades II, US store via `?cc=us`), signed out and without an IsThereAnyDeal key, so the ITAD-only features (lowest price, historical low, price chart) were switched off rather than showing the "add a key" notice. The popup's alert list was filled with three real US deals from the day of capture (prices checked against the Steam API), in the format the background writes them. Signed-in features (market, inventory, trade offers, wishlist panel) and the ITAD price chart aren't shown; a 5th screenshot of the price chart can be added once it's captured with a key.
 
+### Localized screenshots
+
+`localized/<lang>/` holds the same four screenshots for Hebrew (`he`), German (`de`), Russian (`ru`) and Portuguese (`pt_BR`). In the dashboard, pick the language at the top of the Store listing tab and upload that folder's four images; languages without their own screenshots show the English ones.
+
+Each set was captured with Chrome in that language (so the extension's own UI is localized) and Steam in the matching language (Steam has no Hebrew, so the Hebrew set shows Steam in English with the extension in Hebrew, right to left). Store country per set: Israel (₪), Germany (€), US ($ — Russian-language users are spread across regions), Brazil (R$). The popup's alerts are real Steam specials for that country on the day of capture, written in that language the way the background writes them; the caption beside the popup is translated.
+
 At least 1 screenshot is required, up to 5 allowed.
 
 ## Listing text

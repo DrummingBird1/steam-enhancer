@@ -27,7 +27,7 @@
 }
 .se-panel-body { display: flex; flex-direction: column; gap: 4px; }
 .se-row { display: block; }
-.se-label { color: #8f98a0; margin-right: 4px; }
+.se-label { color: #8f98a0; margin-inline-end: 4px; }
 .se-muted { color: #6c7480; }
 .se-link { color: #67c1f5 !important; text-decoration: none; }
 .se-link:hover { color: #fff !important; text-decoration: underline; }
@@ -39,7 +39,7 @@
 }
 
 .se-tag {
-  display: inline-block; padding: 1px 6px; margin-left: 6px;
+  display: inline-block; padding: 1px 6px; margin-inline-start: 6px;
   border-radius: 3px; font-size: 10px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.4px; vertical-align: middle;
 }
@@ -132,7 +132,7 @@
   margin-bottom: 12px; border-bottom: 1px solid #2a475e; padding-bottom: 8px;
 }
 .se-modal-body p { margin: 0 0 8px; }
-.se-modal-body ul { margin: 0 0 12px; padding-left: 20px; }
+.se-modal-body ul { margin: 0 0 12px; padding-inline-start: 20px; }
 .se-modal-body li { margin-bottom: 4px; }
 .se-modal-foot { text-align: end; }
 
@@ -220,6 +220,11 @@
 /* Axis labels are positioned for left-to-right; in an RTL panel (Hebrew)
    text-anchor flips and the edge labels were cut off. */
 .se-chart-plot { direction: ltr; }
+
+/* Hebrew/Arabic/Persian UI (common.js sets .se-ui-rtl on <html>): our own
+   blocks read right to left. In Steam's LTR page, a Hebrew row like
+   "DLC בבעלותך: 0 / 1" otherwise came out as "DLC 1 / 0 :בבעלותך". */
+.se-ui-rtl .se-panel, .se-ui-rtl .se-toolbar, .se-ui-rtl .se-library-float { direction: rtl; text-align: start; }
 .se-chart-line { fill: none; stroke: #66c0f4; stroke-width: 1.5; }
 .se-chart-low { stroke: #a4d007; stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.8; }
 .se-chart-cross { stroke: #8f98a0; stroke-width: 1; }

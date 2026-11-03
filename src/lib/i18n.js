@@ -19,4 +19,6 @@
     try { ui = chrome.i18n.getUILanguage(); } catch {}
     return /^(he|ar|fa)/.test(ui) ? 'rtl' : 'ltr';
   };
+  // "Go on / from → to" arrow pointing the way the UI language reads.
+  SE.arrow = () => (SE.uiDir() === 'rtl' ? '←' : '→');
 })(window);

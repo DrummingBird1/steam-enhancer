@@ -74,7 +74,7 @@ const T = {
   checkingDeals: { en: 'Checking deals…', he: 'בודק מבצעים…', ru: 'Проверка предложений…', de: 'Angebote werden geprüft…', ptBR: 'Verificando ofertas…' },
   noDealData: { en: 'No deal data', he: 'אין נתוני מבצע', ru: 'Нет данных о цене', de: 'Keine Preisdaten', ptBR: 'Sem dados de preço' },
   needsItadKeyMsg: { en: 'Add a free IsThereAnyDeal API key to see prices.', he: 'הוסף מפתח API חינמי של IsThereAnyDeal כדי לראות מחירים.', ru: 'Добавьте бесплатный API-ключ IsThereAnyDeal, чтобы видеть цены.', de: 'Füge einen kostenlosen IsThereAnyDeal-API-Schlüssel hinzu, um Preise zu sehen.', ptBR: 'Adicione uma chave de API gratuita do IsThereAnyDeal para ver os preços.' },
-  openOptionsLink: { en: 'Open settings →', he: 'פתח הגדרות →', ru: 'Открыть настройки →', de: 'Einstellungen öffnen →', ptBR: 'Abrir configurações →' },
+  openOptionsLink: { en: 'Open settings →', he: 'פתח הגדרות ←', ru: 'Открыть настройки →', de: 'Einstellungen öffnen →', ptBR: 'Abrir configurações →' },
   setPricePerAlerts: { en: 'set per-price alerts', he: 'הגדר התראות לפי מחיר', ru: 'настройка оповещений о цене', de: 'preisbasierte Alarme einrichten', ptBR: 'definir alertas de preço' },
   protonDbLabel: { en: 'ProtonDB:', he: 'ProtonDB:', ru: 'ProtonDB:', de: 'ProtonDB:', ptBR: 'ProtonDB:' },
   reportsWord: { en: 'reports', he: 'דיווחים', ru: 'отчётов', de: 'Berichte', ptBR: 'relatórios' },
@@ -180,7 +180,7 @@ const T = {
   libraryWord: { en: 'Library', he: 'ספרייה', ru: 'Библиотека', de: 'Bibliothek', ptBR: 'Biblioteca' },
   sortPlaytimeDesc: { en: 'Sort: playtime ↓', he: 'מיון: זמן משחק ↓', ru: 'Сортировка: время игры ↓', de: 'Sortieren: Spielzeit ↓', ptBR: 'Ordenar: tempo de jogo ↓' },
   neverPlayedFirst: { en: 'Never played first', he: 'לא שוחקו קודם', ru: 'Неигранные сначала', de: 'Nie gespielte zuerst', ptBR: 'Nunca jogados primeiro' },
-  sortAZ: { en: 'A → Z', he: 'א → ת', ru: 'А → Я', de: 'A → Z', ptBR: 'A → Z' },
+  sortAZ: { en: 'A → Z', he: 'א ← ת', ru: 'А → Я', de: 'A → Z', ptBR: 'A → Z' },
   showUnplayedOnly: { en: 'Show unplayed only', he: 'הצג רק לא-משוחקים', ru: 'Показать только неигранные', de: 'Nur ungespielte anzeigen', ptBR: 'Mostrar somente não jogados' },
   estimateLibraryValue: { en: 'Estimate library value', he: 'אמוד שווי ספרייה', ru: 'Оценить стоимость библиотеки', de: 'Bibliothekswert schätzen', ptBR: 'Estimar valor da biblioteca' },
   badgeSummaryThisPage: { en: 'badge summary (this page)', he: 'סיכום badges (עמוד זה)', ru: 'сводка значков (эта страница)', de: 'Abzeichen-Übersicht (diese Seite)', ptBR: 'resumo de emblemas (esta página)' },
@@ -791,7 +791,7 @@ const T = {
   cacheCleared: { en: 'Cleared!', he: 'נוקה!', ru: 'Очищено!', de: 'Geleert!', ptBR: 'Limpo!' },
 
   // v1.5.0 — notification texts.
-  notifWishlistDeal: { en: 'Wishlist deal: -{0}%', he: 'מבצע ברשימת המשאלות: -{0}%', ru: 'Скидка из списка желаемого: -{0}%', de: 'Wunschlisten-Angebot: -{0} %', ptBR: 'Oferta da lista de desejos: -{0}%' },
+  notifWishlistDeal: { en: 'Wishlist deal: -{0}%', he: 'מבצע ברשימת המשאלות: ⁦-{0}%⁩', ru: 'Скидка из списка желаемого: -{0}%', de: 'Wunschlisten-Angebot: -{0} %', ptBR: 'Oferta da lista de desejos: -{0}%' },
   notifFreePromo: { en: 'Free for a limited time!', he: 'בחינם לזמן מוגבל!', ru: 'Бесплатно ограниченное время!', de: 'Für kurze Zeit kostenlos!', ptBR: 'Grátis por tempo limitado!' },
   notifPriceAlert: { en: 'Price alert hit', he: 'הגיע ליעד המחיר', ru: 'Цель по цене достигнута', de: 'Preisalarm erreicht', ptBR: 'Alerta de preço atingido' },
   notifPriceAlertMsg: { en: '{0} at {1} (your target: {2})', he: '{0} ב-{1} (היעד שלך: {2})', ru: '{0} в {1} (ваша цель: {2})', de: '{0} bei {1} (dein Ziel: {2})', ptBR: '{0} na {1} (seu alvo: {2})' },

@@ -150,7 +150,7 @@
 
   function addCardDropsLink(appid) {
     panelBody()?.appendChild(SE.el('div', { class: 'se-row' },
-      SE.el('a', { href: `https://steamcommunity.com/my/gamecards/${appid}/`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🎴 ' + SE.t('remainingCardDrops') + ' →')
+      SE.el('a', { href: `https://steamcommunity.com/my/gamecards/${appid}/`, target: '_blank', rel: 'noopener', class: 'se-link' }, '🎴 ' + SE.t('remainingCardDrops') + ' ' + SE.arrow())
     ));
   }
 
