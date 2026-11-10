@@ -46,6 +46,11 @@
   async function addProtonDB(appid) {
     const body = panelBody(); if (!body) return;
     const r = await SE.api.protonDB(appid);
+    // 404 = no reports for this game (stay quiet); anything else = ProtonDB isn't answering.
+    if (!r?.ok && r?.status !== 404) {
+      body.appendChild(SE.el('div', { class: 'se-row se-muted' }, SE.t('protonDbLabel'), ' ', SE.t('protonUnavailable')));
+      return;
+    }
     if (!r?.ok || !r.data?.tier) return;
     body.appendChild(SE.el('div', { class: 'se-row' },
       SE.el('span', { class: 'se-label' }, SE.t('protonDbLabel')),

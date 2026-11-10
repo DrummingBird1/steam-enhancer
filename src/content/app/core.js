@@ -6,7 +6,13 @@
 
   function insertEnhancerPanel(id) {
     const anchor = SE.$('.game_meta_data') || SE.$('.rightcol') || SE.$('.game_area_purchase');
-    if (!anchor || SE.$('#se-panel')) return;
+    if (SE.$('#se-panel')) return;
+    if (!anchor) {
+      // The app's title is there but none of the places we attach to: Steam
+      // changed the page (an age gate or a removed app has no title either).
+      if (SE.$('#appHubAppName, .apphub_AppName')) SE.health.miss('storePanel', 'healthFeatureStorePanel');
+      return;
+    }
     const panel = SE.el('div', { id: 'se-panel', class: 'se-panel', dataset: { seFor: String(id || '') } },
       SE.el('div', { class: 'se-panel-h' }, SE.t('panelTitle')),
       SE.el('div', { id: 'se-panel-body', class: 'se-panel-body' },

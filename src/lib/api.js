@@ -123,6 +123,21 @@
       return SE.bg({ type: 'fetchJson', url, cacheKey: `histogram:${itemNameId}:${currency}`, ttl: 2 });
     },
 
+    // The order book by name (what the Market Beta page itself calls), reduced
+    // in the background to { currency, highestBuy, lowestSell, buyCount,
+    // sellCount } in cents of `currency` (a Steam currency id). Needs no
+    // order-book id, so it works on the Beta page and the classic one alike;
+    // `currency` is the session's wallet currency — callers that move money
+    // must check it against SE.walletCurrency() before using the cents.
+    async orderBook(appid, market_hash_name) {
+      const qp = encodeURIComponent(JSON.stringify([Number(appid), market_hash_name]));
+      return SE.bg({
+        type: 'fetchJson',
+        url: `https://steamcommunity.com/market/orderbook?q=Load&qp=${qp}`,
+        cacheKey: `orderbook:${appid}:${market_hash_name}`, ttl: 2, reduce: 'orderbook'
+      });
+    },
+
     // The order-book id a market item needs for itemOrdersHistogram. It's only
     // on the item's listing page (and only when signed in), never changes, and
     // the page is large — so the id itself is remembered, not the page.

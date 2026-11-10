@@ -64,6 +64,12 @@
     // only to the popup's history, without a system notification.
     quietHoursStart: '',
     quietHoursEnd: '',
+    // v1.6.0: also alert when a wishlisted game's price is within this many
+    // percent of its Steam historical low (0 = off).
+    alertNearLowPct: 0,
+    // v1.6.0: the regions to compare in "Regional prices" ("us, de, pl"…);
+    // empty = the built-in set of twelve.
+    regionalCountries: '',
     // Applied to every Steam page (common.js). Kept in chrome.storage.local,
     // not sync — see LOCAL_KEYS.
     customCss: ''

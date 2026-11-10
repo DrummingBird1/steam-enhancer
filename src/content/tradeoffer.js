@@ -14,8 +14,7 @@
 
   function getPartnerSteamId64() {
     const partner = location.search.match(/partner=(\d+)/)?.[1];
-    if (!partner) return null;
-    return (BigInt(partner) + 76561197960265728n).toString();
+    return partner ? SE.steamId64FromAccountId(partner) : null;
   }
 
   function insertSteamRepBadge() {

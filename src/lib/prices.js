@@ -4,7 +4,8 @@
 
   // Resolve a Steam appid → an ITAD price summary (current low + Steam's own
   // historical low). Returns null on any failure, or the string 'needsItadKey'
-  // specifically when no IsThereAnyDeal API key is configured (Options → Region)
+  // specifically when no IsThereAnyDeal API key is configured (Options → Region),
+  // or 'unavailable' when ITAD didn't answer
   // — callers use that to show a helpful "add a free key" message instead of
   // just going quiet. Response parsing lives in itad.js (unit-tested).
   SE.priceSummary = async (appid, country = 'us') => {
@@ -12,12 +13,16 @@
     try {
       const lookup = await SE.api.itadLookup(appid);
       if (lookup?.needsItadKey) return 'needsItadKey';
-      const game = lookup?.ok ? SE.itad.gameFromLookup(lookup.data) : null;
+      // Not answering (down, rate-limited, offline) is not the same as "no
+      // data for this game": say so instead of an empty row.
+      if (!lookup?.ok) return 'unavailable';
+      const game = SE.itad.gameFromLookup(lookup.data);
       if (!game) return null;
       const [prices, low] = await Promise.all([
         SE.api.itadPrices(game.id, country),
         SE.api.itadHistoryLow(game.id, country)
       ]);
+      if (!prices?.ok && !low?.ok) return 'unavailable';
       return {
         itadId: game.id,
         slug: game.slug,

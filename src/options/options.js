@@ -16,6 +16,7 @@ const SECTIONS = [
       { type: 'text', key: 'itadApiKey', label: 'optItadKey', hint: 'optItadKeyHint', highlight: true, placeholder: 'optItadKeyPlaceholder', secret: true },
       { type: 'text', key: 'countryOverride', label: 'optCountry', hint: 'optCountryHint', maxlength: 2, placeholder: 'optAuto', lower: true },
       { type: 'text', key: 'displayCurrency', label: 'optDisplayCurrency', hint: 'optDisplayCurrencyHint', maxlength: 3, upper: true },
+      { type: 'text', key: 'regionalCountries', label: 'optRegions', hint: 'optRegionsHint', maxlength: 80, placeholder: 'optAuto', lower: true },
       ...toggles('showLowestPrice', 'showPriceHistory', 'showRegionalPricing', 'showStorePriceAlerts', 'showBundleSavings')
     ]
   },
@@ -45,6 +46,7 @@ const SECTIONS = [
     id: 'notify', title: 'optSecNotify', items: [
       ...toggles('notifyWishlistDeals', 'notifyStorePriceAlerts', 'notifyFreePromos'),
       { type: 'number', key: 'wishlistDealThreshold', label: 'optDealThreshold', min: 1, max: 99 },
+      { type: 'number', key: 'alertNearLowPct', label: 'optNearLow', hint: 'optNearLowHint', min: 0, max: 50 },
       { type: 'time', key: 'quietHoursStart', label: 'optQuietFrom', hint: 'optQuietHint' },
       { type: 'time', key: 'quietHoursEnd', label: 'optQuietTo' }
     ]
@@ -59,6 +61,12 @@ const SECTIONS = [
       { type: 'html', hint: 'optPresetsHint' },
       { type: 'actions', buttons: [['presetMinimal', () => applyPreset('minimal')], ['presetDeals', () => applyPreset('deals')],
         ['presetTrader', () => applyPreset('trader')], ['presetEverything', () => applyPreset('everything')]] }
+    ]
+  },
+  {
+    id: 'help', title: 'optSecHelp', items: [
+      { type: 'html', hint: 'optHelpHint' },
+      { type: 'report' }
     ]
   },
   {
@@ -117,7 +125,35 @@ function hintNode(key) {
 
 const inputs = new Map();
 
+// The diagnostic report, shown in full so the user reads what they copy.
+// Built from settings (toggles and numbers only), the version and the
+// remembered "tool couldn't find its place" misses. Nothing is sent anywhere.
+function renderReport() {
+  const box = el('textarea', { class: 'report', rows: 10, readonly: true, spellcheck: 'false' });
+  const status = el('span', { class: 'status' });
+  (async () => {
+    const SE = window.SteamEnhancer;
+    box.value = SE.health.diagnostics({
+      version: chrome.runtime.getManifest().version,
+      userAgent: navigator.userAgent,
+      language: chrome.i18n.getUILanguage?.(),
+      settings: await store.getAll(),
+      defaults: store.DEFAULTS,
+      misses: await SE.health.read(),
+      now: Date.now()
+    });
+  })();
+  const copy = el('button', { onclick: async () => {
+    await navigator.clipboard.writeText(box.value);
+    status.textContent = t('optReportCopied');
+    setTimeout(() => { status.textContent = ''; }, 2500);
+  } }, t('optReportCopy'));
+  const issue = el('button', { class: 'ghost', onclick: () => window.open('https://github.com/DrummingBird1/steam-enhancer/issues/new', '_blank', 'noopener') }, t('optReportIssue'));
+  return el('div', { class: 'row-static report-box' }, box, el('div', { class: 'actions' }, copy, issue, status));
+}
+
 function renderRow(item) {
+  if (item.type === 'report') return renderReport();
   if (item.type === 'html') return el('div', { class: 'row-static' }, hintNode(item.hint));
   if (item.type === 'actions') {
     return el('div', { class: 'actions' }, ...item.buttons.map(([label, fn, cls]) =>

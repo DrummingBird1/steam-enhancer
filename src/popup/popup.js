@@ -18,6 +18,10 @@ document.querySelectorAll('button[data-go]').forEach((b) => {
   b.addEventListener('click', () => chrome.tabs.create({ url: b.dataset.go }));
 });
 document.getElementById('open-options').addEventListener('click', () => chrome.runtime.openOptionsPage());
+document.getElementById('report').addEventListener('click', (e) => {
+  e.preventDefault();
+  chrome.tabs.create({ url: chrome.runtime.getURL('src/options/options.html#help') });
+});
 document.getElementById('clear-cache').addEventListener('click', () => {
   chrome.runtime.sendMessage({ type: 'clearCache' }, () => {
     const btn = document.getElementById('clear-cache');

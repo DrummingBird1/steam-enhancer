@@ -46,8 +46,7 @@
   // estimate — in a small floating bar outside its tree (never inside it).
   // Every game row links to its store page, which gives the app ids.
   function reactGameIds() {
-    return [...new Set(SE.$$('a[href*="store.steampowered.com/app/"]')
-      .map((a) => a.href.match(/\/app\/(\d+)/)?.[1]).filter(Boolean))];
+    return SE.appIdsFromHrefs(SE.$$('a[href*="store.steampowered.com/app/"]').map((a) => a.href));
   }
   // The list fills in over a few seconds: wait until the count holds still.
   function insertReactBarWhenLoaded(last = -1, tries = 0) {

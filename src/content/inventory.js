@@ -20,10 +20,16 @@
     }
   }
 
-  function insertToolbar() {
+  function insertToolbar(tries = 0) {
     if (SE.$('#se-inv-toolbar')) return;
     const anchor = SE.$('#inventory_pagecontrols') || SE.$('#tabcontent_inventory') || SE.$('#inventories');
-    if (!anchor) return;
+    if (!anchor) {
+      // The game tabs are there but none of the places we attach to: Steam
+      // changed the page. (A private inventory has no tabs, so stays quiet.)
+      if (tries < 4) setTimeout(() => SE.safe('inv:toolbar', () => insertToolbar(tries + 1)), 1500);
+      else if (SE.$('.games_list_tab')) SE.health.miss('inventoryToolbar', 'healthFeatureInventory');
+      return;
+    }
     const showSortGroup = SE.ctx?.settings.showTileSortGroup;
     const bar = SE.el('div', { id: 'se-inv-toolbar', class: 'se-toolbar' },
       SE.el('button', { class: 'se-btn', onclick: showValue }, SE.t('estimateValue')),
@@ -34,6 +40,8 @@
       showSortGroup ? SE.el('button', { class: 'se-btn', onclick: sortTilesByValue }, SE.t('sortByValueBtn')) : null,
       showSortGroup ? SE.el('button', { class: 'se-btn', onclick: groupTilesByType }, SE.t('groupByTypeBtn')) : null,
       showSortGroup ? SE.el('button', { class: 'se-btn', onclick: rarityBreakdown }, SE.t('rarityBreakdownBtn')) : null,
+      SE.el('span', { class: 'se-label', title: SE.t('keepNTitle') }, SE.t('keepNLabel')),
+      SE.el('input', { type: 'number', id: 'se-inv-keep', class: 'se-input', min: '0', value: '0', style: { width: '52px' }, 'aria-label': SE.t('keepNTitle') }),
       SE.el('button', { class: 'se-btn', onclick: massListMedian }, SE.t('massListBtn')),
       SE.el('button', { class: 'se-btn', id: 'se-inv-selmode', onclick: toggleSelectMode }, SE.t('selectItemsBtn')),
       SE.el('button', { class: 'se-btn', onclick: prepareSelectedListing }, SE.t('listSelectedBtn')),
@@ -63,9 +71,7 @@
   function assetIdFromTile(tile) {
     // Steam inventory tile ids look like "160_2_10995123456" (appid_contextid_assetid),
     // on the tile itself or on the .item inside an .itemHolder.
-    const id = tile.id || tile.querySelector('.item')?.id || '';
-    const m = id.match(/(\d+)_(\d+)_(\d+)$/);
-    return m ? m[3] : null;
+    return SE.assetIdFromTileId(tile.id || tile.querySelector('.item')?.id);
   }
 
   // The item behind a tile, by asset id. (Tile images used to carry the item
@@ -337,8 +343,16 @@
 
   const VALUE_HISTORY_KEY = 'se_inventory_value_history_v1';
 
+  // The game whose inventory is open: the address hash, else the selected tab.
+  const currentGameId = () => SE.appidFromInventoryHash(location.hash)
+    || SE.$('.games_list_tab.active')?.id.match(/inventory_link_(\d+)/)?.[1] || null;
+  // One value history per inventory (profile + game): the estimate covers the
+  // game that is open, so one shared history mixed games together. (Up to
+  // 1.5.x the key was the profile alone; those snapshots are left as they are.)
+  const valueKey = () => `${location.pathname}|${currentGameId() || ''}`;
+
   async function recordValueSnapshot(estimate) {
-    const key = location.pathname;
+    const key = valueKey();
     const all = await new Promise((r) => chrome.storage.local.get([VALUE_HISTORY_KEY], (d) => r(d[VALUE_HISTORY_KEY] || {})));
     const list = [...(all[key] || []), { ts: Date.now(), v: estimate }].slice(-30);
     all[key] = list;
@@ -347,7 +361,7 @@
 
   async function showValueHistory() {
     const out = SE.$('#se-inv-out');
-    const key = location.pathname;
+    const key = valueKey();
     const all = await new Promise((r) => chrome.storage.local.get([VALUE_HISTORY_KEY], (d) => r(d[VALUE_HISTORY_KEY] || {})));
     const list = all[key] || [];
     out.innerHTML = '';
@@ -382,25 +396,28 @@
     const items = await getItems(true);
     if (!items) { out.textContent = SE.t('invReadFailed'); return; }
     const marketable = items.filter(i => i.marketable && i.market_hash_name && i.id && i.contextid);
-    const candidates = marketable.slice(0, 10);
+    const keep = Math.max(0, Math.floor(Number(SE.$('#se-inv-keep')?.value) || 0));
+    // Stacks may be listed in part: `amount` is how many of the stack.
+    const candidates = SE.marketMath.selectForListing(marketable, keep).slice(0, 10);
     if (!candidates.length) { out.textContent = SE.t('invNoMarketable'); return; }
     const wallet = await requireWallet(out);
     if (!wallet) return;
 
     out.innerHTML = '';
     out.appendChild(SE.el('div', { class: 'se-label' }, SE.t('invDryRun', candidates.length)));
+    if (keep) out.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('keepNNote', keep)));
 
     const plan = [];
-    for (const it of candidates) {
+    for (const { item: it, amount } of candidates) {
       // Median in the wallet currency (marketPriceOverview defaults to it).
       const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name, 'US', wallet.id);
       const med = SE.parsePrice(p?.data?.median_price);
       if (med == null || med <= 0.03) continue;
       // One cent under the median, as the buyer sees it.
       const buyerCents = Math.max(3, Math.round(med * 100) - 1);
-      plan.push({ it, buyerCents });
+      plan.push({ it, buyerCents, amount });
       out.appendChild(SE.el('div', null,
-        `• ${it.amount > 1 ? `${it.amount}× ` : ''}${it.market_hash_name} (${SE.t('medianWord')} ${SE.formatMoney(med, wallet.iso)}) → ${receiveLabel(buyerCents, wallet.iso)}${it.amount > 1 ? ` ${SE.t('perItemWord')}` : ''}`
+        `• ${amount > 1 ? `${amount}× ` : ''}${it.market_hash_name} (${SE.t('medianWord')} ${SE.formatMoney(med, wallet.iso)}) → ${receiveLabel(buyerCents, wallet.iso)}${amount > 1 ? ` ${SE.t('perItemWord')}` : ''}`
       ));
     }
 
@@ -441,11 +458,21 @@
         const p = await SE.api.marketPriceOverview(it.appid, it.market_hash_name, 'US', wallet.id);
         buyerCents = SE.marketMath.quickSellBuyerCents(SE.marketMath.cents(SE.parsePrice(p?.data?.lowest_price)));
       } else {
-        const nameId = await SE.api.itemNameId(it.appid, it.market_hash_name);
-        // Steam's Market Beta item page doesn't carry the order-book id.
-        if (!nameId) { out.textContent = SE.t('qsNoOrderBook'); return; }
-        const h = await SE.api.itemOrdersHistogram(nameId, 'US', wallet.id);
-        buyerCents = SE.marketMath.instantSellBuyerCents(h?.data?.highest_buy_order);
+        // The order book by name first (works on Market Beta too); the
+        // older id-based histogram is the fallback.
+        const ob = await SE.api.orderBook(it.appid, it.market_hash_name);
+        const book = ob?.ok ? ob.data : null;
+        if (book) {
+          // Instant sell prices at the highest buy order: it must be in the
+          // wallet's currency, or the listing would be priced in the wrong one.
+          if (book.currency !== wallet.id) { out.textContent = SE.t('qsOrderBookCurrency'); return; }
+          buyerCents = SE.marketMath.instantSellBuyerCents(book.highestBuy);
+        } else {
+          const nameId = await SE.api.itemNameId(it.appid, it.market_hash_name);
+          if (!nameId) { out.textContent = SE.t('qsNoOrderBook'); return; }
+          const h = await SE.api.itemOrdersHistogram(nameId, 'US', wallet.id);
+          buyerCents = SE.marketMath.instantSellBuyerCents(h?.data?.highest_buy_order);
+        }
       }
       if (buyerCents == null) { out.textContent = SE.t(kind === 'quick' ? 'qsNoListings' : 'qsNoBuyOrders'); return; }
       out.textContent = '';
@@ -495,11 +522,11 @@
     let listed = 0;
     const status = SE.el('div', null, SE.t('invListing'));
     out.appendChild(status);
-    for (const { it, buyerCents } of plan) {
+    for (const { it, buyerCents, amount } of plan) {
       const receiveCents = SE.marketFees.sellerReceives(buyerCents);
       if (receiveCents < 1 || !it.contextid) continue;
       const r = await SE.pageCall('sellItem', {
-        appid: it.appid, contextid: it.contextid, assetid: it.id, amount: it.amount || 1, price: receiveCents
+        appid: it.appid, contextid: it.contextid, assetid: it.id, amount: amount || it.amount || 1, price: receiveCents
       });
       if (r?.result?.success) listed++;
       await SE.sleep(1500); // rate-limit-friendly
@@ -543,6 +570,19 @@
     }
   }
 
+  // A private note per item name (all copies), kept in this browser only.
+  async function addItemNote(sel, stamp, key) {
+    const saved = await SE.itemNotes.get(key);
+    if (sel.dataset.seDone !== stamp) return; // another item was selected meanwhile
+    const box = SE.el('textarea', {
+      class: 'se-input se-inv-added se-item-note', rows: '2', maxlength: '300',
+      placeholder: SE.t('itemNotePlaceholder'), 'aria-label': SE.t('itemNotePlaceholder')
+    });
+    box.value = saved || '';
+    box.addEventListener('input', SE.debounce(() => SE.itemNotes.set(key, box.value), 500));
+    sel.appendChild(box);
+  }
+
   async function decorateSelected() {
     const sel = visibleInfoPane();
     if (!sel) return;
@@ -559,11 +599,8 @@
     // The hash is "#730" or "#753_6" (game, context), and empty on first load,
     // when the selected game tab says it; older pages used
     // "#inventory_<steamid>_<appid>".
-    const appidMatch = location.hash.match(/^#(\d+)/)
-      || location.hash.match(/inventory_[^_]+_(\d+)/)
-      || SE.$('.games_list_tab.active')?.id.match(/inventory_link_(\d+)/)
-      || sel.querySelector('a[href*="/market/listings/"]')?.href.match(/listings\/(\d+)\//);
-    const appid = appidMatch?.[1];
+    const appid = currentGameId()
+      || sel.querySelector('a[href*="/market/listings/"]')?.href.match(/listings\/(\d+)\//)?.[1];
     if (!appid) return;
     // The market page is keyed by market_hash_name, which can differ from the
     // display name (CS2 wear, item renames).
@@ -574,6 +611,7 @@
       href: `https://steamcommunity.com/market/listings/${appid}/${encodeURIComponent(hashName)}`,
       target: '_blank', rel: 'noopener'
     }, SE.t('viewOnMarket')));
+    SE.safe('inv:note', () => addItemNote(sel, stamp, `${appid}:${hashName}`));
     if (SE.ctx?.settings.enableQuickSell) SE.safe('inv:quickSell', () => addQuickSell(sel));
 
     // CSGO-specific inspect link / float lookup helper. Prefer the exact

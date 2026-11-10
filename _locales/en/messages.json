@@ -866,11 +866,104 @@
   "qsNoListings": {
     "message": "Nobody is selling this item right now, so there's nothing to undercut."
   },
+  "healthMissNote": {
+    "message": "Steam Enhancer couldn't find its place on this page ({0}). Steam may have changed it."
+  },
+  "healthReport": {
+    "message": "Report a problem"
+  },
+  "healthDismiss": {
+    "message": "Dismiss"
+  },
+  "healthFeatureStorePanel": {
+    "message": "game page panel"
+  },
+  "healthFeatureWishlist": {
+    "message": "wishlist panel"
+  },
+  "healthFeatureMarketItem": {
+    "message": "market item tools"
+  },
+  "healthFeatureInventory": {
+    "message": "inventory toolbar"
+  },
+  "optSecHelp": {
+    "message": "Help & report"
+  },
+  "optHelpHint": {
+    "message": "If something doesn't work, copy this report and paste it into an issue. It lists only the version, your browser, which settings you changed and which tools couldn't find their place on a page. No addresses, names, keys or Steam ids. Nothing is sent anywhere."
+  },
+  "optReportCopy": {
+    "message": "Copy report"
+  },
+  "optReportCopied": {
+    "message": "Copied"
+  },
+  "optReportIssue": {
+    "message": "Open an issue on GitHub"
+  },
+  "popupReport": {
+    "message": "Report a problem"
+  },
   "qsNoOrderBook": {
     "message": "Couldn't read this item's order book: Steam's Market Beta page doesn't include it. Use quick sell, or the classic market (Exit Market Beta)."
   },
-  "mktBetaNote": {
-    "message": "Undercut and the buy-order helper need the classic market page (Exit Market Beta)."
+  "keepNLabel": {
+    "message": "Keep of each:"
+  },
+  "keepNTitle": {
+    "message": "Mass-list keeps this many copies of every item"
+  },
+  "keepNNote": {
+    "message": "Keeping {0} of each item."
+  },
+  "itadUnavailable": {
+    "message": "IsThereAnyDeal isn't answering right now. Try again later."
+  },
+  "protonUnavailable": {
+    "message": "isn't answering right now"
+  },
+  "fxUnavailable": {
+    "message": "Exchange rates aren't available right now, so the regional prices can't be compared."
+  },
+  "itemNotePlaceholder": {
+    "message": "Private note about this item (saved in this browser)…"
+  },
+  "notifNearLow": {
+    "message": "Near its historical low"
+  },
+  "notifNearLowMsg": {
+    "message": "{0} (lowest ever {1})"
+  },
+  "optNearLow": {
+    "message": "Also alert when a wishlisted game is within this many % of its historical low (0 = off)"
+  },
+  "optNearLowHint": {
+    "message": "Uses the Steam historical low from IsThereAnyDeal; a game already announced as a deal is not announced twice."
+  },
+  "optRegions": {
+    "message": "Regions for regional prices (optional)"
+  },
+  "optRegionsHint": {
+    "message": "Two-letter country codes separated by commas, e.g. us, de, pl, tr, br (up to 15). Leave empty for the built-in twelve."
+  },
+  "muteAlerts": {
+    "message": "Mute alerts for this game"
+  },
+  "unmuteAlerts": {
+    "message": "Alerts muted — click to turn back on"
+  },
+  "priceStatsDropped": {
+    "message": "Price dropped on {0} ({1} days ago)."
+  },
+  "priceStatsHeld": {
+    "message": "Same price for {0} days. Last drop: {1} ({2} days ago)."
+  },
+  "priceStatsNoDrop": {
+    "message": "Same price for {0} days; no drop in the history we have."
+  },
+  "qsOrderBookCurrency": {
+    "message": "The order book is in a different currency than your wallet, so nothing was priced from it. Nothing was listed."
   },
   "qsNoBuyOrders": {
     "message": "No buy orders for this item (or the order book needs you to be signed in)."

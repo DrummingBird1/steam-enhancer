@@ -243,6 +243,7 @@
 .se-btn-danger { background: linear-gradient(to bottom, #c25555 5%, #7a3434 95%); }
 .se-btn-danger:hover { background: linear-gradient(to bottom, #d46666 5%, #8c4040 95%); }
 .se-qs { margin-top: 6px; }
+.se-item-note { display: block; width: 100%; box-sizing: border-box; margin-top: 8px; font: 12px/1.4 'Motiva Sans', Arial, sans-serif; resize: vertical; }
 .se-qs-out > div { margin: 4px 0; }
 .se-ml-check { margin: 0 6px 0 4px; vertical-align: middle; }
 .se-ml-tag { margin-inline-start: 6px; }
@@ -250,3 +251,12 @@
 /* Achievement progress bar (1.5.0) */
 .se-progress { display: inline-block; width: 90px; height: 6px; background: #0d1620; border-radius: 3px; vertical-align: middle; overflow: hidden; margin-inline-end: 4px; }
 .se-progress > span { display: block; height: 100%; background: #66c0f4; }
+
+/* "Steam changed this page" note (src/lib/health.js): bottom right, above the SE badge. */
+.se-health-note {
+  position: fixed; right: 16px; bottom: 70px; z-index: 10000; max-width: min(420px, calc(100vw - 32px));
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px;
+  background: #16202d; color: #c7d5e0; border: 1px solid #b07a1f; border-radius: 4px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.5); font: 12px/1.4 'Motiva Sans', Arial, sans-serif;
+}
+.se-health-note span { flex: 1 1 100%; }

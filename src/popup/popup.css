@@ -38,3 +38,7 @@ button:hover { background: linear-gradient(to bottom, #79cdff 5%, #4f8bb1 95%); 
 
 footer { display: flex; gap: 6px; padding: 10px 12px; }
 footer button { flex: 1; }
+
+.report { margin: 0; padding: 6px 12px 10px; text-align: center; font-size: 11px; }
+.report a { color: #8f98a0; }
+.report a:hover { color: #66c0f4; }

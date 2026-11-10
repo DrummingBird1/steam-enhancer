@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "__MSG_extDesc__",
   "author": "Steam Enhancer Contributors",
   "default_locale": "en",
@@ -86,6 +86,7 @@
         "src/lib/chart.js",
         "src/lib/notes.js",
         "src/lib/i18n.js",
+        "src/lib/health.js",
         "src/content/common.js"
       ],
       "css": ["src/styles/injected.css"],

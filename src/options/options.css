@@ -75,3 +75,5 @@ footer p { margin: 2px 0; }
   nav { position: static; flex-direction: row; flex-wrap: wrap; width: auto; }
   .top { flex-wrap: wrap; }
 }
+
+.report-box textarea.report { white-space: pre-wrap; min-height: 12em; }
