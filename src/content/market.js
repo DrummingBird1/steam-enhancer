@@ -143,7 +143,7 @@
           ' ',
           SE.el('button', { class: 'se-btn', onclick: showPriceHistoryChart }, SE.t('priceHistoryChart'))
         ),
-        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted' }, '')
+        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted', role: 'status', 'aria-live': 'polite' }, '')
       )
     );
     anchor.parentElement?.insertBefore(box, anchor);
@@ -156,13 +156,14 @@
   // buy-order helper need the classic page.
   function insertBetaItemTools(tries = 0) {
     if (SE.$('#se-mkt-tools')) return;
+    if (SE.ctx?.settings.showFloatingTools === false) return;
     if (!document.querySelector('[data-react-nav-root]')) {
       if (tries < 10) setTimeout(() => insertBetaItemTools(tries + 1), 1000);
       else SE.health.miss('marketItem', 'healthFeatureMarketItem');
       return;
     }
     const btn = (label, fn) => SE.el('button', { class: 'se-btn', onclick: fn }, label);
-    document.body.appendChild(SE.el('div', { id: 'se-mkt-tools', class: 'se-panel se-market-float', dir: 'auto' },
+    document.body.appendChild(SE.el('div', { id: 'se-mkt-tools', class: 'se-panel se-market-float', dir: 'auto', role: 'region', 'aria-label': SE.t('marketQuickTools') },
       SE.el('div', { class: 'se-panel-h' }, SE.t('marketQuickTools')),
       SE.el('div', { class: 'se-panel-body' },
         SE.el('div', { class: 'se-row' },
@@ -172,7 +173,7 @@
           btn(SE.t('salesSummaryBtn'), salesSummary), ' ',
           btn(SE.t('copyHashBtn'), copyHash), ' ',
           btn(SE.t('openSteamDbBtn'), openSCMHistory)),
-        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted' }, '')
+        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted', role: 'status', 'aria-live': 'polite' }, '')
       )));
   }
 

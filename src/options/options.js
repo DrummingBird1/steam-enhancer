@@ -39,7 +39,8 @@ const SECTIONS = [
   {
     id: 'community', title: 'optSecCommunity', items: [
       ...toggles('showLibraryValue', 'showBadgeTracker', 'showMediaShortcuts', 'showFriendsOwnership'),
-      { type: 'text', key: 'steamWebApiKey', label: 'optSteamKey', hint: 'optSteamKeyHint', secret: true }
+      { type: 'text', key: 'steamWebApiKey', label: 'optSteamKey', hint: 'optSteamKeyHint', secret: true },
+      { type: 'number', key: 'friendsToCheck', label: 'optFriendsToCheck', hint: 'optFriendsToCheckHint', min: 5, max: 100 }
     ]
   },
   {
@@ -53,6 +54,7 @@ const SECTIONS = [
   },
   {
     id: 'advanced', title: 'optSecAdvanced', items: [
+      ...toggles('showFab', 'showFloatingTools'),
       { type: 'textarea', key: 'customCss', label: 'optCustomCss', hint: 'optCustomCssHint' }
     ]
   },
@@ -81,14 +83,15 @@ const SECTIONS = [
 const ALL_TOGGLES = SECTIONS.flatMap((s) => s.items.filter((i) => i.type === 'toggle').map((i) => i.key));
 
 // Presets only flip toggles; keys, country and the like are left alone.
+const UI_TOGGLES = ['showFab', 'showFloatingTools']; // part of every preset: they're about layout, not features
 const PRESETS = {
-  minimal: ['showLowestPrice', 'showPriceHistory', 'highlightOwned', 'highlightWishlist', 'highlightIgnored',
+  minimal: [...UI_TOGGLES, 'showLowestPrice', 'showPriceHistory', 'highlightOwned', 'highlightWishlist', 'highlightIgnored',
     'hideIgnoredInSearch', 'showProtonDB', 'enableWishlistExport'],
-  deals: ['showLowestPrice', 'showPriceHistory', 'showRegionalPricing', 'showStorePriceAlerts', 'showBundleSavings',
+  deals: [...UI_TOGGLES, 'showLowestPrice', 'showPriceHistory', 'showRegionalPricing', 'showStorePriceAlerts', 'showBundleSavings',
     'highlightOwned', 'highlightWishlist', 'highlightIgnored', 'hideOwnedInSearch', 'hideIgnoredInSearch',
     'enableWishlistExport', 'notifyWishlistDeals', 'notifyStorePriceAlerts', 'notifyFreePromos', 'showReviewBreakdown',
     'showReviewBombDetector', 'showProtonDB', 'showSteamDBLink'],
-  trader: ['showLowestPrice', 'showPriceHistory', 'highlightOwned', 'highlightWishlist', 'enableMarketTools',
+  trader: [...UI_TOGGLES, 'showLowestPrice', 'showPriceHistory', 'highlightOwned', 'highlightWishlist', 'enableMarketTools',
     'showBuyOrderHelper', 'enableInventoryTools', 'enableQuickSell', 'showTileSortGroup', 'enableTradeOfferTools',
     'showTradeHistory', 'showCardSetValue', 'showBadgeTracker'],
   // Everything except what needs your own Steam Web API key.

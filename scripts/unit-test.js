@@ -20,7 +20,7 @@ const vm = require('vm');
 const sandbox = { console };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
-for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js', 'market.js', 'alerts.js', 'health.js']) {
+for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js', 'market.js', 'alerts.js', 'health.js', 'steamdata.js']) {
   const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
   vm.runInContext(src, sandbox, { filename: file });
 }
@@ -407,6 +407,14 @@ t('diagnostics: the report carries no key, url or id', () => {
   assert.ok(text.includes('- storePanel on store-app (x3), last 2026-11-10'));
   assert.ok(!text.includes('SECRET'));
   assert.ok(!text.includes('.x{}'));
+});
+
+console.log('SE.steamData.ownedAppIds');
+t('owned games reduced to app ids, same shape', () => {
+  const r = SE.steamData.ownedAppIds({ response: { game_count: 2, games: [{ appid: 620, name: 'Portal 2', playtime_forever: 900, img_icon_url: 'x' }, { appid: 400, name: 'Portal' }] } });
+  assert.strictEqual(JSON.stringify(r), JSON.stringify({ response: { game_count: 2, games: [{ appid: 620 }, { appid: 400 }] } }));
+  assert.strictEqual(SE.steamData.ownedAppIds({ response: {} }).response.games.length, 0);   // private profile
+  assert.strictEqual(SE.steamData.ownedAppIds(null).response.games.length, 0);
 });
 
 console.log('Alerts near the historical low, price stats, region list');

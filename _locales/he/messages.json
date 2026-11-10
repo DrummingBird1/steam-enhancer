@@ -962,6 +962,30 @@
   "priceStatsNoDrop": {
     "message": "אותו מחיר כבר {0} ימים. אין ירידה בהיסטוריה שיש לנו."
   },
+  "achAllList": {
+    "message": "כל ההישגים ({0})"
+  },
+  "achHidden": {
+    "message": "מוסתר"
+  },
+  "achShowingFirst": {
+    "message": "מוצגים {0} הראשונים מתוך {1}."
+  },
+  "friendsChecking": {
+    "message": "בודק חברים… {0}/{1}"
+  },
+  "optFriendsToCheck": {
+    "message": "כמה חברים \"בבעלות חברים\" בודק (5–100)"
+  },
+  "optFriendsToCheckHint": {
+    "message": "יותר חברים אומר יותר בקשות בפעם הראשונה. כל חבר נשמר ל-6 שעות."
+  },
+  "opt_showFab": {
+    "message": "הצג את תג \"SE\" הצף בעמודי Steam"
+  },
+  "opt_showFloatingTools": {
+    "message": "הצג את פאנלי הכלים הצפים בעמודים ש-Steam בנה מחדש (סרגל ספרייה, כלי Market Beta)"
+  },
   "qsOrderBookCurrency": {
     "message": "ספר ההזמנות במטבע שונה ממטבע הארנק שלך, ולכן לא תומחר ממנו שום דבר. שום דבר לא הוצע למכירה."
   },

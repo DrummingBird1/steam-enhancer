@@ -64,6 +64,12 @@
     // only to the popup's history, without a system notification.
     quietHoursStart: '',
     quietHoursEnd: '',
+    // v1.6.0: the floating "SE" badge, and the tools that float beside pages
+    // Steam rebuilt in React (library bar, Market Beta panel).
+    showFab: true,
+    showFloatingTools: true,
+    // v1.6.0: how many friends "owned by friends" checks (5–100).
+    friendsToCheck: 30,
     // v1.6.0: also alert when a wishlisted game's price is within this many
     // percent of its Steam historical low (0 = off).
     alertNearLowPct: 0,

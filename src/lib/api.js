@@ -248,7 +248,7 @@
       return SE.bg({
         type: 'fetchJson',
         url: `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${encodeURIComponent(key)}&steamid=${encodeURIComponent(steamid64)}&include_appids=true&include_played_free_games=true`,
-        cacheKey: `ownedgames:${steamid64}`, ttl: 60 * 6
+        cacheKey: `ownedgames:${steamid64}`, ttl: 60 * 6, reduce: 'ownedgames'
       });
     }
   };

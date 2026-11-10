@@ -962,6 +962,30 @@
   "priceStatsNoDrop": {
     "message": "Mesmo preço há {0} dias; nenhuma queda no histórico que temos."
   },
+  "achAllList": {
+    "message": "Todas as conquistas ({0})"
+  },
+  "achHidden": {
+    "message": "oculta"
+  },
+  "achShowingFirst": {
+    "message": "Mostrando as primeiras {0} de {1}."
+  },
+  "friendsChecking": {
+    "message": "verificando amigos… {0}/{1}"
+  },
+  "optFriendsToCheck": {
+    "message": "Quantos amigos \"Possuído por amigos\" verifica (5–100)"
+  },
+  "optFriendsToCheckHint": {
+    "message": "Mais amigos significam mais requisições na primeira vez; cada amigo é lembrado por 6 horas."
+  },
+  "opt_showFab": {
+    "message": "Mostrar o botão flutuante \"SE\" nas páginas da Steam"
+  },
+  "opt_showFloatingTools": {
+    "message": "Mostrar os painéis flutuantes nas páginas que a Steam refez (barra da biblioteca, ferramentas do Market Beta)"
+  },
   "qsOrderBookCurrency": {
     "message": "O livro de ofertas está em outra moeda que a da sua carteira, então nada foi precificado a partir dele. Nada foi anunciado."
   },

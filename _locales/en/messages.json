@@ -962,6 +962,30 @@
   "priceStatsNoDrop": {
     "message": "Same price for {0} days; no drop in the history we have."
   },
+  "achAllList": {
+    "message": "All achievements ({0})"
+  },
+  "achHidden": {
+    "message": "hidden"
+  },
+  "achShowingFirst": {
+    "message": "Showing the first {0} of {1}."
+  },
+  "friendsChecking": {
+    "message": "checking friends… {0}/{1}"
+  },
+  "optFriendsToCheck": {
+    "message": "How many friends \"owned by friends\" checks (5–100)"
+  },
+  "optFriendsToCheckHint": {
+    "message": "More friends means more requests the first time; each friend is remembered for 6 hours."
+  },
+  "opt_showFab": {
+    "message": "Show the floating \"SE\" badge on Steam pages"
+  },
+  "opt_showFloatingTools": {
+    "message": "Show the floating tool panels on pages Steam rebuilt (library bar, Market Beta tools)"
+  },
   "qsOrderBookCurrency": {
     "message": "The order book is in a different currency than your wallet, so nothing was priced from it. Nothing was listed."
   },

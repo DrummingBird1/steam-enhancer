@@ -95,10 +95,11 @@
 
   // Generic page badge: floating control to open Options.
   function injectGlobalBadge() {
-    if (document.getElementById('se-fab')) return;
-    const fab = SE.el('div', {
-      id: 'se-fab',
-      title: SE.t('fabTitle'),
+    if (document.getElementById('se-fab') || SE.ctx?.settings.showFab === false) return;
+    // A real button, so the keyboard can reach it.
+    const fab = SE.el('button', {
+      id: 'se-fab', type: 'button',
+      title: SE.t('fabTitle'), 'aria-label': SE.t('fabTitle'),
       onclick: () => SE.bg({ type: 'openOptions' })
     }, 'SE');
     document.body && document.body.appendChild(fab);
@@ -119,6 +120,25 @@
   const MODAL_HOSTS = ['store.steampowered.com', 'steamcommunity.com'];
   const QUIET_PATHS = /^\/(checkout|cart|login|account|tradeoffer|mobileconf)/i;
   const modalAllowedHere = () => MODAL_HOSTS.includes(location.hostname) && !QUIET_PATHS.test(location.pathname);
+
+  // Dialog semantics for the one-time modals: role and label, focus on the
+  // button, Esc closes, focus goes back where it was. Close one by dispatching
+  // 'se-modal-close' on it (closeModal).
+  const closeModal = (modal) => modal.dispatchEvent(new Event('se-modal-close'));
+  function openModal(modal, focusEl) {
+    const prev = document.activeElement;
+    const box = modal.querySelector('.se-modal-box');
+    const title = modal.querySelector('.se-modal-h');
+    box?.setAttribute('role', 'dialog');
+    box?.setAttribute('aria-modal', 'true');
+    if (title) { title.id = title.id || 'se-modal-title'; box?.setAttribute('aria-labelledby', title.id); }
+    const onKey = (e) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+    const close = () => { document.removeEventListener('keydown', onKey, true); modal.remove(); prev?.focus?.(); };
+    modal.addEventListener('se-modal-close', close);
+    document.addEventListener('keydown', onKey, true);
+    document.body.appendChild(modal);
+    focusEl?.focus();
+  }
 
   // Changelog modal — shown once after install/update.
   async function maybeShowChangelog() {
@@ -147,11 +167,11 @@
           )
         ),
         SE.el('div', { class: 'se-modal-foot' },
-          SE.el('button', { class: 'se-btn', onclick: () => modal.remove() }, SE.t('gotIt'))
+          SE.el('button', { class: 'se-btn', onclick: () => closeModal(modal) }, SE.t('gotIt'))
         )
       )
     );
-    document.body.appendChild(modal);
+    openModal(modal, modal.querySelector('.se-modal-foot .se-btn'));
   }
 
   // First-run onboarding tour — shown once, on the store front page, right
@@ -181,11 +201,11 @@
           )
         ),
         SE.el('div', { class: 'se-modal-foot' },
-          SE.el('button', { class: 'se-btn', onclick: () => modal.remove() }, SE.t('letsGo'))
+          SE.el('button', { class: 'se-btn', onclick: () => closeModal(modal) }, SE.t('letsGo'))
         )
       )
     );
-    document.body.appendChild(modal);
+    openModal(modal, modal.querySelector('.se-modal-foot .se-btn'));
   }
 
   ready()

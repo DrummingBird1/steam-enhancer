@@ -27,7 +27,7 @@
       SE.el('button', { class: 'se-btn', onclick: filterUnplayed }, SE.t('showUnplayedOnly')),
       SE.el('button', { class: 'se-btn', onclick: clearFilters }, SE.t('resetWord')),
       showValue ? SE.el('button', { class: 'se-btn', onclick: estimateLibraryValue }, SE.t('estimateLibraryValue')) : null,
-      SE.el('span', { id: 'se-library-out', class: 'se-muted' }, '')
+      SE.el('span', { id: 'se-library-out', class: 'se-muted', role: 'status', 'aria-live': 'polite' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);
 
@@ -59,13 +59,14 @@
     if (n) insertReactBar();
   }
   function insertReactBar() {
+    if (SE.ctx?.settings.showFloatingTools === false) return;
     const ids = reactGameIds();
-    const bar = SE.el('div', { id: 'se-library-toolbar', class: 'se-toolbar se-library-float', dir: 'auto' },
+    const bar = SE.el('div', { id: 'se-library-toolbar', class: 'se-toolbar se-library-float', dir: 'auto', role: 'region', 'aria-label': SE.t('libraryWord') },
       SE.el('span', { class: 'se-label' }, `${SE.t('libraryWord')}: ${ids.length} ${SE.t('gamesWord')}`),
       SE.ctx?.settings.showLibraryValue
         ? SE.el('button', { class: 'se-btn', onclick: () => estimateLibraryValue(reactGameIds()) }, SE.t('estimateLibraryValue'))
         : null,
-      SE.el('span', { id: 'se-library-out', class: 'se-muted' }, '')
+      SE.el('span', { id: 'se-library-out', class: 'se-muted', role: 'status', 'aria-live': 'polite' }, '')
     );
     document.body.appendChild(bar);
     SE.safe('lib:snapshot', () => saveSnapshot({ gameCount: ids.length }));

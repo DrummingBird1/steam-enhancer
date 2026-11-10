@@ -84,7 +84,7 @@
     const body = panelBody(); if (!body) return;
     const r = await SE.api.achievementPercentages(appid, SE.steamLanguage());
     const list = (r?.data?.response?.achievements || [])
-      .map((a) => ({ name: a.localized_name || a.internal_name, percent: Number(a.player_percent_unlocked) }))
+      .map((a) => ({ name: a.localized_name || a.internal_name, desc: a.localized_desc || '', hidden: !!a.hidden, percent: Number(a.player_percent_unlocked) }))
       .filter((a) => a.name && Number.isFinite(a.percent))
       .sort((a, b) => b.percent - a.percent);
     if (!list.length) return;
@@ -95,6 +95,27 @@
     );
     body.appendChild(row);
     SE.safe('myAchievements', () => addMyAchievements(appid, row));
+    body.appendChild(achievementList(list));
+  }
+
+  // Every achievement with its global unlock percentage, easiest first. Built
+  // when opened, and capped, so a game with a thousand of them stays cheap.
+  function achievementList(list) {
+    const MAX_ROWS = 300;
+    const details = SE.el('details', { class: 'se-ach-details' }, SE.el('summary', null, SE.t('achAllList', list.length)));
+    details.addEventListener('toggle', () => {
+      if (!details.open || details.dataset.seBuilt) return;
+      details.dataset.seBuilt = '1';
+      details.appendChild(SE.el('table', { class: 'se-ach-table' },
+        ...list.slice(0, MAX_ROWS).map((a) => SE.el('tr', null,
+          SE.el('td', { class: 'se-ach-pct' }, `${a.percent.toFixed(1)}%`),
+          SE.el('td', null,
+            SE.el('strong', null, a.name),
+            a.hidden ? SE.tag(SE.t('achHidden'), 'ignored') : null,
+            a.desc ? SE.el('div', { class: 'se-muted' }, a.desc) : null)))));
+      if (list.length > MAX_ROWS) details.appendChild(SE.el('div', { class: 'se-muted' }, SE.t('achShowingFirst', MAX_ROWS, list.length)));
+    });
+    return details;
   }
 
   // Your own progress, for a game you own — only with your Steam Web API key

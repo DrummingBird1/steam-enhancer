@@ -5,12 +5,20 @@
   width: 38px; height: 38px; border-radius: 50%;
   background: linear-gradient(135deg, #66c0f4, #1b2838);
   color: white; font-weight: 700; font-family: 'Motiva Sans', sans-serif;
+  border: 0; padding: 0; font-size: 13px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.4);
   opacity: 0.55; transition: opacity 0.15s ease, transform 0.15s ease;
   user-select: none;
 }
-#se-fab:hover { opacity: 1; transform: scale(1.06); }
+#se-fab:hover, #se-fab:focus-visible { opacity: 1; transform: scale(1.06); }
+
+/* All achievements (store page panel). */
+.se-ach-details { margin: 2px 0 4px; }
+.se-ach-details summary { cursor: pointer; color: #66c0f4; }
+.se-ach-table { border-collapse: collapse; margin-top: 4px; width: 100%; }
+.se-ach-table td { padding: 2px 6px 2px 0; vertical-align: top; font-size: 12px; }
+.se-ach-pct { white-space: nowrap; color: #a4d007; font-variant-numeric: tabular-nums; }
 
 .se-panel {
   margin: 8px 0 12px; padding: 10px 12px;
@@ -28,7 +36,7 @@
 .se-panel-body { display: flex; flex-direction: column; gap: 4px; }
 .se-row { display: block; }
 .se-label { color: #8f98a0; margin-inline-end: 4px; }
-.se-muted { color: #6c7480; }
+.se-muted { color: #8f98a0; } /* 5:1 on the panel background (was #6c7480, 3.2:1) */
 .se-link { color: #67c1f5 !important; text-decoration: none; }
 .se-link:hover { color: #fff !important; text-decoration: underline; }
 
@@ -71,11 +79,15 @@
   color: #c7d5e0; font: 13px 'Motiva Sans', Arial, sans-serif;
 }
 .se-btn {
-  background: linear-gradient(to bottom, #67c1f5 5%, #417a9b 95%);
+  /* Darker than Steam's own blue so the white label reaches ~4.4:1 or better (was 2:1 at the top). */
+  background: linear-gradient(to bottom, #3b7fac 5%, #2c6283 95%);
   color: #fff; border: 0; padding: 4px 10px; border-radius: 2px;
   cursor: pointer; font-size: 12px; font-weight: 600;
 }
-.se-btn:hover { background: linear-gradient(to bottom, #79cdff 5%, #4f8bb1 95%); }
+.se-btn:hover { background: linear-gradient(to bottom, #468fc0 5%, #347199 95%); }
+/* Keyboard focus is visible on everything we add. */
+.se-btn:focus-visible, .se-link:focus-visible, .se-input:focus-visible, #se-fab:focus-visible,
+.se-ach-details summary:focus-visible, .se-wl-table a:focus-visible { outline: 2px solid #66c0f4; outline-offset: 2px; }
 
 .se-market-net {
   font-size: 10px; color: #8f98a0; margin-top: 2px;
@@ -240,8 +252,8 @@
 .se-region-mine td { color: #66c0f4; font-weight: 600; }
 
 /* Market Pro (1.5.0) */
-.se-btn-danger { background: linear-gradient(to bottom, #c25555 5%, #7a3434 95%); }
-.se-btn-danger:hover { background: linear-gradient(to bottom, #d46666 5%, #8c4040 95%); }
+.se-btn-danger { background: linear-gradient(to bottom, #ad4848 5%, #7a3434 95%); }
+.se-btn-danger:hover { background: linear-gradient(to bottom, #bd5555 5%, #8c4040 95%); }
 .se-qs { margin-top: 6px; }
 .se-item-note { display: block; width: 100%; box-sizing: border-box; margin-top: 8px; font: 12px/1.4 'Motiva Sans', Arial, sans-serif; resize: vertical; }
 .se-qs-out > div { margin: 4px 0; }

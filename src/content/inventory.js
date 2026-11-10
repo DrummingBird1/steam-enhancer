@@ -49,7 +49,7 @@
       SE.el('button', { class: 'se-btn', onclick: stickerHelper }, SE.t('cs2StickerBtn')),
       SE.el('button', { class: 'se-btn', onclick: exportInventory }, SE.t('exportJsonBtn')),
       SE.el('input', { type: 'search', id: 'se-inv-filter', placeholder: SE.t('filterByName'), class: 'se-input' }),
-      SE.el('span', { id: 'se-inv-out', class: 'se-muted' }, '')
+      SE.el('span', { id: 'se-inv-out', class: 'se-muted', role: 'status', 'aria-live': 'polite' }, '')
     );
     anchor.parentElement?.insertBefore(bar, anchor);
     SE.$('#se-inv-filter').addEventListener('input', SE.debounce(async (e) => {
@@ -441,7 +441,7 @@
     const it = r?.ok ? r.result : null;
     if (!it?.marketable || !it.market_hash_name || !it.contextid) return;
     if (sel.querySelector('.se-qs')) return;
-    const out = SE.el('div', { class: 'se-qs-out se-muted' });
+    const out = SE.el('div', { class: 'se-qs-out se-muted', role: 'status', 'aria-live': 'polite' });
     const box = SE.el('div', { class: 'se-qs se-inv-added' },
       SE.el('button', { class: 'se-btn', onclick: () => prepare('quick') }, SE.t('quickSellBtn')),
       ' ',

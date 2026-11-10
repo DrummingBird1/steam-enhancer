@@ -962,6 +962,30 @@
   "priceStatsNoDrop": {
     "message": "Seit {0} Tagen derselbe Preis; keine Senkung im vorliegenden Verlauf."
   },
+  "achAllList": {
+    "message": "Alle Erfolge ({0})"
+  },
+  "achHidden": {
+    "message": "versteckt"
+  },
+  "achShowingFirst": {
+    "message": "Zeige die ersten {0} von {1}."
+  },
+  "friendsChecking": {
+    "message": "prüfe Freunde… {0}/{1}"
+  },
+  "optFriendsToCheck": {
+    "message": "Wie viele Freunde „Von Freunden besessen“ prüft (5–100)"
+  },
+  "optFriendsToCheckHint": {
+    "message": "Mehr Freunde bedeuten beim ersten Mal mehr Anfragen; jeder Freund wird 6 Stunden gemerkt."
+  },
+  "opt_showFab": {
+    "message": "Schwebendes „SE“-Symbol auf Steam-Seiten anzeigen"
+  },
+  "opt_showFloatingTools": {
+    "message": "Schwebende Werkzeugleisten auf neu gebauten Steam-Seiten zeigen (Bibliotheksleiste, Market-Beta-Werkzeuge)"
+  },
   "qsOrderBookCurrency": {
     "message": "Das Orderbuch ist in einer anderen Währung als deine Geldbörse, deshalb wurde nichts daraus bepreist. Nichts wurde eingestellt."
   },

@@ -3,6 +3,7 @@
 import '../lib/itad.js';
 import '../lib/alerts.js';
 import '../lib/market.js';
+import '../lib/steamdata.js';
 
 const SE = globalThis.SteamEnhancer;
 const SETTINGS_KEY = 'se_settings_v1';
@@ -86,7 +87,9 @@ async function withItadKey(url) {
 const RATE_RULES = [
   { lane: 'scm-market', gapMs: 2500, match: /^https:\/\/steamcommunity\.com\/market\/(priceoverview|pricehistory|itemordershistogram|orderbook)/ },
   { lane: 'store-appdetails', gapMs: 1500, match: /^https:\/\/store\.steampowered\.com\/api\/appdetails/ },
-  { lane: 'itad', gapMs: 200, match: /^https:\/\/api\.isthereanydeal\.com\// }
+  { lane: 'itad', gapMs: 200, match: /^https:\/\/api\.isthereanydeal\.com\// },
+  // One call per friend for "owned by friends": spread out, up to 100 of them.
+  { lane: 'steam-owned', gapMs: 250, match: /^https:\/\/api\.steampowered\.com\/IPlayerService\/GetOwnedGames/ }
 ];
 const RATE_LIMIT_PAUSE_MS = 60_000;
 const lanes = new Map();
@@ -132,7 +135,10 @@ function doFetchJson(req) {
 
 // A response can be cut down before it is cached (`reduce` in the request):
 // the order book is hundreds of rows and only a few numbers are used.
-const REDUCERS = { orderbook: (d) => SE.marketMath.orderBookSummary(d) };
+const REDUCERS = {
+  orderbook: (d) => SE.marketMath.orderBookSummary(d),
+  ownedgames: (d) => SE.steamData.ownedAppIds(d)
+};
 
 async function fetchJsonUncached({ url, method = 'GET', headers, body, cacheKey, ttl, reduce }) {
   if (cacheKey) {

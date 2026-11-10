@@ -121,7 +121,7 @@
     const panel = SE.el('div', { id: 'se-wl-panel', class: 'se-panel se-wl-panel' },
       SE.el('div', { class: 'se-panel-h' }, toggle, ' ', SE.t('wlPanelTitle')),
       SE.el('div', { class: 'se-wl-summary' }),
-      SE.el('div', { class: 'se-wl-status se-muted' }),
+      SE.el('div', { class: 'se-wl-status se-muted', role: 'status', 'aria-live': 'polite' }),
       body
     );
     // Beside the React tree, never inside it: React owns its children and
