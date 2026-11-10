@@ -24,7 +24,9 @@ src/
     prices.js                    Composite "priceSummary(appid)" used by store pages.
     chart.js                     Interactive price chart (SE.priceChart); pure geometry in SE.chartModel.
     market.js                    Pure market helpers (quick/instant sell prices, listing status, parsing).
-    alerts.js                    Pure alert history + quiet hours. Shared with the service worker and popup.
+    alerts.js                    Pure alert history, quiet hours, near-low rule. Shared with the service worker and popup.
+    health.js                    "Steam changed this page" notes (SE.health.miss) and the diagnostic report text; pure parts tested.
+    steamdata.js                 Pure reducers for Steam Web API answers (owned games → app ids). Imported by the service worker.
   content/                       Page-specific content scripts.
     page-bridge.js               Runs in the page's MAIN world; named ops reading Steam globals (see SE.pageCall).
     common.js                    Loads dynamicstore (owned/wishlist/ignored), dispatches `se-ready`, onboarding/changelog modals.
@@ -49,6 +51,9 @@ scripts/smoke-test.js            Standalone Node script (no deps) that hits live
                                   depends on are still present. Not loaded by the extension. Run it
                                   with `node scripts/smoke-test.js` before a release or when
                                   something seems broken after a Steam redesign.
+scripts/signed-in-check.js       Developer tool (needs playwright-core, not a dependency): launches a browser with the
+                                  extension, YOU sign in, it reads the DOM of the signed-in pages and clicks only read-only
+                                  buttons, prints PASS/FAIL/SKIP, deletes the temp profile. See its header.
 scripts/unit-test.js             Standalone Node script (no deps) testing the pure, non-DOM logic
                                   in src/lib/ (parsePrice, market fees, API parsers, chart geometry, etc.) by loading
                                   it into a vm sandbox. No network, runs instantly. Run with
@@ -87,7 +92,8 @@ scripts/gen-locales.js           Regenerates every _locales/*/messages.json from
 | `store.steampowered.com/dynamicstore/userdata/` | Owned / wishlist / ignored ids | Steam session cookie |
 | `store.steampowered.com/api/featuredcategories` | Free-promo detection (100%-off specials) | None |
 | `store.steampowered.com/appreviewhistogram/{appid}` | Review-bomb heuristic (recommendation counts over time) | None |
-| `steamcommunity.com/market/itemordershistogram` | Buy-order helper (order-book depth) | Steam session cookie; `item_nameid` is scraped from a `Market_LoadOrderSpread(...)` inline script on the listing page — **verified anonymous requests don't render this script at all** (see `scripts/smoke-test.js`), so it's untested against a real logged-in session |
+| `steamcommunity.com/market/orderbook?q=Load&qp=[appid,"market_hash_name"]` | Order book **by name** — the Market Beta page's own call (verified anonymously 2026-11; answers `data.data.{amtMaxBuyOrder,amtMinSellOrder,eCurrency,cBuyOrders,cSellOrders}`, reduced in the SW by `SE.marketMath.orderBookSummary`). First source for the buy-order helper, undercut on Beta and instant sell (which refuses if `eCurrency` isn't the wallet's) | Steam session cookie (currency follows the session) |
+| `steamcommunity.com/market/itemordershistogram` | Fallback buy-order helper / instant sell (order-book depth) | Steam session cookie; `item_nameid` is scraped from a `Market_LoadOrderSpread(...)` inline script on the listing page — **verified anonymous requests don't render this script at all** (see `scripts/smoke-test.js`), so it's untested against a real logged-in session |
 | `api.steampowered.com` GetFriendList / GetOwnedGames / ResolveVanityURL / GetPlayerAchievements | Opt-in "owned by friends", your achievement progress | User-supplied Steam Web API key (Options page), never baked in |
 | `steamcommunity.com/market/listings/{appid}/{name}` (page) | Order-book id for instant sell (`SE.api.itemNameId`, remembered per item) | Steam session cookie |
 | `steamcommunity.com/market/sellitem`, `/market/removelisting/{id}` | Quick/instant sell, mass-list, my-listings removal — only via `page-bridge.js`, only after an explicit confirm click | Steam session (page context) |
@@ -126,11 +132,16 @@ live smoke test.
 i18n key used in `src/` exists. CI (`.github/workflows/ci.yml`) runs both plus a
 locale-drift check on every PR.
 
-There's no browser-based test suite here (no build step, no CI browser), so
-these two scripts plus manual DevTools checks are the whole
-regression-detection story.
+There's no browser-based test suite in CI (no build step, no CI browser), so
+these two scripts plus `node scripts/signed-in-check.js` run by hand (it drives a
+real browser; you sign in yourself, it only reads) are the regression-detection
+story. A command-line-loaded extension is disabled if reloaded from
+`chrome://extensions` or `chrome.runtime.reload()`: restart the browser instead.
 
 ## Things to be careful about
+
+- **Steam keeps rebuilding pages in React** (wishlist, inventory item pane, library, Market Beta item page). Never insert into a React tree: our panels go beside it or float (`.se-library-float`, `.se-market-float`, setting `showFloatingTools`). A tool that can't find its place must not go silent: call `SE.health.miss(feature, labelKey)` (only where a missing anchor really means "Steam changed it", e.g. not for private inventories). Hashed class names change; match on stable ids, text, `data-` attributes or the item data instead.
+- **Reduce big answers in the service worker before caching** (`reduce` in `fetchJson`: `orderbook`, `ownedgames`): `chrome.storage.local` is 10 MB and one cache entry per request adds up.
 
 - **`hideOwnedInSearch` / `hideIgnoredInSearch`** mutate `display: none` on Steam's lazy-loaded rows. If Steam restructures those classes, the filter silently does nothing — that's expected, not a bug to chase.
 - **Trade offer / inventory features** rely on Steam's page-context globals. Anything reading from there must go through `SE.pageCall`. The community pages also re-render constantly; use `setInterval` polling sparingly, prefer MutationObserver scoped to a small subtree.

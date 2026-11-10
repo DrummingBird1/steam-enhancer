@@ -14,12 +14,15 @@ O **Steam Enhancer** reúne os recursos mais queridos das extensões populares p
 • Alertas de preço definidos na página do jogo ou na lista de desejos, verificados em segundo plano
 • Verificação de pacotes: comprar separado vs. preço do pacote
 • Etiqueta de menor preço histórico em cada resultado de busca
+• Alerta opcional quando um jogo da lista de desejos está perto do menor preço histórico; silencie alertas jogo a jogo
+• Há quanto tempo o preço atual se mantém e quando caiu pela última vez
 
 ### Páginas da loja
 • Compatibilidade com o Steam Deck e nota do ProtonDB
 • Seu progresso nas conquistas (com a sua própria chave da Steam Web API), estatísticas de conquistas, jogadores online
 • Divisão das avaliações, avaliação mais útil, alerta de possível review bombing, filtro de avaliações ao vivo — em qualquer idioma da Steam
 • Destaque de DLCs que você tem, links de cartas colecionáveis, notas privadas por jogo, atalhos para HowLongToBeat e SteamDB
+• Lista completa de conquistas com porcentagens globais de desbloqueio
 
 ### Painel da lista de desejos
 • Uma tabela para toda a sua lista: preço, desconto, menor preço histórico, avaliações, Steam Deck, preço de alerta
@@ -32,8 +35,11 @@ O **Steam Enhancer** reúne os recursos mais queridos das extensões populares p
 • Venda rápida (um centavo abaixo do anúncio mais barato) e venda instantânea (para a maior ordem de compra)
 • Confira seus anúncios ativos: quais são os mais baratos e quais foram superados, e remova vários de uma vez
 • Venda com seleção múltipla e anúncio pela mediana, sempre na moeda da sua carteira com prévia "comprador paga / você recebe" — nada é anunciado sem o seu clique de confirmação
+• A listagem em massa pode manter um número de cópias de cada item
 • Valor do inventário com gráfico ao longo do tempo, duplicatas, ordenar por valor, raridade
+• Notas privadas por item do inventário, salvas no seu navegador
 • Histórico de preços do mercado, assistente de ordens de compra, conversor de moedas
+• Funciona nas novas páginas do Market Beta da Steam: cobrir preço, assistente de ordens de compra e venda instantânea pelo livro de ofertas
 
 ### Ofertas de troca
 • Tabela de valor item a item para os dois lados, incluindo itens da Steam como cartas colecionáveis
@@ -42,6 +48,8 @@ O **Steam Enhancer** reúne os recursos mais queridos das extensões populares p
 ### E mais
 • Central de notificações no pop-up da barra de ferramentas, com horário silencioso
 • Página de configurações com busca, predefinições (Mínimo, Caçador de ofertas, Negociante, Tudo) e backup e restauração completos
+• "Relatar um problema": um diagnóstico só para copiar (nada é enviado) e um aviso quando uma ferramenta não encontra seu lugar após a Steam mudar uma página
+• Melhorias de foco do teclado, diálogos e contraste
 • Destaque de jogos que você tem, deseja ou ignora; oculte o que não quer ver
 • Valor da biblioteca, resumo de insígnias, atalhos no perfil
 • Inglês, hebraico (RTL), russo, alemão e português (Brasil)

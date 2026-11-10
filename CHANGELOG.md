@@ -3,6 +3,58 @@
 All notable changes to Steam Enhancer are documented here. Versions follow the
 `version` field in `manifest.json`.
 
+## [1.6.0] — No more silent failures, Market Beta tools, smarter alerts
+
+A feature release built from the roadmap. Trade Guard is still deferred (it
+needs real trade offers to tune). Everything below was checked in a real
+browser except the parts that need a Steam account that may sell, a Steam
+Web API key or a trade partner (see `docs/PLAN-1.6.0.md`).
+
+### Added
+- **"Steam changed this page" notes.** A tool that can't find its place on a
+  page (store panel, wishlist panel, market item tools, inventory toolbar)
+  now says so in a small dismissible note instead of doing nothing.
+- **Report a problem** (Options → Help & report, and a link in the popup): a
+  diagnostic text — version, Chrome and system, language, settings that differ
+  from the defaults, whether keys are set (never the keys), and which tools
+  couldn't find their place on which kind of page. Shown in full, copied only
+  when you click; nothing is sent anywhere.
+- **Market Beta item page, full tools**: Undercut and the buy-order helper
+  now work there, and instant sell no longer needs an order-book id. They read
+  Steam's own `market/orderbook` call (by item name); instant sell refuses if
+  that book is in a different currency than your wallet.
+- **Mass-list can keep N copies** of every item (a "Keep of each" field in the
+  inventory toolbar; stacks are listed in part).
+- **Near-low alerts** (opt-in, Options → Notifications): also alert when a
+  wishlisted game is within X% of Steam's historical low. **Mute alerts** per
+  game from the wishlist panel (deal, near-low and price-target alerts).
+- **Price held / last drop** under the price chart ("Same price for 40 days.
+  Last drop: …").
+- **Regions for regional prices** are now a setting (two-letter codes, up to
+  15).
+- **Full achievements list** on game pages, with global unlock percentages.
+- **How many friends "owned by friends" checks** (5–100, default 30), with
+  progress while it runs.
+- **Private notes per inventory item**; the inventory **value history is now
+  per game** (it used to mix every game of a profile).
+- Options to **hide the floating SE badge** and the **floating tool panels**.
+- `scripts/signed-in-check.js`: a signed-in regression run in a real browser
+  (you sign in; it only reads; the temp profile is deleted). Smoke test and a
+  fixture for the order-book endpoint. Unit tests 73 → 88.
+
+### Changed
+- **Clearer messages** when IsThereAnyDeal, ProtonDB or the exchange-rate
+  service doesn't answer (it used to look like "no data").
+- **Accessibility**: the SE badge is a real button; the "what's new" and
+  welcome windows are dialogs (labelled, focused, Esc closes); visible
+  keyboard focus; status text is announced; muted text now has about 5:1
+  contrast, and buttons are a darker blue so the white label is readable
+  (about 4.4:1 at the lightest point, was 2:1).
+- Friends' owned-games answers are cached as app ids only. Each was tens of KB
+  and `chrome.storage.local` is 10 MB, which up to 100 friends would exceed.
+- Small pure helpers (inventory hash, tile id, partner id, store links, keep-N,
+  order-book summary) moved out of page scripts into tested code.
+
 ## [1.5.0] — Wishlist dashboard, Market Pro, price charts
 
 The biggest release so far: a round of real bug fixes (some had been there
