@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file gives Claude Code the context it needs to work productively in this repository.
+This file gives Claude Code the context it needs to work productively in this repository. Commands, hard rules, git/release workflow and the handoff checklist are in [`AGENTS.md`](AGENTS.md) — read both.
 
 ## What this project is
 
