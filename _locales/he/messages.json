@@ -866,11 +866,128 @@
   "qsNoListings": {
     "message": "אף אחד לא מוכר את הפריט הזה כרגע, אז אין מה לעקוף."
   },
+  "healthMissNote": {
+    "message": "Steam Enhancer לא מצא את המקום שלו בעמוד ({0}). ייתכן ש-Steam שינה אותו."
+  },
+  "healthReport": {
+    "message": "דווח על בעיה"
+  },
+  "healthDismiss": {
+    "message": "סגור"
+  },
+  "healthFeatureStorePanel": {
+    "message": "פאנל עמוד המשחק"
+  },
+  "healthFeatureWishlist": {
+    "message": "פאנל רשימת המשאלות"
+  },
+  "healthFeatureMarketItem": {
+    "message": "כלי עמוד פריט ב-Market"
+  },
+  "healthFeatureInventory": {
+    "message": "סרגל המלאי"
+  },
+  "optSecHelp": {
+    "message": "עזרה ודיווח"
+  },
+  "optHelpHint": {
+    "message": "אם משהו לא עובד, העתיקו את הדוח הזה והדביקו אותו ב-issue. הוא כולל רק את הגרסה, הדפדפן, אילו הגדרות שיניתם ואילו כלים לא מצאו את מקומם בעמוד. בלי כתובות, שמות, מפתחות או מזהי Steam. שום דבר לא נשלח לשום מקום."
+  },
+  "optReportCopy": {
+    "message": "העתק דוח"
+  },
+  "optReportCopied": {
+    "message": "הועתק"
+  },
+  "optReportIssue": {
+    "message": "פתח issue ב-GitHub"
+  },
+  "popupReport": {
+    "message": "דווח על בעיה"
+  },
   "qsNoOrderBook": {
     "message": "לא הצלחתי לקרוא את ספר ההזמנות של הפריט: עמוד ה-Market Beta של Steam לא כולל אותו. אפשר להשתמש במכירה מהירה, או ב-Market הקלאסי (Exit Market Beta)."
   },
-  "mktBetaNote": {
-    "message": "עקיפת מחיר ועזרה בהזמנות קנייה דורשות את עמוד ה-Market הקלאסי (Exit Market Beta)."
+  "keepNLabel": {
+    "message": "השאר מכל פריט:"
+  },
+  "keepNTitle": {
+    "message": "רישום המוני משאיר כמות כזו מכל פריט"
+  },
+  "keepNNote": {
+    "message": "משאירים {0} מכל פריט."
+  },
+  "itadUnavailable": {
+    "message": "IsThereAnyDeal לא עונה כרגע. נסו שוב מאוחר יותר."
+  },
+  "protonUnavailable": {
+    "message": "לא עונה כרגע"
+  },
+  "fxUnavailable": {
+    "message": "שערי החליפין לא זמינים כרגע, ולכן אי אפשר להשוות מחירים אזוריים."
+  },
+  "itemNotePlaceholder": {
+    "message": "הערה פרטית על הפריט (נשמרת בדפדפן הזה)…"
+  },
+  "notifNearLow": {
+    "message": "קרוב לשפל ההיסטורי"
+  },
+  "notifNearLowMsg": {
+    "message": "{0} (השפל אי פעם {1})"
+  },
+  "optNearLow": {
+    "message": "התראה גם כשמשחק ברשימת המשאלות קרוב לשפל ההיסטורי שלו בעד אחוזים אלה (0 = כבוי)"
+  },
+  "optNearLowHint": {
+    "message": "משתמש בשפל ההיסטורי של Steam מ-IsThereAnyDeal. משחק שכבר הוכרז כמבצע לא מוכרז פעמיים."
+  },
+  "optRegions": {
+    "message": "אזורים להשוואת מחירים (לא חובה)"
+  },
+  "optRegionsHint": {
+    "message": "קודי מדינה בני שתי אותיות מופרדים בפסיקים, למשל us, de, pl, tr, br (עד 15). אם ריק, נעשה שימוש בשתים-עשרה המובנות."
+  },
+  "muteAlerts": {
+    "message": "השתק התראות למשחק הזה"
+  },
+  "unmuteAlerts": {
+    "message": "ההתראות מושתקות. לחצו להפעלה מחדש"
+  },
+  "priceStatsDropped": {
+    "message": "המחיר ירד ב-{0} (לפני {1} ימים)."
+  },
+  "priceStatsHeld": {
+    "message": "אותו מחיר כבר {0} ימים. הירידה האחרונה: {1} (לפני {2} ימים)."
+  },
+  "priceStatsNoDrop": {
+    "message": "אותו מחיר כבר {0} ימים. אין ירידה בהיסטוריה שיש לנו."
+  },
+  "achAllList": {
+    "message": "כל ההישגים ({0})"
+  },
+  "achHidden": {
+    "message": "מוסתר"
+  },
+  "achShowingFirst": {
+    "message": "מוצגים {0} הראשונים מתוך {1}."
+  },
+  "friendsChecking": {
+    "message": "בודק חברים… {0}/{1}"
+  },
+  "optFriendsToCheck": {
+    "message": "כמה חברים \"בבעלות חברים\" בודק (5–100)"
+  },
+  "optFriendsToCheckHint": {
+    "message": "יותר חברים אומר יותר בקשות בפעם הראשונה. כל חבר נשמר ל-6 שעות."
+  },
+  "opt_showFab": {
+    "message": "הצג את תג \"SE\" הצף בעמודי Steam"
+  },
+  "opt_showFloatingTools": {
+    "message": "הצג את פאנלי הכלים הצפים בעמודים ש-Steam בנה מחדש (סרגל ספרייה, כלי Market Beta)"
+  },
+  "qsOrderBookCurrency": {
+    "message": "ספר ההזמנות במטבע שונה ממטבע הארנק שלך, ולכן לא תומחר ממנו שום דבר. שום דבר לא הוצע למכירה."
   },
   "qsNoBuyOrders": {
     "message": "אין הזמנות קנייה לפריט הזה (או שספר ההזמנות דורש התחברות)."

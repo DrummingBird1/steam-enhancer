@@ -8,3 +8,6 @@ Thumbs.db
 dist/
 build/
 .claude/
+*.local.md
+.env
+.env.*

@@ -14,12 +14,15 @@ Das Alles-in-einem-Upgrade für Steam: Preisverlauf, Wunschlisten-Übersicht, Ma
 • Preisalarme direkt auf der Spieleseite oder in der Wunschliste, im Hintergrund geprüft
 • Bundle-Check: Einzelkauf vs. Bundle-Preis
 • Tiefstpreis-Markierung bei jedem Suchergebnis
+• Optionaler Alarm, wenn ein Wunschlisten-Spiel nahe an seinem Tiefstpreis liegt; Alarme spielweise stummschalten
+• Wie lange der aktuelle Preis gilt und wann er zuletzt gesenkt wurde
 
 ### Shop-Seiten
 • Steam-Deck-Kompatibilität und ProtonDB-Bewertung
 • Dein eigener Erfolgsfortschritt (mit deinem eigenen Steam-Web-API-Schlüssel), Erfolgsstatistik, aktuelle Spielerzahl
 • Rezensionsaufteilung, hilfreichste Rezension, Hinweis auf mögliches Review-Bombing, Live-Rezensionsfilter — in jeder Steam-Sprache
 • Markierung besessener DLCs, Sammelkarten-Links, private Notizen pro Spiel, Links zu HowLongToBeat und SteamDB
+• Vollständige Erfolgsliste mit globalen Freischaltquoten
 
 ### Wunschlisten-Übersicht
 • Eine Tabelle für deine ganze Wunschliste: Preis, Rabatt, Tiefstpreis, Rezensionen, Steam-Deck-Status, Alarmpreis
@@ -32,8 +35,11 @@ Das Alles-in-einem-Upgrade für Steam: Preisverlauf, Wunschlisten-Übersicht, Ma
 • Schnellverkauf (einen Cent unter dem günstigsten Angebot) und Sofortverkauf (an den höchsten Kaufauftrag)
 • Prüfe deine aktiven Angebote: welche am günstigsten sind und welche unterboten wurden — mehrere auf einmal entfernen
 • Mehrfachauswahl-Verkauf und Einstellen zum Median, immer in deiner Geldbörsenwährung mit Vorschau „Käufer zahlt / du erhältst“ — nichts wird ohne deinen ausdrücklichen Bestätigungsklick eingestellt
+• Massen-Angebot kann eine Anzahl Exemplare jedes Gegenstands behalten
 • Inventarwert mit Verlaufsdiagramm, Duplikate, Sortieren nach Wert, Seltenheitsübersicht
+• Private Notizen zu jedem Inventar-Gegenstand, in deinem Browser gespeichert
 • Marktpreisverlauf, Kaufauftrag-Helfer, Währungsrechner
+• Funktioniert auf Steams neuen Market-Beta-Seiten: Unterbieten, Kaufauftrag-Helfer und Sofortverkauf aus dem Orderbuch
 
 ### Tauschangebote
 • Wert-Tabelle Gegenstand für Gegenstand für beide Seiten, auch für Steam-Gegenstände wie Sammelkarten
@@ -42,6 +48,8 @@ Das Alles-in-einem-Upgrade für Steam: Preisverlauf, Wunschlisten-Übersicht, Ma
 ### Und mehr
 • Benachrichtigungszentrale im Popup der Symbolleiste, mit Ruhezeiten
 • Einstellungsseite mit Suche, Voreinstellungen (Minimal, Schnäppchenjäger, Händler, Alles) und vollständiger Sicherung und Wiederherstellung
+• „Problem melden“: ein Diagnosebericht nur zum Kopieren (nichts wird gesendet) und ein Hinweis, wenn ein Werkzeug nach einer Steam-Änderung seinen Platz nicht findet
+• Besserer Tastaturfokus, bessere Dialoge und Kontraste
 • Besessene, gewünschte und ignorierte Spiele hervorheben; Unerwünschtes ausblenden
 • Bibliothekswert, Abzeichen-Übersicht, Profil-Links
 • Englisch, Hebräisch (RTL), Russisch, Deutsch und Portugiesisch (Brasilien)

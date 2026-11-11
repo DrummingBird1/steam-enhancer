@@ -13,15 +13,17 @@ Thanks for considering a contribution — issues, bug reports, and pull requests
 1. Fork and clone the repo.
 2. Visit `chrome://extensions/`, enable **Developer mode**, click **Load unpacked**, select the repo root.
 3. Edit a file, then click the reload icon on the extension card (or reload the Steam tab if you only touched CSS/content scripts).
-4. Before opening a PR, run `node scripts/smoke-test.js` (no dependencies, Node 18+) — it makes live, read-only requests to the Steam endpoints/pages the extension depends on and flags anything that's silently broken.
+4. Before opening a PR, run `node scripts/unit-test.js`, `node scripts/check-manifest.js` and `node scripts/smoke-test.js` (no dependencies, Node 18+). The first two are what CI runs; the smoke test makes live, read-only requests to the Steam endpoints/pages the extension depends on and flags anything that's silently broken.
+5. Using an AI coding agent? Point it at [`AGENTS.md`](AGENTS.md) first.
 
 ## Code conventions
 
 - **All network calls go through the background service worker** via `SE.bg({ type: 'fetchJson', url, cacheKey, ttl })`. Never `fetch()` directly from a content script — it breaks caching and some CORS-sensitive endpoints.
-- **Page-context access** (Steam's `g_ActiveInventory`, `g_sessionID`, etc.) goes through `SE.injectPage(fn)`, never read directly from the content script's isolated world.
+- **Page-context access** (Steam's `g_ActiveInventory`, `g_sessionID`, etc.) goes through `SE.pageCall('op', args)` (add a named op in `src/content/page-bridge.js`), never read directly from the content script's isolated world.
 - **DOM decoration**: prefix every injected class/id with `se-`. Mark decorated nodes with `dataset.seDone` so MutationObservers don't reprocess them.
 - **Wrap features defensively.** Steam's markup changes without notice, and a lot of this codebase's selectors are best-effort. Use `SE.safe(label, fn)` around any feature that touches Steam's DOM so one broken selector can't take down the rest of the script. Prefer "silently do nothing" over throwing.
-- **Settings**: add new toggles to the `DEFAULTS` object in both `src/lib/storage.js` and `src/options/options.js` — they're intentionally duplicated (no build step, no shared bundle) and must be kept in sync.
+- **Settings**: add the default only in `src/lib/storage.js` (the popup and options pages load that file too), then add the control to `SECTIONS` in `src/options/options.js`.
+- **i18n**: UI text goes through `SE.t('key')`. Add keys to the table in `scripts/gen-locales.js` and run `node scripts/gen-locales.js`; don't hand-edit `_locales/*/messages.json`.
 - **Don't ship API keys.** If a feature needs an authenticated endpoint, route it through a user-supplied key in the Options page (see `steamWebApiKey` for a template), never a key baked into the extension.
 - **Don't widen `host_permissions`** without updating the justification table in both `CLAUDE.md` and `store-assets/description.md`.
 - **Don't reuse code or assets from Augmented Steam or Steam Inventory Helper.** Their licenses differ from this project's MIT license, and re-implementation from scratch is the point.

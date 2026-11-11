@@ -9,7 +9,7 @@
 - ✅ branch `release/1.5.0` מ-`main`, כולל אייקון החנות מ-PR #4
 - ✅ CI ב-GitHub Actions: unit tests, בדיקה ש-`gen-locales` לא מייצר diff, ולידציה של ה-manifest
 - ✅ תיקון הגרסה ב-ROADMAP.md
-- ⬜ merge ל-PR #4 וניקוי branches שמוזגו (דורש אישור)
+- ✅ PR #4 נסגר (התוכן כבר ב-main). ניקוי ה-branches שמוזגו עדיין ממתין לאישור
 
 ## שלב 1 — תיקוני באגים ✅
 | # | באג | תיקון |
@@ -56,12 +56,12 @@
 
 ## שלב 5 — בדיקה ושחרור
 - ✅ הרחבת smoke test (wishlist API, GetItems, סיכום ביקורות, SSR)
-- ⬜ בדיקה ידנית מחובר (Idan): לפי `docs/TESTING-1.5.0.md`
+- ✅ בדיקה ידנית מחובר ב-2026-11-03 (ראו `docs/TESTING-1.5.0.md`); מה שלא נבדק: מכירה בפועל, Market קלאסי, Trade, התראות ITAD
 - ✅ CHANGELOG, README בשתי שפות, רישום בחנות ב-5 שפות, מדיניות פרטיות, ROADMAP
 - ✅ גרסה 1.5.0 ב-manifest, `scripts/package.js`, ‏`dist/steam-enhancer-v1.5.0.zip`
-- ⬜ צילומי מסך חדשים (Idan, מחובר)
-- ⬜ push, PR ל-main, tag `v1.5.0`, GitHub release עם ה-ZIP (דורש אישור)
-- ⬜ העלאה לחנות (Idan)
+- ✅ צילומי מסך חדשים, כולל תמונות מקומיות ב-4 שפות
+- ✅ PR #5 מוזג, tag `v1.5.0`, GitHub release עם ה-ZIP
+- ✅ הועלה לחנות ב-2026-11-03
 
 ## נקודות בדיקה מחובר
 1. אחרי שלב 1 — market ו-mass-list

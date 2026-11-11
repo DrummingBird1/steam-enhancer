@@ -143,7 +143,7 @@
           ' ',
           SE.el('button', { class: 'se-btn', onclick: showPriceHistoryChart }, SE.t('priceHistoryChart'))
         ),
-        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted' }, '')
+        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted', role: 'status', 'aria-live': 'polite' }, '')
       )
     );
     anchor.parentElement?.insertBefore(box, anchor);
@@ -156,21 +156,24 @@
   // buy-order helper need the classic page.
   function insertBetaItemTools(tries = 0) {
     if (SE.$('#se-mkt-tools')) return;
+    if (SE.ctx?.settings.showFloatingTools === false) return;
     if (!document.querySelector('[data-react-nav-root]')) {
       if (tries < 10) setTimeout(() => insertBetaItemTools(tries + 1), 1000);
+      else SE.health.miss('marketItem', 'healthFeatureMarketItem');
       return;
     }
     const btn = (label, fn) => SE.el('button', { class: 'se-btn', onclick: fn }, label);
-    document.body.appendChild(SE.el('div', { id: 'se-mkt-tools', class: 'se-panel se-market-float', dir: 'auto' },
+    document.body.appendChild(SE.el('div', { id: 'se-mkt-tools', class: 'se-panel se-market-float', dir: 'auto', role: 'region', 'aria-label': SE.t('marketQuickTools') },
       SE.el('div', { class: 'se-panel-h' }, SE.t('marketQuickTools')),
       SE.el('div', { class: 'se-panel-body' },
         SE.el('div', { class: 'se-row' },
+          btn(SE.t('undercutBtn'), undercut), ' ',
+          btn(SE.t('buyOrderHelperBtn'), buyOrderHelper), ' ',
           btn(SE.t('priceHistoryChart'), showPriceHistoryChart), ' ',
           btn(SE.t('salesSummaryBtn'), salesSummary), ' ',
           btn(SE.t('copyHashBtn'), copyHash), ' ',
           btn(SE.t('openSteamDbBtn'), openSCMHistory)),
-        SE.el('div', { class: 'se-row se-muted' }, SE.t('mktBetaNote')),
-        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted' }, '')
+        SE.el('div', { id: 'se-mkt-out', class: 'se-row se-muted', role: 'status', 'aria-live': 'polite' }, '')
       )));
   }
 
@@ -199,10 +202,28 @@
     out.appendChild(SE.priceChart(sampled, { currency: wallet.iso, step: false, w: 420, h: 150 }));
   }
 
-  function undercut() {
-    const first = SE.$('.market_listing_price_with_fee, .market_listing_price');
-    const p = first ? SE.parsePrice(first.textContent) : null;
+  // The order book for the item whose page this is, or null. The Market Beta
+  // page has no classic markup to read prices from, so this is its source.
+  // These tools only show numbers (nothing is listed from here), so the
+  // book's own currency is displayed as it is; instant sell, which does move
+  // money, checks it against the wallet (inventory.js).
+  async function pageOrderBook() {
+    const { appid, name } = listingNameFromUrl();
+    if (!appid || !name) return null;
+    const r = await SE.api.orderBook(appid, name);
+    return r?.ok && r.data ? r.data : null;
+  }
+
+  async function undercut() {
     const out = SE.$('#se-mkt-out');
+    const first = SE.$('.market_listing_price_with_fee, .market_listing_price');
+    let p = first ? SE.parsePrice(first.textContent) : null;
+    if (p == null) {
+      // Market Beta: the cheapest listing comes from the order book.
+      out.textContent = SE.t('mktFetching');
+      const book = await pageOrderBook();
+      if (book?.lowestSell) p = book.lowestSell / 100;
+    }
     if (p == null) { out.textContent = SE.t('mktNoListing'); return; }
     out.innerHTML = '';
     out.appendChild(SE.el('div', null, SE.t('mktLowestListing', p.toFixed(2))));
@@ -249,19 +270,41 @@
     return null;
   }
 
+  // Order-book numbers as { highestBuy, lowestSell, buyCount, sellCount } in
+  // currency units: from the order book by name first (Market Beta has no
+  // order-book id), else the classic page's id-based histogram.
+  async function readOrderBook() {
+    const book = await pageOrderBook();
+    if (book) {
+      return {
+        highestBuy: book.highestBuy != null ? book.highestBuy / 100 : null,
+        lowestSell: book.lowestSell != null ? book.lowestSell / 100 : null,
+        buyCount: book.buyCount, sellCount: book.sellCount,
+        iso: SE.currency.isoForSteamId(book.currency)
+      };
+    }
+    const itemNameId = findItemNameId();
+    if (!itemNameId) return null;
+    const r = await SE.api.itemOrdersHistogram(itemNameId);
+    if (!r?.ok || !r.data?.success) return null;
+    const d = r.data;
+    return {
+      highestBuy: d.highest_buy_order != null ? Number(d.highest_buy_order) / 100 : null,
+      lowestSell: d.lowest_sell_order != null ? Number(d.lowest_sell_order) / 100 : null,
+      buyCount: d.buy_order_count || 0, sellCount: d.sell_order_count || 0
+    };
+  }
+
   async function buyOrderHelper() {
     const out = SE.$('#se-mkt-out');
-    const itemNameId = findItemNameId();
-    if (!itemNameId) { out.textContent = SE.t('mktNoOrderBookId'); return; }
     out.textContent = SE.t('mktFetchingOrderBook');
-    const r = await SE.api.itemOrdersHistogram(itemNameId);
-    if (!r?.ok || !r.data?.success) { out.textContent = SE.t('mktOrderBookFailed'); return; }
-    const d = r.data;
-    const highestBuy = d.highest_buy_order != null ? Number(d.highest_buy_order) / 100 : null;
-    const lowestSell = d.lowest_sell_order != null ? Number(d.lowest_sell_order) / 100 : null;
+    const book = await readOrderBook();
+    if (!book) { out.textContent = SE.t('mktOrderBookFailed'); return; }
+    const { highestBuy, lowestSell } = book;
+    const show = (v) => (v == null ? '—' : book.iso ? SE.formatMoney(v, book.iso) : v.toFixed(2));
     out.innerHTML = '';
-    out.appendChild(SE.el('div', null, SE.t('mktHighestBuy', highestBuy != null ? highestBuy.toFixed(2) : '—', d.buy_order_count || 0)));
-    out.appendChild(SE.el('div', null, SE.t('mktLowestSell', lowestSell != null ? lowestSell.toFixed(2) : '—', d.sell_order_count || 0)));
+    out.appendChild(SE.el('div', null, SE.t('mktHighestBuy', show(highestBuy), book.buyCount || 0)));
+    out.appendChild(SE.el('div', null, SE.t('mktLowestSell', show(lowestSell), book.sellCount || 0)));
     if (highestBuy != null) {
       const suggested = highestBuy + 0.01;
       out.appendChild(SE.el('div', null,

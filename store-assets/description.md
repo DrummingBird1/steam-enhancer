@@ -14,12 +14,15 @@ The all-in-one Steam upgrade: price history, wishlist dashboard, market & invent
 • Price alerts set right on the game page or the wishlist, checked in the background
 • Bundle check: buying separately vs. the bundle price
 • Historical-low tag on every search result
+• Optional alert when a wishlisted game is near its historical low; mute alerts game by game
+• How long the current price has held and when it last dropped
 
 ### Store pages
 • Steam Deck compatibility and ProtonDB rating
 • Your own achievement progress (with your own Steam Web API key), achievement stats, live player count
 • Review breakdown, most-helpful review, possible review-bomb flag, live review filter — in any Steam language
 • Owned-DLC highlighting, trading-card links, private per-game notes, HowLongToBeat and SteamDB shortcuts
+• Full list of achievements with global unlock percentages
 
 ### Wishlist dashboard
 • One table for your whole wishlist: price, discount, historical low, reviews, Steam Deck status, alert price
@@ -32,8 +35,11 @@ The all-in-one Steam upgrade: price history, wishlist dashboard, market & invent
 • Quick sell (one cent under the cheapest listing) and Instant sell (to the highest buy order)
 • Check your active listings: see which are the cheapest and which were undercut, and remove several at once
 • Multi-select selling and list-at-median, always in your wallet currency with a "buyer pays / you receive" preview — nothing is listed without your explicit confirm click
+• Mass-list can keep a number of copies of each item
 • Inventory value with a value-over-time chart, duplicates, sort by value, rarity breakdown
+• Private notes per inventory item, kept in your browser
 • Market price-history chart, buy-order helper, currency converter
+• Works on Steam's new Market Beta pages: undercut, buy-order helper and instant sell from the order book
 
 ### Trade offers
 • Item-by-item value table for both sides, including Steam items such as trading cards
@@ -42,6 +48,8 @@ The all-in-one Steam upgrade: price history, wishlist dashboard, market & invent
 ### And more
 • Notification center in the toolbar popup with quiet hours
 • Settings page with search, presets (Minimal, Deal hunter, Trader, Everything) and full backup and restore
+• "Report a problem": a copy-only diagnostic (nothing is sent) and a note when a tool can't find its place after Steam changes a page
+• Better keyboard focus, dialogs and contrast
 • Highlight owned, wishlisted and ignored games; hide the ones you don't want to see
 • Library value estimate, badge summary, profile shortcuts
 • English, Hebrew (RTL), Russian, German and Portuguese (Brazil)

@@ -30,6 +30,12 @@
     forCountry: (cc) => CC_TO_CUR[String(cc || '').toLowerCase()] || 'USD',
     list: () => Object.keys(CC_TO_CUR).sort(),
     isoForSteamId: (id) => STEAM_CURRENCY[Number(id)] || null,
+    // The regions to compare prices in, from the Options text ("us, de pl"):
+    // two-letter codes, distinct, at most 15; `fallback` if nothing valid.
+    parseRegionList: (text, fallback) => {
+      const codes = [...new Set(String(text || '').toLowerCase().split(/[^a-z]+/).filter((c) => /^[a-z]{2}$/.test(c)))].slice(0, 15);
+      return codes.length ? codes : fallback;
+    },
     steamIdForIso: (iso) => {
       const want = String(iso || '').toUpperCase();
       const hit = Object.entries(STEAM_CURRENCY).find(([, v]) => v === want);

@@ -20,7 +20,7 @@ const vm = require('vm');
 const sandbox = { console };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
-for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js', 'market.js', 'alerts.js']) {
+for (const file of ['utils.js', 'currency.js', 'itad.js', 'wishlist.js', 'chart.js', 'market.js', 'alerts.js', 'health.js', 'steamdata.js']) {
   const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
   vm.runInContext(src, sandbox, { filename: file });
 }
@@ -163,6 +163,31 @@ t('no percentage → null', () => assert.strictEqual(SE.parseReviewSummary('No u
 
 console.log('SE.marketMath');
 const MM = SE.marketMath;
+t('keep N of each when mass-listing: holds copies back, stack by stack', () => {
+  const items = [
+    { id: 'a', market_hash_name: 'Gems', amount: 5 },
+    { id: 'b', market_hash_name: 'Card', amount: 1 },
+    { id: 'c', market_hash_name: 'Card', amount: 1 },
+    { id: 'd', market_hash_name: 'Card', amount: 1 }
+  ];
+  const sel = (keep) => MM.selectForListing(items, keep).map((x) => `${x.item.id}:${x.amount}`).join(' ');
+  assert.strictEqual(sel(0), 'a:5 b:1 c:1 d:1');
+  assert.strictEqual(sel(1), 'a:4 c:1 d:1');        // first copy of each name stays
+  assert.strictEqual(sel(2), 'a:3 d:1');            // two cards stay, the third is listed
+  assert.strictEqual(sel(9), '');                    // keeping more than you own lists nothing
+  assert.strictEqual(sel(-3), 'a:5 b:1 c:1 d:1');   // nonsense counts as 0
+  assert.strictEqual(MM.selectForListing(null, 1).length, 0);
+});
+t('order book (Market Beta): by-name response → the few numbers used', () => {
+  const b = MM.orderBookSummary(fixture('steam-orderbook.json'));
+  assert.deepStrictEqual({ ...b }, { currency: 35, highestBuy: 214, lowestSell: 218, buyCount: 331296, sellCount: 23183 });
+  assert.strictEqual(MM.orderBookSummary({ data: { success: false } }), null);
+  assert.strictEqual(MM.orderBookSummary(null), null);
+  // No buy orders: the field is 0 or missing → null, not 0 (nothing to sell into).
+  const empty = MM.orderBookSummary({ data: { success: true, data: { eCurrency: 1, amtMaxBuyOrder: 0, amtMinSellOrder: 150 } } });
+  assert.strictEqual(empty.highestBuy, null);
+  assert.strictEqual(empty.lowestSell, 150);
+});
 t('price history: Steam\'s `prices` rows → UTC points', () => {
   const pts = MM.historyPoints({ success: true, price_prefix: '₪', prices: [['Dec 11 2014 01: +0', 1.13, '1249'], ['Jan 2 2026 13: +0', '2.5', '7'], ['garbage', 1, '1']] });
   assert.strictEqual(pts.length, 2);
@@ -335,6 +360,121 @@ t('chartSince carries in the price already in effect', () => {
   assert.strictEqual(r.length, 2);
   assert.strictEqual(r[0].t, 2000);
   assert.strictEqual(r[0].v, 5);
+});
+
+console.log('SE.health (page types, misses, report)');
+t('pageType: addresses become types, nothing else', () => {
+  const H = SE.health;
+  assert.strictEqual(H.pageType('store.steampowered.com', '/app/1145350/Hades_II/'), 'store-app');
+  assert.strictEqual(H.pageType('store.steampowered.com', '/wishlist/profiles/7656119909117/'), 'store-wishlist');
+  assert.strictEqual(H.pageType('store.steampowered.com', '/'), 'store-home');
+  assert.strictEqual(H.pageType('steamcommunity.com', '/market/listings/753/Sack%20of%20Gems'), 'market-item');
+  assert.strictEqual(H.pageType('steamcommunity.com', '/market/'), 'market');
+  assert.strictEqual(H.pageType('steamcommunity.com', '/my/inventory/'), 'inventory');
+  assert.strictEqual(H.pageType('steamcommunity.com', '/profiles/76561199091177266/inventory'), 'inventory');
+  assert.strictEqual(H.pageType('steamcommunity.com', '/id/someone/games/'), 'library');
+  assert.strictEqual(H.pageType('steamcommunity.com', '/tradeoffer/new/'), 'trade-offer');
+  assert.strictEqual(H.pageType('example.com', '/app/1'), 'other');
+});
+t('addMiss: one entry per feature and page, counted, newest first, capped', () => {
+  let list = [];
+  list = SE.health.addMiss(list, { feature: 'a', page: 'store-app', ts: 1 });
+  list = SE.health.addMiss(list, { feature: 'b', page: 'inventory', ts: 2 });
+  list = SE.health.addMiss(list, { feature: 'a', page: 'store-app', ts: 3 });
+  assert.strictEqual(list.length, 2);
+  assert.strictEqual(list[0].feature, 'a');
+  assert.strictEqual(list[0].count, 2);
+  assert.strictEqual(list[0].ts, 3);
+  for (let i = 0; i < 30; i++) list = SE.health.addMiss(list, { feature: 'f' + i, page: 'x', ts: i });
+  assert.strictEqual(list.length, 20);
+});
+t('changedFromDefaults: toggles and numbers only, never strings', () => {
+  const defaults = { a: true, b: false, n: 25, itadApiKey: '', customCss: '' };
+  const settings = { a: false, b: false, n: 40, itadApiKey: 'SECRET', customCss: 'body{}' };
+  assert.deepStrictEqual(Array.from(SE.health.changedFromDefaults(settings, defaults)), ['a=false', 'n=40']);
+});
+t('diagnostics: the report carries no key, url or id', () => {
+  const text = SE.health.diagnostics({
+    version: '1.6.0', userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.6723.92 Safari/537.36',
+    language: 'he', defaults: { a: true }, settings: { a: false, itadApiKey: 'SECRET-KEY', steamWebApiKey: '', customCss: '.x{}' },
+    misses: [{ feature: 'storePanel', page: 'store-app', ts: Date.UTC(2026, 10, 10), count: 3 }], now: 0
+  });
+  assert.ok(text.includes('Steam Enhancer 1.6.0'));
+  assert.ok(text.includes('Chrome 130.0.6723.92 on Windows'));
+  assert.ok(text.includes('IsThereAnyDeal key set: yes'));
+  assert.ok(text.includes('Steam Web API key set: no'));
+  assert.ok(text.includes('a=false'));
+  assert.ok(text.includes('- storePanel on store-app (x3), last 2026-11-10'));
+  assert.ok(!text.includes('SECRET'));
+  assert.ok(!text.includes('.x{}'));
+});
+
+console.log('SE.steamData.ownedAppIds');
+t('owned games reduced to app ids, same shape', () => {
+  const r = SE.steamData.ownedAppIds({ response: { game_count: 2, games: [{ appid: 620, name: 'Portal 2', playtime_forever: 900, img_icon_url: 'x' }, { appid: 400, name: 'Portal' }] } });
+  assert.strictEqual(JSON.stringify(r), JSON.stringify({ response: { game_count: 2, games: [{ appid: 620 }, { appid: 400 }] } }));
+  assert.strictEqual(SE.steamData.ownedAppIds({ response: {} }).response.games.length, 0);   // private profile
+  assert.strictEqual(SE.steamData.ownedAppIds(null).response.games.length, 0);
+});
+
+console.log('Alerts near the historical low, price stats, region list');
+t('nearLow: within X% of the low, never when off', () => {
+  assert.strictEqual(SE.alerts.nearLow(12.49, 12.49, 10), true);
+  assert.strictEqual(SE.alerts.nearLow(13.5, 12.49, 10), true);   // 8% above
+  assert.strictEqual(SE.alerts.nearLow(14, 12.49, 10), false);    // 12% above
+  assert.strictEqual(SE.alerts.nearLow(12.49, 12.49, 0), false);  // off
+  assert.strictEqual(SE.alerts.nearLow(12.49, null, 10), false);  // no low known
+});
+t('shouldAnnounceNear: once, then only when lower', () => {
+  assert.strictEqual(SE.alerts.shouldAnnounceNear(undefined, 13), true);
+  assert.strictEqual(SE.alerts.shouldAnnounceNear(13, 13), false);
+  assert.strictEqual(SE.alerts.shouldAnnounceNear(13, 12.5), true);
+  assert.strictEqual(SE.alerts.shouldAnnounceNear(13, 14), false);
+});
+t('priceStats: held days and the last drop', () => {
+  const day = 86400000, now = Date.UTC(2026, 10, 10);
+  const pts = [{ t: now - 300 * day, v: 30 }, { t: now - 100 * day, v: 15 }, { t: now - 40 * day, v: 30 }];
+  const s = SE.itad.priceStats(pts, now);
+  assert.strictEqual(s.heldDays, 40);
+  assert.strictEqual(s.lastDropDaysAgo, 100);
+  assert.strictEqual(s.dropIsCurrent, false);
+  const d = SE.itad.priceStats([{ t: now - 90 * day, v: 30 }, { t: now - 3 * day, v: 15 }], now);
+  assert.strictEqual(d.dropIsCurrent, true);
+  assert.strictEqual(d.heldDays, 3);
+  const none = SE.itad.priceStats([{ t: now - 90 * day, v: 15 }, { t: now - 3 * day, v: 30 }], now);
+  assert.strictEqual(none.lastDropAt, null);
+  assert.strictEqual(SE.itad.priceStats([{ t: now, v: 1 }], now), null);
+});
+t('parseRegionList: valid codes only, distinct, capped; fallback otherwise', () => {
+  const R = SE.currency.parseRegionList;
+  assert.strictEqual(R('US, de  pl;tr', ['x']).join(','), 'us,de,pl,tr');
+  assert.strictEqual(R('us,us,DE', ['x']).join(','), 'us,de');
+  assert.strictEqual(R('usa, 12, ', ['x']).join(','), 'x');
+  assert.strictEqual(R('', ['us']).join(','), 'us');
+  assert.strictEqual(R('aa bb cc dd ee ff gg hh ii jj kk ll mm nn oo pp', ['x']).length, 15);
+});
+
+console.log('SE.appidFromInventoryHash / assetIdFromTileId / steamId64FromAccountId / appIdsFromHrefs');
+t('inventory hash → game', () => {
+  assert.strictEqual(SE.appidFromInventoryHash('#730'), '730');
+  assert.strictEqual(SE.appidFromInventoryHash('#753_6'), '753');
+  assert.strictEqual(SE.appidFromInventoryHash('#inventory_76561198000000000_440'), '440');
+  assert.strictEqual(SE.appidFromInventoryHash(''), null);
+  assert.strictEqual(SE.appidFromInventoryHash('#abc'), null);
+});
+t('tile id → asset id', () => {
+  assert.strictEqual(SE.assetIdFromTileId('730_2_10995123456'), '10995123456');
+  assert.strictEqual(SE.assetIdFromTileId('item730_2_42'), '42');
+  assert.strictEqual(SE.assetIdFromTileId('empty-slot'), null);
+  assert.strictEqual(SE.assetIdFromTileId(undefined), null);
+});
+t('trade partner account id → SteamID64', () => {
+  assert.strictEqual(SE.steamId64FromAccountId('130899538'), '76561198091165266');
+  assert.strictEqual(SE.steamId64FromAccountId('not a number'), null);
+});
+t('store links → distinct app ids', () => {
+  const ids = SE.appIdsFromHrefs(['https://store.steampowered.com/app/620/Portal_2/', 'https://store.steampowered.com/app/620/', 'https://store.steampowered.com/app/400/', 'https://store.steampowered.com/']);
+  assert.strictEqual(ids.join(','), '620,400');
 });
 
 console.log('SE.steamLanguage');

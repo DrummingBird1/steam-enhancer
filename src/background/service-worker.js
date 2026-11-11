@@ -2,6 +2,8 @@
 
 import '../lib/itad.js';
 import '../lib/alerts.js';
+import '../lib/market.js';
+import '../lib/steamdata.js';
 
 const SE = globalThis.SteamEnhancer;
 const SETTINGS_KEY = 'se_settings_v1';
@@ -83,9 +85,11 @@ async function withItadKey(url) {
 // blocks them for a while — so a 429 pauses that lane for a minute instead of
 // letting every queued request fail too.
 const RATE_RULES = [
-  { lane: 'scm-market', gapMs: 2500, match: /^https:\/\/steamcommunity\.com\/market\/(priceoverview|pricehistory|itemordershistogram)/ },
+  { lane: 'scm-market', gapMs: 2500, match: /^https:\/\/steamcommunity\.com\/market\/(priceoverview|pricehistory|itemordershistogram|orderbook)/ },
   { lane: 'store-appdetails', gapMs: 1500, match: /^https:\/\/store\.steampowered\.com\/api\/appdetails/ },
-  { lane: 'itad', gapMs: 200, match: /^https:\/\/api\.isthereanydeal\.com\// }
+  { lane: 'itad', gapMs: 200, match: /^https:\/\/api\.isthereanydeal\.com\// },
+  // One call per friend for "owned by friends": spread out, up to 100 of them.
+  { lane: 'steam-owned', gapMs: 250, match: /^https:\/\/api\.steampowered\.com\/IPlayerService\/GetOwnedGames/ }
 ];
 const RATE_LIMIT_PAUSE_MS = 60_000;
 const lanes = new Map();
@@ -129,7 +133,14 @@ function doFetchJson(req) {
   return p;
 }
 
-async function fetchJsonUncached({ url, method = 'GET', headers, body, cacheKey, ttl }) {
+// A response can be cut down before it is cached (`reduce` in the request):
+// the order book is hundreds of rows and only a few numbers are used.
+const REDUCERS = {
+  orderbook: (d) => SE.marketMath.orderBookSummary(d),
+  ownedgames: (d) => SE.steamData.ownedAppIds(d)
+};
+
+async function fetchJsonUncached({ url, method = 'GET', headers, body, cacheKey, ttl, reduce }) {
   if (cacheKey) {
     const cached = await cacheGet(cacheKey);
     if (cached !== null) return { ok: true, data: cached, cached: true };
@@ -146,8 +157,9 @@ async function fetchJsonUncached({ url, method = 'GET', headers, body, cacheKey,
         credentials: sendsSteamCookies(url) ? 'include' : 'omit'
       });
       const ct = resp.headers.get('content-type') || '';
-      const data = ct.includes('application/json') ? await resp.json() : await resp.text();
-      if (resp.ok && cacheKey) await cachePut(cacheKey, data, ttl);
+      let data = ct.includes('application/json') ? await resp.json() : await resp.text();
+      if (resp.ok && REDUCERS[reduce]) data = REDUCERS[reduce](data);
+      if (resp.ok && cacheKey && data != null) await cachePut(cacheKey, data, ttl);
       return { ok: resp.ok, status: resp.status, data, rateLimited: resp.status === 429 };
     } catch (e) {
       return { ok: false, error: String(e) };
@@ -166,7 +178,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       } else if (msg?.type === 'getSettings') {
         sendResponse(await getSettings());
       } else if (msg?.type === 'openOptions') {
-        chrome.runtime.openOptionsPage();
+        // `hash` jumps to a section ("help"); openOptionsPage can't take one.
+        if (/^[a-z]{1,20}$/.test(msg.hash || '')) {
+          chrome.tabs.create({ url: chrome.runtime.getURL(`src/options/options.html#${msg.hash}`) });
+        } else {
+          chrome.runtime.openOptionsPage();
+        }
         sendResponse({ ok: true });
       } else if (msg?.type === 'alertsMarkRead') {
         // Queued behind any history write in progress.
@@ -317,7 +334,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 // appid → ITAD game id for each appid (each lookup cached 24h), then ONE
 // prices call for all of them. Returns Map<appid, deal|null> or null when no
 // ITAD key is configured.
-async function bestDealsFor(appids, country, { nondeals }) {
+async function bestDealsFor(appids, country, { nondeals, withLows = false }) {
   const lookups = await Promise.all(appids.map(async (appid) => {
     const r = await doFetchJson({
       url: `https://api.isthereanydeal.com/games/lookup/v1?appid=${encodeURIComponent(appid)}`,
@@ -343,9 +360,16 @@ async function bestDealsFor(appids, country, { nondeals }) {
     // reading it as one made the wishlist poll forget which deals it had
     // already announced, then announce them all again on the next run.
     if (!prices?.ok) continue;
+    // Steam's historical low, for the near-low alert (one more batched call).
+    const lows = withLows ? await doFetchJson({
+      url: `https://api.isthereanydeal.com/games/storelow/v2?country=${encodeURIComponent(country)}&shops=61`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(chunk.map((l) => l.id))
+    }) : null;
     for (const { appid, id, title } of chunk) {
       const deal = SE.itad.bestDeal(prices?.data, id);
-      out.set(appid, deal && { ...deal, title });
+      out.set(appid, deal && { ...deal, title, low: lows?.ok ? SE.itad.storeLow(lows.data, id) : null });
     }
   }
   return out;
@@ -355,6 +379,9 @@ async function bestDealsFor(appids, country, { nondeals }) {
 // for a day and the prices call is batched (200 per request), so after the
 // first run this is ~1 lookup-free request per 200 games.
 const MAX_POLLED_APPS = 500;
+
+// Games the user muted in the wishlist panel: { appid: true }. No alerts of any kind for them.
+const MUTED_KEY = 'se_alert_muted';
 
 // The whole wishlist (up to MAX_POLLED_APPS), from the dynamic-store ids the
 // content script captured into se_collections. Each deal is announced once:
@@ -368,13 +395,17 @@ async function handleWishlistPoll() {
     if (!coll?.wishlist?.length) return;
     const country = await getCountry(settings);
     const threshold = Number(settings.wishlistDealThreshold || 25);
-    const deals = await bestDealsFor(coll.wishlist.slice(0, MAX_POLLED_APPS).map(String), country, { nondeals: false });
+    const nearPct = Math.max(0, Number(settings.alertNearLowPct) || 0);
+    const deals = await bestDealsFor(coll.wishlist.slice(0, MAX_POLLED_APPS).map(String), country, { nondeals: false, withLows: nearPct > 0 });
     if (!deals) return;
+    const muted = (await localGet([MUTED_KEY]))[MUTED_KEY] || {};
 
     const SEEN_KEY = 'se_wishlist_deal_notified';
     const seen = (await localGet([SEEN_KEY]))[SEEN_KEY] || {};
     const fresh = [];
     for (const [appid, deal] of deals) {
+      // A muted game gets no alerts; forgetting it here means unmuting during a sale announces it once.
+      if (muted[appid]) { delete seen[appid]; continue; }
       if (!deal || !(deal.cut >= threshold)) { delete seen[appid]; continue; }
       if (deal.cut > (seen[appid] || 0)) fresh.push([appid, deal]);
     }
@@ -386,6 +417,27 @@ async function handleWishlistPoll() {
       seen[appid] = deal.cut;
     }
     chrome.storage.local.set({ [SEEN_KEY]: seen });
+
+    // Near the historical low (opt-in): games under the deal threshold whose
+    // price is within nearPct% of Steam's lowest ever. Announced once, and
+    // again only if the price goes lower.
+    if (nearPct > 0) {
+      const NEAR_KEY = 'se_wishlist_near_notified';
+      const nearSeen = (await localGet([NEAR_KEY]))[NEAR_KEY] || {};
+      const freshNear = [];
+      for (const [appid, deal] of deals) {
+        const near = !muted[appid] && deal && !(deal.cut >= threshold) && deal.low
+          && SE.alerts.nearLow(deal.price, deal.low.price, nearPct);
+        if (!near) { delete nearSeen[appid]; continue; }
+        if (SE.alerts.shouldAnnounceNear(nearSeen[appid], deal.price)) freshNear.push([appid, deal]);
+      }
+      for (const [appid, deal] of freshNear.slice(0, 3)) {
+        notify(appNotificationId(appid), t('notifNearLow'),
+          withGameName(deal.title, t('notifNearLowMsg', money(deal.price, deal.currency), money(deal.low.price, deal.low.currency || deal.currency))));
+        nearSeen[appid] = deal.price;
+      }
+      chrome.storage.local.set({ [NEAR_KEY]: nearSeen });
+    }
   } catch (e) {
     console.warn('[SE] wishlist poll failed', e);
   }
@@ -441,12 +493,13 @@ async function handlePriceAlertPoll() {
     const country = await getCountry(settings);
     const deals = await bestDealsFor(appids, country, { nondeals: true });
     if (!deals) return;
+    const muted = (await localGet([MUTED_KEY]))[MUTED_KEY] || {};
     const NOTIFIED_KEY = 'se_price_alert_notified';
     const notifiedState = (await localGet([NOTIFIED_KEY]))[NOTIFIED_KEY] || {};
     let sent = 0;
 
     for (const [appid, deal] of deals) {
-      if (deal?.price == null) continue;
+      if (deal?.price == null || muted[appid]) continue;
       const target = Number(targets[appid]);
       if (deal.price <= target) {
         if (!notifiedState[appid]) {

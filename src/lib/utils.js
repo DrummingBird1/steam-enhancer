@@ -225,6 +225,26 @@
     return STEAM_LANG[l] || STEAM_LANG[l.split('-')[0]] || 'english';
   };
 
+  // The game in an inventory address hash: "#730", "#753_6" (game, context),
+  // or the older "#inventory_<steamid>_<appid>". null when there is none.
+  SE.appidFromInventoryHash = (hash) => {
+    const h = String(hash || '');
+    return (h.match(/^#(\d+)/) || h.match(/inventory_[^_]+_(\d+)/) || [])[1] || null;
+  };
+
+  // An inventory tile's element id, "<appid>_<contextid>_<assetid>" (possibly
+  // with a prefix) → the asset id.
+  SE.assetIdFromTileId = (id) => (String(id || '').match(/(\d+)_(\d+)_(\d+)$/) || [])[3] || null;
+
+  // A trade offer's `partner` query value is the account id; the SteamID64 is
+  // that plus 76561197960265728.
+  SE.steamId64FromAccountId = (partner) => {
+    try { return (BigInt(partner) + 76561197960265728n).toString(); } catch { return null; }
+  };
+
+  // The distinct app ids behind a list of store links, in order.
+  SE.appIdsFromHrefs = (hrefs) => [...new Set((hrefs || []).map((h) => (String(h).match(/\/app\/(\d+)/) || [])[1]).filter(Boolean))];
+
   SE.fmtPercent = (a, b) => {
     if (!a || !b || a <= 0) return null;
     return Math.round((1 - b / a) * 100);

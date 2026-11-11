@@ -81,6 +81,23 @@ check('Steam Web API: GetGameAchievements names + percentages (info.js)', async 
   assertTruthy(Number.isFinite(Number(a.player_percent_unlocked)), 'achievements[].player_percent_unlocked missing');
 });
 
+check('Market Beta item page: order book by name (market.js, inventory.js instant sell)', async () => {
+  // The Beta page's own call; answers anonymously with the session's (here the IP's) currency.
+  const qp = encodeURIComponent(JSON.stringify([753, '753-Sack of Gems']));
+  const j = await (await fetch(`https://steamcommunity.com/market/orderbook?q=Load&qp=${qp}`, { headers: { 'User-Agent': UA } })).json();
+  const d = j?.data?.data;
+  assertTruthy(j?.data?.success === true && d, 'data.success / data.data missing');
+  assertTruthy(Number.isFinite(Number(d.eCurrency)), 'eCurrency missing');
+  assertTruthy(d.amtMaxBuyOrder > 0 && d.amtMinSellOrder > 0, 'amtMaxBuyOrder / amtMinSellOrder missing for a busy item');
+});
+
+check('Market item page: classic markup or the Beta React root (market.js)', async () => {
+  const r = await fetch('https://steamcommunity.com/market/listings/753/' + encodeURIComponent('753-Sack of Gems'), { headers: { 'User-Agent': UA } });
+  const html = await r.text();
+  // Rate-limited (429) answers still carry a page; judge only a real item page.
+  assertTruthy(/largeiteminfo|data-react-nav-root/.test(html), `neither classic markup nor the Beta root in the page (HTTP ${r.status})`);
+});
+
 check('Storefront API: appdetails price_overview shape', async () => {
   const j = await (await fetch('https://store.steampowered.com/api/appdetails/?appids=620&cc=us&filters=price_overview,basic')).json();
   assertTruthy(j?.['620']?.success === true, 'appdetails success flag missing');

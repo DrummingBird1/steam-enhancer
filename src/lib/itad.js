@@ -40,6 +40,22 @@
     },
 
     // Lowest price ever recorded on the requested shop(s) (storelow/v2).
+    // How long the current price has held, and when it last dropped, from the
+    // change log (ascending). One point says nothing about change → null.
+    priceStats(points, now) {
+      const pts = (Array.isArray(points) ? points : []).filter((p) => Number.isFinite(p.t) && Number.isFinite(p.v));
+      if (pts.length < 2) return null;
+      const cur = pts[pts.length - 1];
+      let drop = null;
+      for (let i = pts.length - 1; i > 0; i--) if (pts[i].v < pts[i - 1].v) { drop = pts[i]; break; }
+      const ago = (t) => Math.max(0, Math.floor(((now == null ? Date.now() : now) - t) / 86400000));
+      return {
+        price: cur.v, heldDays: ago(cur.t),
+        lastDropAt: drop ? drop.t : null, lastDropDaysAgo: drop ? ago(drop.t) : null,
+        dropIsCurrent: !!drop && drop.t === cur.t
+      };
+    },
+
     storeLow(lowBody, id) {
       const lows = byId(lowBody, id)?.lows;
       if (!Array.isArray(lows) || !lows.length) return null;

@@ -78,6 +78,28 @@
     }
   };
 
+  // Private per-item notes from the inventory: { "<appid>:<market_hash_name>": text }.
+  // Kept in this browser (and in the Options backup); capped so it can't grow
+  // without bound — the least recently written notes go first.
+  const ITEM_NOTES_KEY = 'se_item_notes';
+  const ITEM_NOTES_MAX = 500;
+  SE.itemNotes = {
+    async get(key) {
+      return new Promise((r) => chrome.storage.local.get([ITEM_NOTES_KEY], (d) => r((d[ITEM_NOTES_KEY] || {})[key] || '')));
+    },
+    async set(key, text) {
+      return new Promise((r) => chrome.storage.local.get([ITEM_NOTES_KEY], (d) => {
+        const all = d[ITEM_NOTES_KEY] || {};
+        delete all[key]; // re-inserted last, so it counts as the newest
+        const t = String(text || '').trim().slice(0, 300);
+        if (t) all[key] = t;
+        const keys = Object.keys(all);
+        if (keys.length > ITEM_NOTES_MAX) keys.slice(0, keys.length - ITEM_NOTES_MAX).forEach((k) => delete all[k]);
+        chrome.storage.local.set({ [ITEM_NOTES_KEY]: all }, r);
+      }));
+    }
+  };
+
   // Currency conversion via exchangerate.host (no key required). Falls back to no-op.
   SE.fx = {
     async rates(base = 'USD') {

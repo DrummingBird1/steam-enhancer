@@ -13,6 +13,7 @@
     const sum = await SE.priceSummary(appid, SE.ctx.country);
     row.innerHTML = '';
     if (sum === 'needsItadKey') { row.appendChild(itadKeyNotice()); return; }
+    if (sum === 'unavailable') { row.appendChild(SE.el('span', { class: 'se-muted' }, SE.t('itadUnavailable'))); return; }
     if (!sum) { row.appendChild(SE.el('span', { class: 'se-muted' }, SE.t('noDealData'))); return; }
     // "Lowest current price" and "Historical low" are separate settings.
     const cur = settings?.showLowestPrice ? sum.currentLow : null;
@@ -58,7 +59,8 @@
     body.appendChild(SE.el('div', { class: 'se-row' }, SE.el('span', { class: 'se-label' }, SE.t('regional')), out));
 
     const rows = [];
-    for (const cc of [...new Set([mine, ...REGIONS])]) {
+    const regions = SE.currency.parseRegionList(settings?.regionalCountries, REGIONS);
+    for (const cc of [...new Set([mine, ...regions])]) {
       const r = await SE.api.appDetails(appid, cc);
       const po = r?.data?.[appid]?.data?.price_overview;
       if (!po || !Number.isFinite(po.final)) { rows.push({ cc, amount: null }); continue; }
@@ -67,7 +69,9 @@
       rows.push({ cc, amount: Number.isFinite(amount) ? amount : null, local: po.final_formatted, discount: po.discount_percent || 0 });
     }
     const ranked = SE.compareRegions(rows, mine);
-    if (!ranked.length) { out.textContent = SE.t('noDealData'); return; }
+    // Prices came back but none could be converted: the exchange-rate service
+    // isn't answering, which is different from "no prices".
+    if (!ranked.length) { out.textContent = SE.t(rows.some((r) => r.local) ? 'fxUnavailable' : 'noDealData'); return; }
 
     const table = SE.el('table', { class: 'se-region-table' },
       ...ranked.map((r) => SE.el('tr', { class: r.mine ? 'se-region-mine' : '' },
@@ -104,12 +108,23 @@
     }
     // One remembered visit is a dot, not a history.
     if (!points.length || (note && points.length < 2)) return;
+    // How long the current price has held and when it last dropped, from the
+    // real change log (before it is extended to today below).
+    const stats = SE.itad.priceStats(points, Date.now());
+
     // History only logs changes; extend the last price to today so the line
     // reaches the present.
     points.push({ ...points[points.length - 1], t: Date.now() });
 
     body.appendChild(SE.el('div', { class: 'se-row se-label' }, SE.t('priceHistoryLabel')));
     body.appendChild(SE.priceChart(points, { currency, note }));
+    if (stats) {
+      const day = (t) => new Date(t).toISOString().slice(0, 10);
+      const text = stats.dropIsCurrent ? SE.t('priceStatsDropped', day(stats.lastDropAt), stats.lastDropDaysAgo)
+        : stats.lastDropAt != null ? SE.t('priceStatsHeld', stats.heldDays, day(stats.lastDropAt), stats.lastDropDaysAgo)
+        : SE.t('priceStatsNoDrop', stats.heldDays);
+      body.appendChild(SE.el('div', { class: 'se-row se-muted' }, text));
+    }
   }
 
   // Steam shows "Buy as a bundle" boxes on the app page when this game is part

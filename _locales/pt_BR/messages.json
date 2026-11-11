@@ -866,11 +866,128 @@
   "qsNoListings": {
     "message": "Ninguém está vendendo este item agora, então não há o que superar."
   },
+  "healthMissNote": {
+    "message": "O Steam Enhancer não encontrou seu lugar nesta página ({0}). A Steam pode tê-la alterado."
+  },
+  "healthReport": {
+    "message": "Relatar um problema"
+  },
+  "healthDismiss": {
+    "message": "Dispensar"
+  },
+  "healthFeatureStorePanel": {
+    "message": "painel da página do jogo"
+  },
+  "healthFeatureWishlist": {
+    "message": "painel da lista de desejos"
+  },
+  "healthFeatureMarketItem": {
+    "message": "ferramentas da página do item"
+  },
+  "healthFeatureInventory": {
+    "message": "barra do inventário"
+  },
+  "optSecHelp": {
+    "message": "Ajuda e relatório"
+  },
+  "optHelpHint": {
+    "message": "Se algo não funcionar, copie este relatório e cole em uma issue. Ele traz só a versão, o navegador, as configurações alteradas e as ferramentas que não acharam seu lugar na página. Sem endereços, nomes, chaves ou IDs da Steam. Nada é enviado a lugar nenhum."
+  },
+  "optReportCopy": {
+    "message": "Copiar relatório"
+  },
+  "optReportCopied": {
+    "message": "Copiado"
+  },
+  "optReportIssue": {
+    "message": "Abrir uma issue no GitHub"
+  },
+  "popupReport": {
+    "message": "Relatar um problema"
+  },
   "qsNoOrderBook": {
     "message": "Não foi possível ler o livro de ofertas: a página Market Beta do Steam não o inclui. Use a venda rápida ou o mercado clássico (Exit Market Beta)."
   },
-  "mktBetaNote": {
-    "message": "Cobrir preço e o assistente de ordens de compra precisam da página clássica (Exit Market Beta)."
+  "keepNLabel": {
+    "message": "Manter de cada:"
+  },
+  "keepNTitle": {
+    "message": "A listagem em massa mantém essa quantidade de cópias de cada item"
+  },
+  "keepNNote": {
+    "message": "Mantendo {0} de cada item."
+  },
+  "itadUnavailable": {
+    "message": "O IsThereAnyDeal não está respondendo agora. Tente mais tarde."
+  },
+  "protonUnavailable": {
+    "message": "não está respondendo agora"
+  },
+  "fxUnavailable": {
+    "message": "As taxas de câmbio não estão disponíveis agora, então os preços regionais não podem ser comparados."
+  },
+  "itemNotePlaceholder": {
+    "message": "Nota privada sobre este item (salva neste navegador)…"
+  },
+  "notifNearLow": {
+    "message": "Perto do menor preço histórico"
+  },
+  "notifNearLowMsg": {
+    "message": "{0} (menor de todos {1})"
+  },
+  "optNearLow": {
+    "message": "Avisar também quando um jogo da lista de desejos estiver a até tantos % do menor preço histórico (0 = desligado)"
+  },
+  "optNearLowHint": {
+    "message": "Usa o menor preço histórico da Steam do IsThereAnyDeal; um jogo já avisado como oferta não é avisado duas vezes."
+  },
+  "optRegions": {
+    "message": "Regiões para preços regionais (opcional)"
+  },
+  "optRegionsHint": {
+    "message": "Códigos de país de duas letras separados por vírgula, ex.: us, de, pl, tr, br (até 15). Deixe vazio para os doze embutidos."
+  },
+  "muteAlerts": {
+    "message": "Silenciar alertas deste jogo"
+  },
+  "unmuteAlerts": {
+    "message": "Alertas silenciados — clique para reativar"
+  },
+  "priceStatsDropped": {
+    "message": "O preço caiu em {0} ({1} dias atrás)."
+  },
+  "priceStatsHeld": {
+    "message": "Mesmo preço há {0} dias. Última queda: {1} ({2} dias atrás)."
+  },
+  "priceStatsNoDrop": {
+    "message": "Mesmo preço há {0} dias; nenhuma queda no histórico que temos."
+  },
+  "achAllList": {
+    "message": "Todas as conquistas ({0})"
+  },
+  "achHidden": {
+    "message": "oculta"
+  },
+  "achShowingFirst": {
+    "message": "Mostrando as primeiras {0} de {1}."
+  },
+  "friendsChecking": {
+    "message": "verificando amigos… {0}/{1}"
+  },
+  "optFriendsToCheck": {
+    "message": "Quantos amigos \"Possuído por amigos\" verifica (5–100)"
+  },
+  "optFriendsToCheckHint": {
+    "message": "Mais amigos significam mais requisições na primeira vez; cada amigo é lembrado por 6 horas."
+  },
+  "opt_showFab": {
+    "message": "Mostrar o botão flutuante \"SE\" nas páginas da Steam"
+  },
+  "opt_showFloatingTools": {
+    "message": "Mostrar os painéis flutuantes nas páginas que a Steam refez (barra da biblioteca, ferramentas do Market Beta)"
+  },
+  "qsOrderBookCurrency": {
+    "message": "O livro de ofertas está em outra moeda que a da sua carteira, então nada foi precificado a partir dele. Nada foi anunciado."
   },
   "qsNoBuyOrders": {
     "message": "Não há ordens de compra para este item (ou o livro de ofertas exige login)."

@@ -26,9 +26,11 @@ There is no separate project website yet — this repository (and, once publishe
 - 📈 **Interactive price-history chart** — Steam's price over three years, hover for date and price, 3M / 1Y / All ranges, a line at the lowest price. Without an ITAD key it charts the prices you've seen on your own visits
 - 🌍 **Regional prices in your currency** — a dozen regions converted to one currency, cheapest first, each compared to your own price
 - 🔔 **Price alerts** — set a target right on the game page (shared with the wishlist) and get notified when it's hit
+- 🎯 **Near-low alerts** (opt-in) when a wishlisted game is within X% of its historical low, per-game **mute**, and how long the current price has held and when it last dropped
 - 🎒 **Bundle check** — buying separately vs. the bundle price
 - 🎮 **Steam Deck status** (Verified / Playable / Unsupported) and 🐧 **ProtonDB rating**
 - 🏆 **Achievement stats** (count, easiest, rarest) and **your own progress** for games you own (with your Steam Web API key)
+- 📜 A **full achievements list** with global unlock percentages
 - 👥 **Players online now**, 👫 **friends who own it** (opt-in, your own Steam Web API key)
 - 📊 Review breakdown, **most-helpful review**, **possible review-bomb flag**, and a **live review filter** (playtime, length, recommended or not) — all of these work whatever language your Steam is in
 - 🧩 Owned-DLC highlighting, owned items in packages, DRM / Early Access / Coming Soon badges, community tags
@@ -51,13 +53,14 @@ A panel above Steam's own wishlist, built from Steam's wishlist and store data �
 ### Steam Community Market
 - 💰 **What you'd actually receive** after Steam's fees, on every listing (Steam's own fee rounding)
 - 📋 **My listings check** — each of your listings marked LOWEST or UNDERCUT by how much; select the undercut ones and remove them together
-- ✂️ Undercut calculator, 💹 buy-order helper (the real order book), 📈 price-history chart
+- ✂️ Undercut calculator, 💹 buy-order helper (the real order book), 📈 price-history chart — also on Steam's new **Market Beta** item page (the order book is read by name, so no order-book id is needed)
 - 💱 Currency converter
 
 ### Inventory
 - ⚡ **Quick sell** (one cent under the cheapest listing) and **Instant sell** (to the highest buy order) for the selected item
-- ☑️ **Multi-select selling** and **list at median** — each item shows *buyer pays / you receive* in your wallet currency, and nothing is listed without your explicit confirm click
+- ☑️ **Multi-select selling** and **list at median** — each item shows *buyer pays / you receive* in your wallet currency, and nothing is listed without your explicit confirm click Mass-list can **keep N copies** of every item.
 - 💎 Inventory value estimate with a value-over-time chart · 👯 duplicates · 🗂 sort by value, group by type, rarity breakdown
+- 📝 Private per-item notes (kept in your browser); value history per game
 - 🃏 Card-set progress, booster-pack creator, CS2 sticker prices and exact-item inspect links
 
 ### Trade offers
@@ -71,6 +74,8 @@ A panel above Steam's own wishlist, built from Steam's wishlist and store data �
 
 ### Everywhere
 - 🔔 **Notification center** — every alert kept in the toolbar popup with an unread badge; click one to open the game; **quiet hours**
+- 🩺 **Report a problem**: a copy-only diagnostic (nothing is sent), and a note when a tool can't find its place after Steam changes a page
+- ♿ Keyboard focus, labelled dialogs, live status text and better contrast
 - ⚙️ **Settings page** with search, presets (Minimal / Deal hunter / Trader / Everything), saves as you go, full **backup & restore**, custom CSS
 - 🖱 Right-click lookups, floating **SE** badge, keyboard shortcuts (`Alt+Shift+S/W/D`)
 - 🌐 Prices follow the country Steam shows you (or your own choice); English, Hebrew (RTL), Russian, German, Portuguese (Brazil)
@@ -117,6 +122,7 @@ src/
   styles/            Injected CSS (all .se-* prefixed)
 scripts/
   smoke-test.js       Live regression check against real Steam/ITAD endpoints (see CLAUDE.md)
+  signed-in-check.js  Signed-in regression run in a real browser: you sign in, it only reads (see the file header)
   unit-test.js        Pure-logic tests (prices, fees, API parsers, wishlist, chart…) — no network, instant
   check-manifest.js   Manifest file references and i18n keys
   gen-locales.js      Regenerates all _locales/*/messages.json from one source table

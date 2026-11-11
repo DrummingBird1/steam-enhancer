@@ -13,7 +13,7 @@
 
   // Steam's language names for the store API, from the page's <html lang>.
   const state = {
-    steamid: null, items: null, store: new Map(), itad: new Map(), targets: {},
+    steamid: null, items: null, store: new Map(), itad: new Map(), targets: {}, muted: {},
     rows: [], sort: 'priority', dir: 1, shown: PAGE_SIZE,
     filter: { text: '', onSale: false, atLow: false, atTarget: false, maxPrice: null }
   };
@@ -30,6 +30,8 @@
     state.steamid = steamid;
 
     insertPanel();
+    // The React page is slow to render: judge its root only after a while.
+    setTimeout(() => { if (!SE.$('#StoreTemplate')) SE.health.miss('wishlistPanel', 'healthFeatureWishlist'); }, 8000);
     if (!steamid) { setStatus(SE.t('wlNoOwner')); return; }
 
     setStatus(SE.t('wlLoading'));
@@ -44,6 +46,7 @@
       W.storeItems(r?.ok ? r.data : null).forEach((v, k) => state.store.set(k, v));
     }
     state.targets = await getTargets();
+    state.muted = await getMuted();
     rebuild();
 
     // Historical lows come second: they need an ITAD key and can take a while
@@ -118,7 +121,7 @@
     const panel = SE.el('div', { id: 'se-wl-panel', class: 'se-panel se-wl-panel' },
       SE.el('div', { class: 'se-panel-h' }, toggle, ' ', SE.t('wlPanelTitle')),
       SE.el('div', { class: 'se-wl-summary' }),
-      SE.el('div', { class: 'se-wl-status se-muted' }),
+      SE.el('div', { class: 'se-wl-status se-muted', role: 'status', 'aria-live': 'polite' }),
       body
     );
     // Beside the React tree, never inside it: React owns its children and
@@ -181,6 +184,12 @@
       state.targets = await setTarget(r.appid, Number.isFinite(v) && v > 0 ? v : null);
       rebuild();
     });
+    // Mute: no alerts of any kind (deal, near-low, price target) for this game.
+    const muted = !!state.muted[r.appid];
+    const muteBtn = SE.el('button', {
+      class: 'se-btn se-mute', 'aria-pressed': String(muted), title: SE.t(muted ? 'unmuteAlerts' : 'muteAlerts'),
+      onclick: async () => { state.muted = await setMuted(r.appid, !muted); render(); }
+    }, muted ? '🔕' : '🔔');
     const tr = SE.el('tr', { class: r.atTarget ? 'se-wl-hit' : '' },
       SE.el('td', null, SE.el('a', { href: r.url, class: 'se-link' }, r.name)),
       SE.el('td', null, r.price == null ? '—' : (r.price === 0 ? SE.t('wlFree') : money(r.price))),
@@ -189,7 +198,7 @@
       SE.el('td', null, r.vsLow == null ? '—' : (r.atLow ? SE.tag(SE.t('wlLowNow'), 'good') : `+${r.vsLow}%`)),
       SE.el('td', null, r.reviewPct == null ? '—' : `${r.reviewPct}%`),
       SE.el('td', null, deck ? SE.tag(SE.t(deck[0]), deck[1]) : ''),
-      SE.el('td', null, target),
+      SE.el('td', null, target, ' ', muteBtn),
       SE.el('td', null, r.added ? new Date(r.added * 1000).toISOString().slice(0, 10) : '')
     );
     return tr;
@@ -234,6 +243,17 @@
     const cur = await getTargets();
     if (v == null) delete cur[appid]; else cur[appid] = v;
     await new Promise((r) => chrome.storage.local.set({ se_wishlist_targets: cur }, r));
+    return cur;
+  }
+
+  // Games muted in this panel; read by the background alerts (service worker).
+  function getMuted() {
+    return new Promise((r) => chrome.storage.local.get(['se_alert_muted'], (d) => r(d.se_alert_muted || {})));
+  }
+  async function setMuted(appid, on) {
+    const cur = await getMuted();
+    if (on) cur[appid] = true; else delete cur[appid];
+    await new Promise((r) => chrome.storage.local.set({ se_alert_muted: cur }, r));
     return cur;
   }
 

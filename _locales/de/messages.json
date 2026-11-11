@@ -866,11 +866,128 @@
   "qsNoListings": {
     "message": "Gerade verkauft niemand diesen Gegenstand, es gibt nichts zu unterbieten."
   },
+  "healthMissNote": {
+    "message": "Steam Enhancer hat seinen Platz auf dieser Seite nicht gefunden ({0}). Vielleicht hat Steam sie geändert."
+  },
+  "healthReport": {
+    "message": "Problem melden"
+  },
+  "healthDismiss": {
+    "message": "Schließen"
+  },
+  "healthFeatureStorePanel": {
+    "message": "Panel der Spieleseite"
+  },
+  "healthFeatureWishlist": {
+    "message": "Wunschlisten-Panel"
+  },
+  "healthFeatureMarketItem": {
+    "message": "Werkzeuge der Marktseite"
+  },
+  "healthFeatureInventory": {
+    "message": "Inventar-Leiste"
+  },
+  "optSecHelp": {
+    "message": "Hilfe & Meldung"
+  },
+  "optHelpHint": {
+    "message": "Wenn etwas nicht funktioniert, kopiere diesen Bericht in ein Issue. Er enthält nur die Version, deinen Browser, geänderte Einstellungen und Werkzeuge, die ihren Platz auf einer Seite nicht fanden. Keine Adressen, Namen, Schlüssel oder Steam-IDs. Nichts wird irgendwohin gesendet."
+  },
+  "optReportCopy": {
+    "message": "Bericht kopieren"
+  },
+  "optReportCopied": {
+    "message": "Kopiert"
+  },
+  "optReportIssue": {
+    "message": "Issue auf GitHub öffnen"
+  },
+  "popupReport": {
+    "message": "Problem melden"
+  },
   "qsNoOrderBook": {
     "message": "Das Orderbuch konnte nicht gelesen werden: Die Market-Beta-Seite von Steam enthält es nicht. Nutze den Schnellverkauf oder den klassischen Markt (Exit Market Beta)."
   },
-  "mktBetaNote": {
-    "message": "Unterbieten und der Kaufauftrag-Helfer brauchen die klassische Marktseite (Exit Market Beta)."
+  "keepNLabel": {
+    "message": "Behalte je Gegenstand:"
+  },
+  "keepNTitle": {
+    "message": "Das Massen-Angebot behält so viele Exemplare jedes Gegenstands"
+  },
+  "keepNNote": {
+    "message": "Behalte {0} von jedem Gegenstand."
+  },
+  "itadUnavailable": {
+    "message": "IsThereAnyDeal antwortet gerade nicht. Versuche es später erneut."
+  },
+  "protonUnavailable": {
+    "message": "antwortet gerade nicht"
+  },
+  "fxUnavailable": {
+    "message": "Wechselkurse sind gerade nicht verfügbar, die Regionalpreise lassen sich deshalb nicht vergleichen."
+  },
+  "itemNotePlaceholder": {
+    "message": "Private Notiz zu diesem Gegenstand (in diesem Browser gespeichert)…"
+  },
+  "notifNearLow": {
+    "message": "Nahe am Tiefstpreis"
+  },
+  "notifNearLowMsg": {
+    "message": "{0} (Tiefstpreis {1})"
+  },
+  "optNearLow": {
+    "message": "Auch warnen, wenn ein Wunschlisten-Spiel höchstens so viel % über seinem Tiefstpreis liegt (0 = aus)"
+  },
+  "optNearLowHint": {
+    "message": "Nutzt den Steam-Tiefstpreis von IsThereAnyDeal; ein bereits gemeldetes Angebot wird nicht doppelt gemeldet."
+  },
+  "optRegions": {
+    "message": "Regionen für Regionalpreise (optional)"
+  },
+  "optRegionsHint": {
+    "message": "Zweibuchstabige Ländercodes, durch Kommas getrennt, z. B. us, de, pl, tr, br (bis zu 15). Leer lassen für die eingebauten zwölf."
+  },
+  "muteAlerts": {
+    "message": "Alarme für dieses Spiel stummschalten"
+  },
+  "unmuteAlerts": {
+    "message": "Alarme stummgeschaltet — zum Einschalten klicken"
+  },
+  "priceStatsDropped": {
+    "message": "Preis gesenkt am {0} (vor {1} Tagen)."
+  },
+  "priceStatsHeld": {
+    "message": "Seit {0} Tagen derselbe Preis. Letzte Senkung: {1} (vor {2} Tagen)."
+  },
+  "priceStatsNoDrop": {
+    "message": "Seit {0} Tagen derselbe Preis; keine Senkung im vorliegenden Verlauf."
+  },
+  "achAllList": {
+    "message": "Alle Erfolge ({0})"
+  },
+  "achHidden": {
+    "message": "versteckt"
+  },
+  "achShowingFirst": {
+    "message": "Zeige die ersten {0} von {1}."
+  },
+  "friendsChecking": {
+    "message": "prüfe Freunde… {0}/{1}"
+  },
+  "optFriendsToCheck": {
+    "message": "Wie viele Freunde „Von Freunden besessen“ prüft (5–100)"
+  },
+  "optFriendsToCheckHint": {
+    "message": "Mehr Freunde bedeuten beim ersten Mal mehr Anfragen; jeder Freund wird 6 Stunden gemerkt."
+  },
+  "opt_showFab": {
+    "message": "Schwebendes „SE“-Symbol auf Steam-Seiten anzeigen"
+  },
+  "opt_showFloatingTools": {
+    "message": "Schwebende Werkzeugleisten auf neu gebauten Steam-Seiten zeigen (Bibliotheksleiste, Market-Beta-Werkzeuge)"
+  },
+  "qsOrderBookCurrency": {
+    "message": "Das Orderbuch ist in einer anderen Währung als deine Geldbörse, deshalb wurde nichts daraus bepreist. Nichts wurde eingestellt."
   },
   "qsNoBuyOrders": {
     "message": "Keine Kaufaufträge für diesen Gegenstand (oder das Orderbuch erfordert eine Anmeldung)."

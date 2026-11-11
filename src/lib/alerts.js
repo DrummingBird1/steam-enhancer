@@ -40,6 +40,15 @@
       return s < e ? now >= s && now < e : now >= s || now < e;
     },
 
+    // "Within pct% of the historical low": the price is at or under low × (1 + pct/100).
+    nearLow(price, low, pct) {
+      const p = Number(price), l = Number(low), x = Number(pct);
+      return x > 0 && l > 0 && p > 0 && p <= l * (1 + x / 100);
+    },
+
+    // A near-low is announced once, and again only if the price goes lower.
+    shouldAnnounceNear(prevPrice, price) { return !(Number(prevPrice) > 0) || price < prevPrice; },
+
     // "5m", "3h", "2d" — compact age for the popup list.
     age(ts, now = Date.now()) {
       const m = Math.max(0, Math.round((now - ts) / 60000));
