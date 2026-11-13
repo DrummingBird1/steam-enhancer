@@ -13,6 +13,7 @@ node scripts/check-manifest.js     # manifest file refs + every i18n key used in
 node scripts/gen-locales.js        # regenerate _locales/*/messages.json (then `git diff _locales/` must be what you intended)
 node scripts/smoke-test.js         # live, read-only requests to public Steam endpoints (network)
 node scripts/package.js            # builds dist/steam-enhancer-vX.Y.Z.zip (dist/ is git-ignored)
+node scripts/package.js --firefox  # builds dist/steam-enhancer-firefox-vX.Y.Z.zip (experimental, not run in a real Firefox)
 ```
 
 CI (`.github/workflows/ci.yml`) runs the first three on every PR. All must pass before merge.
