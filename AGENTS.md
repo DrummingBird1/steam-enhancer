@@ -3,6 +3,19 @@
 Guide for any coding agent or contributor (Claude Code, Codex, Cursor, a human) working in this repo.
 The full code tour (layout, conventions, external-API table, pitfalls) is in **[`CLAUDE.md`](CLAUDE.md)** — read it before changing code. This file is the short operational part: how to run things, what is allowed, how work is handed over.
 
+<!-- BEGIN core-rules v1 (generated from the shared core-rules.md; do not edit by hand) -->
+## Core rules (apply to every agent)
+
+- Read this file first. If `HANDOFF.local.md` exists next to it, read it too (local only, not in git).
+- Never push, force-push or create remotes unless the owner explicitly asks. Work on a branch named `agent/<tool>-<topic>`; merge to `main` only through a pull request.
+- Never commit or print secrets (`.env`, keys, tokens). Keep personal paths, emails and private repo names out of tracked files.
+- Package managers: JavaScript uses `pnpm`, Python uses `uv`. Do not switch without being asked.
+- Dev servers listen on `127.0.0.1` only, unless the owner asks otherwise.
+- Do not delete or overwrite user data. Move it to an archive folder or ask first, and do a dry run before bulk changes.
+- Make the smallest change that solves the task. Run this project's own check and test commands (see Run and Test in this file) and say what you ran and what you could not verify.
+- If you have no access to the repository (a chat-only agent), return a unified diff or complete files, and list what the owner should verify.
+<!-- END core-rules -->
+
 ## Quick start
 
 No build step, no dependencies for the checks (Node 18+).
