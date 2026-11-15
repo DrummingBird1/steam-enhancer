@@ -94,7 +94,7 @@ Steam Enhancer **לא אוסף, לא מעביר, ולא מוכר שום מידע
 
 ## פיתוח
 
-ראו [`CLAUDE.md`](CLAUDE.md) (באנגלית) לסיור קוד מלא, ו-[`CONTRIBUTING.md`](CONTRIBUTING.md) (באנגלית) להנחיות תרומה.
+ראו [`docs/agent-notes.md`](docs/agent-notes.md) (באנגלית) לסיור קוד מלא, ו-[`CONTRIBUTING.md`](CONTRIBUTING.md) (באנגלית) להנחיות תרומה.
 
 אין שלב build: עורכים קובץ ולוחצים "reload" ב-`chrome://extensions/`. בדיקות: `node scripts/unit-test.js`, `node scripts/check-manifest.js`, `node scripts/smoke-test.js`.
 

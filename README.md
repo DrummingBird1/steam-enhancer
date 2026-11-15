@@ -110,7 +110,7 @@ Full privacy policy: [`store-assets/privacy-policy.md`](store-assets/privacy-pol
 
 ## Development
 
-See [`CLAUDE.md`](CLAUDE.md) for a code-tour written for both humans and AI assistants.
+See [`docs/agent-notes.md`](docs/agent-notes.md) for a code-tour written for both humans and AI assistants.
 
 ```
 src/
@@ -121,7 +121,7 @@ src/
   options/           Settings page
   styles/            Injected CSS (all .se-* prefixed)
 scripts/
-  smoke-test.js       Live regression check against real Steam/ITAD endpoints (see CLAUDE.md)
+  smoke-test.js       Live regression check against real Steam/ITAD endpoints (see docs/agent-notes.md)
   signed-in-check.js  Signed-in regression run in a real browser: you sign in, it only reads (see the file header)
   unit-test.js        Pure-logic tests (prices, fees, API parsers, wishlist, chart…) — no network, instant
   check-manifest.js   Manifest file references and i18n keys
@@ -139,7 +139,7 @@ Issues and PRs welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full
 - Don't import code from other Steam extensions (license cleanliness matters).
 - Keep all DOM injections under the `se-` class prefix.
 - Route all `fetch` through the background service worker.
-- No build step, no ES modules in content scripts — see [`CLAUDE.md`](CLAUDE.md) for why.
+- No build step, no ES modules in content scripts — see [`docs/agent-notes.md`](docs/agent-notes.md) for why.
 
 [Open an issue](https://github.com/DrummingBird1/steam-enhancer/issues) · [See past releases](https://github.com/DrummingBird1/steam-enhancer/releases)
 

@@ -6,7 +6,7 @@ Thanks for considering a contribution — issues, bug reports, and pull requests
 
 - **No build step.** This is intentional. Don't introduce webpack/vite/tsc/a bundler unless there's a very strong reason and it's discussed in an issue first. The "edit a file, click reload" loop is the whole point of this codebase.
 - **No ES modules in content scripts.** Every content/lib file attaches to `window.SteamEnhancer` (aliased `SE`) instead of using `import`/`export`. The background service worker is the only `"type": "module"` slot.
-- **Read [`CLAUDE.md`](CLAUDE.md) first.** It's a full code-tour: repository layout, key conventions, the external-API table, and a running list of things to be careful about. It's written for both humans and AI coding assistants, and it's the fastest way to get oriented.
+- **Read [`docs/agent-notes.md`](docs/agent-notes.md) first.** It's a full code-tour: repository layout, key conventions, the external-API table, and a running list of things to be careful about. It's written for both humans and AI coding assistants, and it's the fastest way to get oriented.
 
 ## Setting up a dev loop
 
@@ -25,7 +25,7 @@ Thanks for considering a contribution — issues, bug reports, and pull requests
 - **Settings**: add the default only in `src/lib/storage.js` (the popup and options pages load that file too), then add the control to `SECTIONS` in `src/options/options.js`.
 - **i18n**: UI text goes through `SE.t('key')`. Add keys to the table in `scripts/gen-locales.js` and run `node scripts/gen-locales.js`; don't hand-edit `_locales/*/messages.json`.
 - **Don't ship API keys.** If a feature needs an authenticated endpoint, route it through a user-supplied key in the Options page (see `steamWebApiKey` for a template), never a key baked into the extension.
-- **Don't widen `host_permissions`** without updating the justification table in both `CLAUDE.md` and `store-assets/description.md`.
+- **Don't widen `host_permissions`** without updating the justification table in both `docs/agent-notes.md` and `store-assets/description.md`.
 - **Don't reuse code or assets from Augmented Steam or Steam Inventory Helper.** Their licenses differ from this project's MIT license, and re-implementation from scratch is the point.
 
 ## If you add a feature that depends on an undocumented Steam endpoint or a guessed CSS selector
@@ -34,7 +34,7 @@ This happens a lot in this codebase, because Steam has no public docs for most o
 
 1. If possible, verify the endpoint/selector actually returns what you expect (a live request, or `scripts/smoke-test.js`).
 2. If you can't verify it (e.g. it needs a logged-in session and you can't test one), say so explicitly in a code comment and wrap the feature in `SE.safe`.
-3. Add a row to the external-API table in `CLAUDE.md` if it's a new endpoint.
+3. Add a row to the external-API table in `docs/agent-notes.md` if it's a new endpoint.
 
 ## Reporting bugs
 

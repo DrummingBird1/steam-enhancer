@@ -1,7 +1,6 @@
-# AGENTS.md
+# Steam Enhancer
 
-Guide for any coding agent or contributor (Claude Code, Codex, Cursor, a human) working in this repo.
-The full code tour (layout, conventions, external-API table, pitfalls) is in **[`CLAUDE.md`](CLAUDE.md)** — read it before changing code. This file is the short operational part: how to run things, what is allowed, how work is handed over.
+Single source of truth for any AI agent or contributor (Claude, Codex, Copilot, Cursor, Gemini, ChatGPT, Grok, OpenCode, a human) working in this repo. `CLAUDE.md` only imports this file. The long reference (layout, conventions, external-API table, pitfalls) is in **[`docs/agent-notes.md`](docs/agent-notes.md)**: read it before changing code. This file is the operational part: what the project is, how to run things, what is allowed, how work is handed over.
 
 <!-- BEGIN core-rules v1 (generated from the shared core-rules.md; do not edit by hand) -->
 ## Core rules (apply to every agent)
@@ -16,7 +15,11 @@ The full code tour (layout, conventions, external-API table, pitfalls) is in **[
 - If you have no access to the repository (a chat-only agent), return a unified diff or complete files, and list what the owner should verify.
 <!-- END core-rules -->
 
-## Quick start
+## What this is
+
+Steam Enhancer is an unofficial Manifest V3 Chrome extension that augments the Steam Store, Steam Community and Steam Market: price history, regional pricing, wishlist tooling, market and inventory helpers, trade-offer summaries and more, in one codebase with no build step. It is not affiliated with Valve, Augmented Steam or Steam Inventory Helper; all code is original (MIT). The owner works in Hebrew: reply in Hebrew unless asked otherwise; code, docs and commit messages stay in English.
+
+## Run and test (quick start)
 
 No build step, no dependencies for the checks (Node 18+).
 
@@ -38,16 +41,18 @@ Signed-in checks (`scripts/signed-in-check.js`) need playwright-core and a human
 - **No build step, no ES modules in content scripts.** Files attach to `window.SteamEnhancer` (`SE`).
 - **Network only through the service worker** (`SE.bg`). Page globals only through `SE.pageCall` + a named op in `src/content/page-bridge.js`.
 - **i18n:** never hardcode UI text. Add keys to the table in `scripts/gen-locales.js`, run it, commit the generated `_locales/`. Never hand-edit `_locales/*/messages.json`.
-- **Settings defaults live only in `src/lib/storage.js`.** Options UI comes from `SECTIONS` in `src/options/options.js` (+ an `opt_<key>` label).
+- **Settings defaults live only in `src/lib/storage.js`.** Always go through `SE.storage`. Options UI comes from `SECTIONS` in `src/options/options.js` (+ an `opt_<key>` label). The few settings too big for sync's 8 KB item quota (`LOCAL_KEYS`) live in `chrome.storage.local`.
+- **Injected DOM:** every node gets a class prefixed `se-`, and most get `dataset.seDone = '1'` so MutationObservers don't decorate the same row twice.
+- **API keys are user-supplied** through Options (ITAD, Steam Web API); never bake one in. A new keyed endpoint follows the same pattern.
 - **Never insert into Steam's React trees** (wishlist, new inventory pane, library, Market Beta). Float or sit beside; report with `SE.health.miss(...)`.
 - **Money:** wallet currency via `SE.walletCurrency()`; refuse to list when unknown; `sellitem` takes the after-fee amount (`SE.marketFees`).
 - **Big API answers are reduced in the service worker before caching** (`chrome.storage.local` is 10 MB).
 - **Don't widen `host_permissions`**, don't ship API keys, don't copy code or assets from Augmented Steam / Steam Inventory Helper, keep the "unofficial" disclaimer in docs.
-- If you add a pure helper to `src/lib/`, add a case to `scripts/unit-test.js`. If you add an endpoint, add a row to the table in `CLAUDE.md` and a check to `scripts/smoke-test.js` when it can be verified anonymously.
+- If you add a pure helper to `src/lib/`, add a case to `scripts/unit-test.js`. If you add an endpoint, add a row to the table in `docs/agent-notes.md` and a check to `scripts/smoke-test.js` when it can be verified anonymously.
 
 ## This repo is public
 
-Everything tracked is world-readable. Never commit local paths (`C:\Users\…`), emails, tokens/keys, personal notes or session transcripts. Private context goes in `*.local.md` files (git-ignored; `HANDOFF.local.md` is the convention). Check `git diff --cached --stat` before every commit.
+Everything tracked is world-readable. Never commit local paths (drive letters or user-profile folders), emails, tokens/keys, personal notes or session transcripts. Private context goes in `*.local.md` files (git-ignored; `HANDOFF.local.md` is the convention). Check `git diff --cached --stat` before every commit.
 
 ## Git and release workflow
 
@@ -58,6 +63,7 @@ Everything tracked is world-readable. Never commit local paths (`C:\Users\…`),
 
 ## Where things stand
 
+- [`docs/agent-notes.md`](docs/agent-notes.md): the code tour (layout, conventions, external APIs, things to be careful about).
 - [`ROADMAP.md`](ROADMAP.md): shipped / next / ideas / deliberately set aside (read "set aside" before proposing a feature).
 - [`docs/`](docs): per-release plans and test checklists (`PLAN-*.md`, `TESTING-*.md`).
 - [`CHANGELOG.md`](CHANGELOG.md): what each version contains.
