@@ -18,8 +18,8 @@
 //
 // The Firefox manifest differs only here: background.service_worker becomes an event page
 // (background.scripts), browser_specific_settings.gecko gets an add-on id and strict_min_version,
-// and minimum_chrome_version (Chrome only) is dropped. data_collection_permissions is NOT declared
-// on purpose: decide what to declare before submitting to addons.mozilla.org.
+// and minimum_chrome_version (Chrome only) is dropped. data_collection_permissions declares
+// browsingActivity (ProtonDB, IsThereAnyDeal and Steam get game ids from the pages you view).
 
 const { execFileSync } = require('child_process');
 const fs = require('fs');
@@ -32,7 +32,8 @@ const PATHS = ['manifest.json', 'src', 'icons', '_locales', 'LICENSE'];
 
 const FIREFOX = process.argv.includes('--firefox');
 const GECKO_ID = 'steam-enhancer@drummingbird1.github.io'; // proposed id, not registered on AMO yet
-const GECKO_MIN_VERSION = '128.0'; // content scripts with "world": "MAIN" need Firefox 128
+const GECKO_MIN_VERSION = '140.0'; // data_collection_permissions needs Firefox 140 ("world": "MAIN" needs 128)
+const GECKO_DATA_COLLECTION = { required: ['browsingActivity'] };
 
 function firefoxManifest(m) {
   const f = structuredClone(m);
@@ -50,7 +51,9 @@ function firefoxManifest(m) {
     }
   }
   for (const war of f.web_accessible_resources || []) delete war.use_dynamic_url; // Chrome-only key
-  f.browser_specific_settings = { gecko: { id: GECKO_ID, strict_min_version: GECKO_MIN_VERSION } };
+  f.browser_specific_settings = {
+    gecko: { id: GECKO_ID, strict_min_version: GECKO_MIN_VERSION, data_collection_permissions: GECKO_DATA_COLLECTION },
+  };
   return f;
 }
 
@@ -162,4 +165,4 @@ if (FIREFOX) {
 }
 const kb = Math.round(fs.statSync(out).size / 1024);
 console.log(`wrote dist/${name} (${kb} KB, ${files.length} files, from ${ref === 'HEAD' ? git('rev-parse', '--short', 'HEAD') : ref})`);
-if (FIREFOX) console.log('EXPERIMENTAL: not run in a real Firefox yet; data_collection_permissions is not declared.');
+if (FIREFOX) console.log('EXPERIMENTAL Firefox build (needs Firefox 140+). Check it in a real Firefox before submitting.');
