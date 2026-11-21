@@ -27,7 +27,7 @@
 // Notes learned the hard way: a command-line-loaded extension is DISABLED if
 // you reload it from chrome://extensions or chrome.runtime.reload(), so to
 // test code changes run this script again (it starts a fresh browser). The
-// Steam pages the checks target are described in docs/TESTING-1.5.0.md.
+// Steam pages the checks target are the ones named in the checks below.
 //
 // --no-wait skips the sign-in prompt: checks that need a session are SKIPped
 // and the rest run (useful for the anonymous part, or a quick sanity run).

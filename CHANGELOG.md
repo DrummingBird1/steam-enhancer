@@ -8,7 +8,7 @@ All notable changes to Steam Enhancer are documented here. Versions follow the
 A feature release built from the roadmap. Trade Guard is still deferred (it
 needs real trade offers to tune). Everything below was checked in a real
 browser except the parts that need a Steam account that may sell, a Steam
-Web API key or a trade partner (see `docs/PLAN-1.6.0.md`).
+Web API key or a trade partner.
 
 ### Added
 - **"Steam changed this page" notes.** A tool that can't find its place on a
@@ -59,7 +59,7 @@ Web API key or a trade partner (see `docs/PLAN-1.6.0.md`).
 
 The biggest release so far: a round of real bug fixes (some had been there
 since 1.0), the wishlist rebuilt for Steam's new wishlist page, and a set of
-new tools. How it was planned: `docs/PLAN-1.5.0.md`.
+new tools.
 
 ### Fixed
 - **Mass-list and "list selected" could sell at the wrong price.** Prices were

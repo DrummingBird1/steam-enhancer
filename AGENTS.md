@@ -65,7 +65,7 @@ Everything tracked is world-readable. Never commit local paths (drive letters or
 
 - [`docs/agent-notes.md`](docs/agent-notes.md): the code tour (layout, conventions, external APIs, things to be careful about).
 - [`ROADMAP.md`](ROADMAP.md): shipped / next / ideas / deliberately set aside (read "set aside" before proposing a feature).
-- [`docs/`](docs): per-release plans and test checklists (`PLAN-*.md`, `TESTING-*.md`).
+- [`docs/`](docs): English-only technical notes (per-release plans and checklists are kept out of this public repo).
 - [`CHANGELOG.md`](CHANGELOG.md): what each version contains.
 - Known limits and what has *not* been verified signed in are listed in the release PR description and in the plan's status table.
 
@@ -74,6 +74,6 @@ Everything tracked is world-readable. Never commit local paths (drive letters or
 Before ending a session that leaves work half done, leave the repo in a state a stranger can pick up:
 
 1. Commit (or clearly list) what is uncommitted; never leave the checks red without saying so.
-2. Update the status table in the current `docs/PLAN-*.md` (done / not done / unverified).
+2. Update the status table in the current local plan, kept outside the repo (done / not done / unverified).
 3. Write the open items and the exact next command in the PR description or in `HANDOFF.local.md` (local only).
 4. Say what you verified live vs. only by tests. "Not verified signed in" is a valid and useful statement.

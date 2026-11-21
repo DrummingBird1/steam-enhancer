@@ -11,3 +11,4 @@ build/
 *.local.md
 .env
 .env.*
+docs-local/
